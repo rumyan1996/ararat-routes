@@ -1,6 +1,6 @@
 # Ararat Routes (Armenia Tours Map)
 
-A tool for planning **driving day trips from Yerevan** that surface detour-worthy sights *along the way*, rather than just navigating from A to B. See [`docs/armenia-tours-prd.md`](docs/armenia-tours-prd.md) for the full v1 PRD.
+A tool for planning **driving day trips from Yerevan** that surface detour-worthy sights *along the way*, rather than just navigating from A to B. See [`armenia-tours-prd.md`](armenia-tours-prd.md) for the full v1 PRD.
 
 **v1 scope:** driving only, day trips from Yerevan, English only, no accounts or booking.
 
@@ -11,7 +11,7 @@ It's a single static file with no build step.
 - **Locally:** open `index.html` in a browser.
 - **GitHub Pages:** Settings → Pages → deploy from the `main` branch, root folder.
 
-It loads Leaflet from unpkg, map tiles from CARTO, and fonts from Google Fonts, so it needs an internet connection.
+It loads the Yandex Maps API, Leaflet (backup map, from unpkg), CARTO map tiles (backup map) and Google Fonts, so it needs an internet connection.
 
 ## How it works
 
@@ -23,7 +23,18 @@ It loads Leaflet from unpkg, map tiles from CARTO, and fonts from Google Fonts, 
 
 ## Configuration
 
-Both settings sit in the `CONFIG` block near the top of the `<script>` in `index.html`.
+All settings sit in the `CONFIG` block near the top of the `<script>` in `index.html`.
+
+### 0. Map (Yandex Maps)
+
+The map uses the **Yandex Maps JavaScript API v3** when `YANDEX_MAPS_KEY` is set. If Yandex can't load (blocked, key not active yet, offline), the page automatically falls back to the basic OpenStreetMap map, and a small link under the map lets visitors switch between the two by hand. Leave the key empty to use only the basic map.
+
+Requirements on the Yandex side (developer.tech.yandex.ru):
+- The key must be linked to the **JavaScript API** product.
+- The key must have its **HTTP Referer restriction** set to the site address (e.g. `ararat-routes.vercel.app`). Yandex v3 refuses keys without it, and it also stops other websites from using the key.
+- Keys can take up to about 15 minutes to activate. Check the plan/rates in the Yandex dashboard.
+
+The key is visible to anyone who opens the page; that is normal for map keys, and the referer restriction is what protects it. Yandex is used for the map view only. Drive times and route lines are separate (see below).
 
 ### 1. Real driving routes (OpenRouteService)
 
@@ -48,6 +59,7 @@ A missing or broken URL falls back to the sight's flat icon. **No photos are set
 
 ## Status / open items
 
+- [x] Yandex Maps key connected (map view)
 - [ ] OpenRouteService key not yet activated (estimates are used until then).
 - [ ] Sight photos: none set. Needs verified image URLs.
 - [ ] Hours/price data for several sights is still flagged as unverified.
@@ -58,4 +70,4 @@ Accommodation booking, offline mode, multi-day itineraries, walking/transit rout
 
 ## Credits
 
-Map data © OpenStreetMap contributors; tiles © CARTO. Rendered with [Leaflet](https://leafletjs.com). Routing by [OpenRouteService](https://openrouteservice.org) when enabled.
+Main map © Yandex Maps. Backup map: data © OpenStreetMap contributors, tiles © CARTO, rendered with [Leaflet](https://leafletjs.com). Routing by [OpenRouteService](https://openrouteservice.org) when enabled.

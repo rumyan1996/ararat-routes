@@ -442,6 +442,11 @@ select{
 .leaflet-container{ font-family: var(--font-body); }
 .leaflet-control-attribution{ font-size: 10.5px; }
 .hexicon{ background:none; border:none; }
+.ymk{ cursor:pointer; }
+.ymk:focus-visible{ outline:2px solid var(--ink); outline-offset:3px; border-radius:6px; }
+.map-switch{ font-size:12.5px; color: var(--ink-faint); margin: -14px 0 22px; }
+.map-switch-btn{ background:none; border:none; padding:0; font:inherit; color: var(--blue-ink); text-decoration:underline; cursor:pointer; }
+.map-switch-btn:focus-visible{ outline:2px solid var(--ink); outline-offset:2px; }
 .hexpin{
   width:100%; height:100%;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
@@ -571,6 +576,7 @@ select{
       </div>
     </div>
     <p class="map-hint" id="map-hint">Click a pin on the map to see details about that sight here.</p>
+    <p class="map-switch" id="map-switch-wrap" hidden><span id="map-switch-note"></span> <button type="button" class="map-switch-btn" id="map-switch" onclick="toggleMapProvider()"></button></p>
 
     <div id="results">
       <div class="status" data-i18n="statusIdle">Set your time budget on the left and press <strong>Find routes</strong> — or open the search another way and pick a must-see place instead.</div>
@@ -598,6 +604,10 @@ select{
       A broken or missing URL falls back to the icon automatically.
 ====================================================================== */
 const ORS_API_KEY = '';
+/* Yandex Maps (map view only). Browser-visible key: it must have an
+   HTTP Referer restriction set to this site's address in the Yandex
+   developer dashboard. Leave empty to use the basic OpenStreetMap map. */
+const YANDEX_MAPS_KEY = 'b387716c-a1bf-440c-bd99-e4ceea318c5a';
 const PHOTOS = {
   // garni: { url:'', credit:'' },
 };
@@ -1187,45 +1197,204 @@ function fmtMin(min){
   return m? `${h}h${m}m` : `${h}h`;
 }
 /* ======================================================================
-   MAP — Leaflet + OpenStreetMap data (CARTO Voyager tiles).
+   MAP — Yandex Maps (when YANDEX_MAPS_KEY is set) with the basic
+   Leaflet + OpenStreetMap (CARTO Voyager tiles) map as automatic backup.
+   Both draw the same thing through one small interface (mapApi), so the
+   rest of the page doesn't care which one is showing.
    Hexagon markers: ember = on the active route (numbered), slate = other
    sights, gold = Yerevan, ink ring = selected.
    Route line: real road geometry from OpenRouteService when ORS_API_KEY is
    set, otherwise straight segments. Out and back on one road, so the line
    is drawn once.
 ====================================================================== */
-const map = L.map('map', { zoomControl:true, scrollWheelZoom:true }).setView([40.3, 44.7], 8);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-  maxZoom: 18, subdomains: 'abcd',
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-}).addTo(map);
-setTimeout(()=>map.invalidateSize(), 0);
+let mapApi = null;          // the active map backend
+let pendingStops = [];      // what to draw as soon as a backend is ready
+let mapProvider = YANDEX_MAPS_KEY ? 'yandex' : 'leaflet';
+let mapInitToken = 0;       // guards against overlapping (re)initialisations
 
 const markers = {};
 let originMarker = null;
-let routeLayer = L.layerGroup().addTo(map);
 
-function hexIcon(kind, label, size){
-  const w = size, h = Math.round(size*1.1547);
-  return L.divIcon({
-    className:'hexicon',
-    html:`<div class="hexwrap"><div class="hexpin ${kind}"><i>${label||''}</i></div></div>`,
-    iconSize:[w,h], iconAnchor:[w/2,h/2]
+function hexSize(size){ return [size, Math.round(size*1.1547)]; }
+
+/* ---------- Backend 1: Leaflet (basic map) ---------- */
+function createLeafletBackend(el){
+  const map = L.map(el, { zoomControl:true, scrollWheelZoom:true }).setView([40.3, 44.7], 8);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    maxZoom: 18, subdomains: 'abcd',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+  }).addTo(map);
+  setTimeout(()=>map.invalidateSize(), 0);
+  const routeLayer = L.layerGroup().addTo(map);
+  const icon = (kind, label, size)=>{
+    const [w,h] = hexSize(size);
+    return L.divIcon({
+      className:'hexicon',
+      html:`<div class="hexwrap"><div class="hexpin ${kind}"><i>${label||''}</i></div></div>`,
+      iconSize:[w,h], iconAnchor:[w/2,h/2]
+    });
+  };
+  return {
+    name:'leaflet',
+    addMarker(o){
+      const m = L.marker([o.lat,o.lon], {
+        icon: icon(o.kind,o.label,o.size), title:o.title, alt:o.title,
+        riseOnHover: !o.origin, keyboard: !o.origin, zIndexOffset:o.z||0
+      }).addTo(map);
+      if(o.onClick) m.on('click', o.onClick);
+      return m;
+    },
+    updateMarker(m, o){ m.setIcon(icon(o.kind,o.label,o.size)); m.setZIndexOffset(o.z||0); },
+    drawRoute(pts, live){
+      routeLayer.clearLayers();
+      L.polyline(pts, { color:'#FFFFFF', weight:9, opacity:.9, lineCap:'round', lineJoin:'round', interactive:false }).addTo(routeLayer);
+      L.polyline(pts, { color:'#F0692B', weight:4, opacity:1, lineCap:'round', lineJoin:'round', dashArray: live ? null : '1 8', interactive:false }).addTo(routeLayer);
+    },
+    clearRoute(){ routeLayer.clearLayers(); },
+    flyTo(lat, lon, minZoom){ map.flyTo([lat,lon], Math.max(map.getZoom(), minZoom), { duration:0.6 }); },
+    fit(pts, maxZoom){ map.flyToBounds(L.latLngBounds(pts).pad(0.25), { duration:0.6, maxZoom }); },
+    destroy(){ map.remove(); }
+  };
+}
+
+/* ---------- Backend 2: Yandex Maps JS API v3 ---------- */
+function loadYandexScript(){
+  return new Promise((resolve, reject)=>{
+    if(window.ymaps3) return resolve();
+    const s = document.createElement('script');
+    s.src = 'https://api-maps.yandex.ru/v3/?apikey=' + encodeURIComponent(YANDEX_MAPS_KEY) + '&lang=en_US';
+    s.onload = ()=> resolve();
+    s.onerror = ()=> reject(new Error('Yandex script failed to load'));
+    document.head.appendChild(s);
   });
+}
+function withTimeout(promise, ms, msg){
+  return Promise.race([promise, new Promise((_,rej)=> setTimeout(()=>rej(new Error(msg)), ms))]);
+}
+async function createYandexBackend(el){
+  await withTimeout(loadYandexScript().then(()=>ymaps3.ready), 12000, 'Yandex Maps took too long to load');
+  const { YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapMarker, YMapFeature, YMapControls } = ymaps3;
+  const map = new YMap(el, { location:{ center:[44.7, 40.3], zoom:8 } });
+  map.addChild(new YMapDefaultSchemeLayer({}));
+  map.addChild(new YMapDefaultFeaturesLayer({}));
+  try{
+    const { YMapZoomControl } = await ymaps3.import('@yandex/ymaps3-controls@0.0.1');
+    const controls = new YMapControls({ position:'right' });
+    controls.addChild(new YMapZoomControl({}));
+    map.addChild(controls);
+  }catch(e){ console.warn('Yandex zoom buttons unavailable (scroll / pinch still zoom)', e); }
+
+  let routeFeatures = [];
+  const paint = (h)=>{
+    const o = h.o, [w,hh] = hexSize(o.size);
+    h.el.style.width = w+'px'; h.el.style.height = hh+'px';
+    h.el.innerHTML = `<div class="hexwrap"><div class="hexpin ${o.kind}"><i>${o.label||''}</i></div></div>`;
+  };
+  return {
+    name:'yandex',
+    addMarker(o){
+      const node = document.createElement('div');
+      node.className = 'hexicon ymk';
+      node.style.transform = 'translate(-50%,-50%)';
+      node.title = o.title;
+      if(!o.origin){
+        node.setAttribute('role','button'); node.tabIndex = 0;
+        node.setAttribute('aria-label', o.title);
+        node.addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && o.onClick){ e.preventDefault(); o.onClick(); } });
+      }
+      const h = { o, el:node, mk:null };
+      paint(h);
+      if(o.onClick) node.addEventListener('click', e=>{ e.stopPropagation(); o.onClick(); });
+      h.mk = new YMapMarker({ coordinates:[o.lon, o.lat], zIndex:o.z||0 }, node);
+      map.addChild(h.mk);
+      return h;
+    },
+    updateMarker(h, o){
+      h.o = Object.assign({}, h.o, o);
+      paint(h);
+      h.mk.update({ zIndex:o.z||0 });
+    },
+    drawRoute(pts, live){
+      this.clearRoute();
+      const geometry = { type:'LineString', coordinates: pts.map(p=>[p[1],p[0]]) };
+      const casing = new YMapFeature({ geometry, style:{ stroke:[{ color:'#FFFFFF', width:9, opacity:.9 }] }, zIndex:1 });
+      const stroke = { color:'#F0692B', width:4 };
+      if(!live) stroke.dash = [2, 9];
+      const line = new YMapFeature({ geometry, style:{ stroke:[stroke] }, zIndex:2 });
+      map.addChild(casing); map.addChild(line);
+      routeFeatures = [casing, line];
+    },
+    clearRoute(){ routeFeatures.forEach(f=>{ try{ map.removeChild(f); }catch(e){} }); routeFeatures = []; },
+    flyTo(lat, lon, minZoom){
+      map.setLocation({ center:[lon,lat], zoom: Math.max(map.zoom||8, minZoom), duration:600 });
+    },
+    fit(pts, maxZoom){
+      // Fit the points in view with ~25% breathing room, capped at maxZoom.
+      const mx = lon => (lon+180)/360;
+      const my = lat => { const s=Math.sin(lat*Math.PI/180); return 0.5 - Math.log((1+s)/(1-s))/(4*Math.PI); };
+      const lats = pts.map(p=>p[0]), lons = pts.map(p=>p[1]);
+      const minLon=Math.min(...lons), maxLon=Math.max(...lons), minLat=Math.min(...lats), maxLat=Math.max(...lats);
+      const spanX = Math.max((mx(maxLon)-mx(minLon))*1.5, 1e-6);
+      const spanY = Math.max((my(minLat)-my(maxLat))*1.5, 1e-6);
+      const r = el.getBoundingClientRect();
+      const zx = Math.log2(Math.max(r.width,1)/(256*spanX)), zy = Math.log2(Math.max(r.height,1)/(256*spanY));
+      const zoom = Math.max(3, Math.min(maxZoom, zx, zy));
+      const yMid = (my(minLat)+my(maxLat))/2;
+      const latMid = (2*Math.atan(Math.exp((0.5-yMid)*2*Math.PI)) - Math.PI/2) * 180/Math.PI;
+      map.setLocation({ center:[(minLon+maxLon)/2, latMid], zoom, duration:600 });
+    },
+    destroy(){ try{ map.destroy(); }catch(e){} el.innerHTML=''; }
+  };
+}
+
+/* ---------- Start / switch the map ---------- */
+function updateMapSwitch(note){
+  const wrap = document.getElementById('map-switch-wrap');
+  if(!wrap) return;
+  if(!YANDEX_MAPS_KEY){ wrap.hidden = true; return; }
+  wrap.hidden = false;
+  document.getElementById('map-switch-note').textContent = note || '';
+  const btn = document.getElementById('map-switch');
+  btn.textContent = mapProvider==='yandex' ? 'Map blank or not loading? Use the basic map' : 'Switch to Yandex map';
+}
+async function startMap(provider, note){
+  const token = ++mapInitToken;
+  mapProvider = provider;
+  if(mapApi){ mapApi.destroy(); mapApi = null; }
+  Object.keys(markers).forEach(k=> delete markers[k]);
+  originMarker = null;
+  const el = document.getElementById('map');
+  let api = null;
+  if(provider==='yandex'){
+    try{ api = await createYandexBackend(el); }
+    catch(e){
+      console.warn('Yandex Maps unavailable, using the basic map', e);
+      if(token!==mapInitToken) return;
+      el.innerHTML = '';
+      mapProvider = 'leaflet';
+      note = 'Yandex Maps could not load, so the basic map is showing.';
+    }
+  }
+  if(token!==mapInitToken){ if(api) api.destroy(); return; }
+  if(!api) api = createLeafletBackend(el);
+  mapApi = api;
+  updateMapSwitch(note);
+  renderMap(pendingStops);
+}
+function toggleMapProvider(){
+  startMap(mapProvider==='yandex' ? 'leaflet' : 'yandex');
 }
 
 function ensureMarkers(){
-  if(originMarker) return;
-  originMarker = L.marker([YEREVAN.lat, YEREVAN.lon], { icon: hexIcon('origin','',34), title:'Yerevan', keyboard:false, zIndexOffset:500 }).addTo(map);
+  if(originMarker || !mapApi) return;
+  originMarker = mapApi.addMarker({ lat:YEREVAN.lat, lon:YEREVAN.lon, kind:'origin', label:'', size:34, title:'Yerevan', origin:true, z:500 });
   SIGHTS.forEach(s=>{
-    const m = L.marker([s.lat, s.lon], { icon: hexIcon('idle','',26), title: s.name.en, alt: s.name.en, riseOnHover:true });
-    m.on('click', ()=> selectSight(s.id));
-    m.addTo(map);
-    markers[s.id] = m;
+    markers[s.id] = mapApi.addMarker({ lat:s.lat, lon:s.lon, kind:'idle', label:'', size:26, title:s.name.en, z:0, onClick: ()=> selectSight(s.id) });
   });
 }
 
 function refreshMarkers(orderedStops){
+  if(!mapApi) return;
   ensureMarkers();
   SIGHTS.forEach(s=>{
     const idx = orderedStops.findIndex(o=>o.id===s.id);
@@ -1233,27 +1402,26 @@ function refreshMarkers(orderedStops){
     let kind = idx!==-1 ? 'route' : 'idle';
     if(sel) kind += ' sel';
     const size = idx!==-1 ? 34 : 26;
-    markers[s.id].setIcon(hexIcon(kind, idx!==-1 ? String(idx+1) : '', size));
-    markers[s.id].setZIndexOffset(sel ? 900 : (idx!==-1 ? 300 : 0));
+    mapApi.updateMarker(markers[s.id], { kind, label: idx!==-1 ? String(idx+1) : '', size, z: sel ? 900 : (idx!==-1 ? 300 : 0) });
   });
 }
 
 function drawRoute(orderedStops, r){
-  routeLayer.clearLayers();
+  if(!mapApi) return;
+  mapApi.clearRoute();
   if(!orderedStops.length) return;
   const pts = r && r.geometry ? r.geometry : [[YEREVAN.lat,YEREVAN.lon], ...orderedStops.map(s=>[s.lat,s.lon])];
-  const live = !!(r && r.geometry);
-  L.polyline(pts, { color:'#FFFFFF', weight:9, opacity:.9, lineCap:'round', lineJoin:'round', interactive:false }).addTo(routeLayer);
-  L.polyline(pts, { color:'#F0692B', weight:4, opacity:1, lineCap:'round', lineJoin:'round', dashArray: live ? null : '1 8', interactive:false }).addTo(routeLayer);
+  mapApi.drawRoute(pts, !!(r && r.geometry));
 }
 
 function renderMap(orderedStops){
+  pendingStops = orderedStops;
+  if(!mapApi) return;            // the map is still starting; startMap() redraws when ready
   const r = orderedStops.length && state.routes ? state.routes[state.activeRoute] : null;
   refreshMarkers(orderedStops);
   drawRoute(orderedStops, r);
   if(orderedStops.length){
-    const b = L.latLngBounds([[YEREVAN.lat,YEREVAN.lon], ...orderedStops.map(s=>[s.lat,s.lon])]);
-    map.flyToBounds(b.pad(0.25), { duration:0.6, maxZoom:11 });
+    mapApi.fit([[YEREVAN.lat,YEREVAN.lon], ...orderedStops.map(s=>[s.lat,s.lon])], 11);
   }
 }
 
@@ -1315,7 +1483,7 @@ function selectSight(sightId){
   const sg = SIGHTS.find(x=>x.id===sightId);
   const r = state.routes && state.routes[state.activeRoute];
   refreshMarkers(r ? r.order : []);
-  if(sg) map.flyTo([sg.lat, sg.lon], Math.max(map.getZoom(), 10), { duration:0.6 });
+  if(sg && mapApi) mapApi.flyTo(sg.lat, sg.lon, 10);
 }
 
 function closeSightPanel(){
@@ -1453,7 +1621,7 @@ buildMustSeeOptions();
 buildInterestChips();
 renderSaved();
 updateDataNote();
-renderMap([]);
+startMap(mapProvider);
 if(!loadFromHash()){
   // idle state already in markup
 }
