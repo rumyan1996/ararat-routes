@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
 
 /* ============ TOKENS — Soft Structuralism ============ */
@@ -439,39 +438,12 @@ select{
 .map-wrap{ isolation:isolate; }
 #map{ height: 470px; width:100%; border-radius: var(--radius-m); background: var(--surface-2); }
 @media (max-width: 900px){ #map{ height: 360px; } }
-.leaflet-container{ font-family: var(--font-body); }
-.leaflet-control-attribution{ font-size: 10.5px; }
 .hexicon{ background:none; border:none; }
 .ymk{ cursor:pointer; }
 .ymk:focus-visible{ outline:2px solid var(--ink); outline-offset:3px; border-radius:6px; }
-.map-switch{ font-size:12.5px; color: var(--ink-faint); margin: -14px 0 22px; }
-.map-switch-btn{ background:none; border:none; padding:0; font:inherit; color: var(--blue-ink); text-decoration:underline; cursor:pointer; }
-.map-switch-btn:focus-visible{ outline:2px solid var(--ink); outline-offset:2px; }
-.hexpin{
-  width:100%; height:100%;
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-  background: var(--surface);
-  display:flex; align-items:center; justify-content:center;
-  transition: transform 180ms cubic-bezier(.2,.7,.2,1);
-  cursor:pointer;
-}
-.hexwrap{ width:100%; height:100%; filter: drop-shadow(0 2px 3px rgba(23,23,26,.38)); }
-.hexpin i{
-  display:flex; align-items:center; justify-content:center;
-  width:calc(100% - 6px); height:calc(100% - 6px);
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-  background: var(--ink-faint);
-  color: var(--on-accent);
-  font: 700 13px/1 var(--font-display);
-  font-style: normal;
-}
-.hexpin.route i{ background: var(--rose); }
-.hexpin.origin i{ background: var(--gold); }
-.hexpin.idle{ opacity:.8; }
-.hexpin.idle i{ background: var(--blue); }
-.hexpin.sel{ background: var(--ink); transform: scale(1.18); }
-.hexicon:hover .hexpin{ transform: scale(1.1); }
-.hexicon:hover .hexpin.sel{ transform: scale(1.18); }
+.map-msg{ height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:24px; text-align:center; color: var(--ink-muted); font-size:14px; }
+.map-msg button{ font:inherit; font-weight:600; padding:9px 18px; border-radius: var(--radius-pill); border:1px solid var(--border-strong); background: var(--surface); color: var(--ink); cursor:pointer; }
+.map-msg button:focus-visible{ outline:2px solid var(--ink); outline-offset:2px; }
 .origin-hex{ width:14px; height:16px; background: var(--gold);
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); display:inline-block; }
 .stop-thumb img{ display:block; width:100%; height:100%; object-fit:cover; border-radius: var(--radius-m); border:1px solid var(--border); }
@@ -576,7 +548,6 @@ select{
       </div>
     </div>
     <p class="map-hint" id="map-hint">Click a pin on the map to see details about that sight here.</p>
-    <p class="map-switch" id="map-switch-wrap" hidden><span id="map-switch-note"></span> <button type="button" class="map-switch-btn" id="map-switch" onclick="toggleMapProvider()"></button></p>
 
     <div id="results">
       <div class="status" data-i18n="statusIdle">Set your time budget on the left and press <strong>Find routes</strong> — or open the search another way and pick a must-see place instead.</div>
@@ -586,7 +557,6 @@ select{
   </main>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 /* ======================================================================
    CONFIG — edit these two things, nothing else is required.
@@ -606,7 +576,7 @@ select{
 const ORS_API_KEY = '';
 /* Yandex Maps (map view only). Browser-visible key: it must have an
    HTTP Referer restriction set to this site's address in the Yandex
-   developer dashboard. Leave empty to use the basic OpenStreetMap map. */
+   developer dashboard. */
 const YANDEX_MAPS_KEY = 'b387716c-a1bf-440c-bd99-e4ceea318c5a';
 const PHOTOS = {
   // garni: { url:'', credit:'' },
@@ -1197,10 +1167,9 @@ function fmtMin(min){
   return m? `${h}h${m}m` : `${h}h`;
 }
 /* ======================================================================
-   MAP — Yandex Maps (when YANDEX_MAPS_KEY is set) with the basic
-   Leaflet + OpenStreetMap (CARTO Voyager tiles) map as automatic backup.
-   Both draw the same thing through one small interface (mapApi), so the
-   rest of the page doesn't care which one is showing.
+   MAP — Yandex Maps JavaScript API v3.
+   If Yandex can't load, the map area shows a short message with a
+   "Try again" button; the rest of the page keeps working.
    Hexagon markers: ember = on the active route (numbered), slate = other
    sights, gold = Yerevan, ink ring = selected.
    Route line: real road geometry from OpenRouteService when ORS_API_KEY is
@@ -1209,7 +1178,6 @@ function fmtMin(min){
 ====================================================================== */
 let mapApi = null;          // the active map backend
 let pendingStops = [];      // what to draw as soon as a backend is ready
-let mapProvider = YANDEX_MAPS_KEY ? 'yandex' : 'leaflet';
 let mapInitToken = 0;       // guards against overlapping (re)initialisations
 
 const markers = {};
@@ -1217,47 +1185,7 @@ let originMarker = null;
 
 function hexSize(size){ return [size, Math.round(size*1.1547)]; }
 
-/* ---------- Backend 1: Leaflet (basic map) ---------- */
-function createLeafletBackend(el){
-  const map = L.map(el, { zoomControl:true, scrollWheelZoom:true }).setView([40.3, 44.7], 8);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    maxZoom: 18, subdomains: 'abcd',
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-  }).addTo(map);
-  setTimeout(()=>map.invalidateSize(), 0);
-  const routeLayer = L.layerGroup().addTo(map);
-  const icon = (kind, label, size)=>{
-    const [w,h] = hexSize(size);
-    return L.divIcon({
-      className:'hexicon',
-      html:`<div class="hexwrap"><div class="hexpin ${kind}"><i>${label||''}</i></div></div>`,
-      iconSize:[w,h], iconAnchor:[w/2,h/2]
-    });
-  };
-  return {
-    name:'leaflet',
-    addMarker(o){
-      const m = L.marker([o.lat,o.lon], {
-        icon: icon(o.kind,o.label,o.size), title:o.title, alt:o.title,
-        riseOnHover: !o.origin, keyboard: !o.origin, zIndexOffset:o.z||0
-      }).addTo(map);
-      if(o.onClick) m.on('click', o.onClick);
-      return m;
-    },
-    updateMarker(m, o){ m.setIcon(icon(o.kind,o.label,o.size)); m.setZIndexOffset(o.z||0); },
-    drawRoute(pts, live){
-      routeLayer.clearLayers();
-      L.polyline(pts, { color:'#FFFFFF', weight:9, opacity:.9, lineCap:'round', lineJoin:'round', interactive:false }).addTo(routeLayer);
-      L.polyline(pts, { color:'#F0692B', weight:4, opacity:1, lineCap:'round', lineJoin:'round', dashArray: live ? null : '1 8', interactive:false }).addTo(routeLayer);
-    },
-    clearRoute(){ routeLayer.clearLayers(); },
-    flyTo(lat, lon, minZoom){ map.flyTo([lat,lon], Math.max(map.getZoom(), minZoom), { duration:0.6 }); },
-    fit(pts, maxZoom){ map.flyToBounds(L.latLngBounds(pts).pad(0.25), { duration:0.6, maxZoom }); },
-    destroy(){ map.remove(); }
-  };
-}
-
-/* ---------- Backend 2: Yandex Maps JS API v3 ---------- */
+/* ---------- Yandex Maps JS API v3 ---------- */
 function loadYandexScript(){
   return new Promise((resolve, reject)=>{
     if(window.ymaps3) return resolve();
@@ -1347,42 +1275,35 @@ async function createYandexBackend(el){
   };
 }
 
-/* ---------- Start / switch the map ---------- */
-function updateMapSwitch(note){
-  const wrap = document.getElementById('map-switch-wrap');
-  if(!wrap) return;
-  if(!YANDEX_MAPS_KEY){ wrap.hidden = true; return; }
-  wrap.hidden = false;
-  document.getElementById('map-switch-note').textContent = note || '';
-  const btn = document.getElementById('map-switch');
-  btn.textContent = mapProvider==='yandex' ? 'Map blank or not loading? Use the basic map' : 'Switch to Yandex map';
+/* ---------- Start the map ---------- */
+function showMapMessage(text){
+  const el = document.getElementById('map');
+  el.innerHTML = '';
+  const box = document.createElement('div'); box.className = 'map-msg';
+  const p = document.createElement('p'); p.textContent = text; p.style.margin = '0';
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Try again';
+  b.onclick = ()=> startMap();
+  box.appendChild(p); box.appendChild(b); el.appendChild(box);
 }
-async function startMap(provider, note){
+async function startMap(){
   const token = ++mapInitToken;
-  mapProvider = provider;
   if(mapApi){ mapApi.destroy(); mapApi = null; }
   Object.keys(markers).forEach(k=> delete markers[k]);
   originMarker = null;
   const el = document.getElementById('map');
+  el.innerHTML = '';
+  if(!YANDEX_MAPS_KEY){ showMapMessage('The map is not set up yet.'); return; }
   let api = null;
-  if(provider==='yandex'){
-    try{ api = await createYandexBackend(el); }
-    catch(e){
-      console.warn('Yandex Maps unavailable, using the basic map', e);
-      if(token!==mapInitToken) return;
-      el.innerHTML = '';
-      mapProvider = 'leaflet';
-      note = 'Yandex Maps could not load, so the basic map is showing.';
-    }
+  try{ api = await createYandexBackend(el); }
+  catch(e){
+    console.warn('Yandex Maps could not load', e);
+    if(token!==mapInitToken) return;
+    showMapMessage('The map could not load right now. Your trip planning below still works.');
+    return;
   }
-  if(token!==mapInitToken){ if(api) api.destroy(); return; }
-  if(!api) api = createLeafletBackend(el);
+  if(token!==mapInitToken){ api.destroy(); return; }
   mapApi = api;
-  updateMapSwitch(note);
   renderMap(pendingStops);
-}
-function toggleMapProvider(){
-  startMap(mapProvider==='yandex' ? 'leaflet' : 'yandex');
 }
 
 function ensureMarkers(){
@@ -1621,7 +1542,7 @@ buildMustSeeOptions();
 buildInterestChips();
 renderSaved();
 updateDataNote();
-startMap(mapProvider);
+startMap();
 if(!loadFromHash()){
   // idle state already in markup
 }

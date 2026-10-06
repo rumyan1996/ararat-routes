@@ -11,7 +11,7 @@ It's a single static file with no build step.
 - **Locally:** open `index.html` in a browser.
 - **GitHub Pages:** Settings → Pages → deploy from the `main` branch, root folder.
 
-It loads the Yandex Maps API, Leaflet (backup map, from unpkg), CARTO map tiles (backup map) and Google Fonts, so it needs an internet connection.
+It loads the Yandex Maps API and Google Fonts, so it needs an internet connection.
 
 ## How it works
 
@@ -27,12 +27,12 @@ All settings sit in the `CONFIG` block near the top of the `<script>` in `index.
 
 ### 0. Map (Yandex Maps)
 
-The map uses the **Yandex Maps JavaScript API v3** when `YANDEX_MAPS_KEY` is set. If Yandex can't load (blocked, key not active yet, offline), the page automatically falls back to the basic OpenStreetMap map, and a small link under the map lets visitors switch between the two by hand. Leave the key empty to use only the basic map.
+The map is the **Yandex Maps JavaScript API v3**, set by `YANDEX_MAPS_KEY`. There is no backup map: if Yandex can't load, the map area shows a short message with a "Try again" button, and the trip planner below keeps working.
 
 Requirements on the Yandex side (developer.tech.yandex.ru):
-- The key must be linked to the **JavaScript API** product.
+- The key must be linked to the **JavaScript API** product, on an active plan.
 - The key must have its **HTTP Referer restriction** set to the site address (e.g. `ararat-routes.vercel.app`). Yandex v3 refuses keys without it, and it also stops other websites from using the key.
-- Keys can take up to about 15 minutes to activate. Check the plan/rates in the Yandex dashboard.
+- Keys can take up to about 15 minutes to activate.
 
 The key is visible to anyone who opens the page; that is normal for map keys, and the referer restriction is what protects it. Yandex is used for the map view only. Drive times and route lines are separate (see below).
 
@@ -70,4 +70,4 @@ Accommodation booking, offline mode, multi-day itineraries, walking/transit rout
 
 ## Credits
 
-Main map © Yandex Maps. Backup map: data © OpenStreetMap contributors, tiles © CARTO, rendered with [Leaflet](https://leafletjs.com). Routing by [OpenRouteService](https://openrouteservice.org) when enabled.
+Map © Yandex Maps. Routing by [OpenRouteService](https://openrouteservice.org) when enabled.
