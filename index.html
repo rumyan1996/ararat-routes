@@ -441,18 +441,7 @@ select{
 .hexicon{ background:none; border:none; }
 .ymk{ cursor:pointer; }
 .ymk:focus-visible{ outline:2px solid var(--ink); outline-offset:3px; border-radius:6px; }
-/* Hexagon map pins (basalt-column shape): gold = Yerevan, slate = sights, ember = on the trip (numbered), dark ring = selected */
-.hexwrap{ position:relative; display:block; width:100%; height:100%; filter: drop-shadow(0 2px 3px rgba(23,23,26,0.35)); transition: transform .15s ease; }
-.hexwrap::before, .hexpin{ clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
-.hexwrap::before{ content:''; position:absolute; inset:0; background:#FFFFFF; }
-.hexpin{ position:absolute; inset:2px; display:flex; align-items:center; justify-content:center; background: var(--blue); }
-.hexpin i{ font-style:normal; font: 700 12px/1 var(--font-body); color:#FFFFFF; }
-.hexpin.origin{ background: var(--gold); }
-.hexpin.route{ background: var(--rose); }
-.hexpin.route i{ color: var(--on-accent); }
-.hexwrap:has(.hexpin.sel){ transform: scale(1.18); }
-.hexwrap:has(.hexpin.sel)::before{ background: var(--ink); }
-.ymk:hover .hexwrap{ transform: scale(1.12); }
+.ymk:hover svg{ filter: drop-shadow(0 3px 4px rgba(23,23,26,.45)) brightness(1.06) !important; }
 .map-msg{ height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:24px; text-align:center; color: var(--ink-muted); font-size:14px; }
 .map-msg-detail{ font-size:12px; color: var(--ink-faint); max-width:520px; }
 .map-msg button{ font:inherit; font-weight:600; padding:9px 18px; border-radius: var(--radius-pill); border:1px solid var(--border-strong); background: var(--surface); color: var(--ink); cursor:pointer; }
@@ -664,6 +653,9 @@ const ORS_API_KEY = '';
    HTTP Referer restriction set to this site's address in the Yandex
    developer dashboard. */
 const YANDEX_MAPS_KEY = '6eb53885-339f-467a-b278-3ede26e5b785';
+/* Yandex Router API key for real road routing. Leave empty to try the map key above;
+   if Yandex says that key has no routing access, paste a separate Router API key here. */
+const YANDEX_ROUTER_KEY = '';
 const PHOTOS = {
   // garni: { url:'', credit:'' },
 };
@@ -1125,6 +1117,7 @@ function buildInterestChips(){
       if(state.cats.includes(catId)) state.cats = state.cats.filter(c=>c!==catId);
       else state.cats.push(catId);
       buildInterestChips();
+      syncMapToFilter();
     };
     wrap.appendChild(b);
   });
@@ -1269,7 +1262,26 @@ let mapInitToken = 0;       // guards against overlapping (re)initialisations
 const markers = {};
 let originMarker = null;
 
-function hexSize(size){ return [size, Math.round(size*1.1547)]; }
+const CAT_COLOR = { hist:'#B5532A', nature:'#4F8A5B', view:'#3E6FA8' };
+const CAT_GLYPH = {
+  hist:   '<path d="M9.5 15.5 20 10l10.5 5.5z" fill="#fff"/><path d="M13 17.5v6M18 17.5v6M22 17.5v6M27 17.5v6M10 25.5h20" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/>',
+  nature: '<path d="M9.5 25.5 16 14l4.2 6.2 3-4.2 7.3 9.5z" fill="#fff"/>',
+  view:   '<path d="M9.5 18c3-4.6 6.2-6.8 10.5-6.8S27.5 13.4 30.5 18c-3 4.6-6.2 6.8-10.5 6.8S12.5 22.6 9.5 18z" fill="none" stroke="#fff" stroke-width="2"/><circle cx="20" cy="18" r="3.4" fill="#fff"/>'
+};
+/* A pin: round head, pointed tip on the exact spot. Colour + icon = category,
+   orange + number = stop on the planned trip, gold = Yerevan. */
+function pinSvg(o){
+  const k = o.kind || 'idle';
+  const isRoute = k.includes('route'), sel = k.includes('sel'), origin = k.includes('origin');
+  const fill = origin ? '#E8B030' : isRoute ? '#F0692B' : (CAT_COLOR[o.cat] || '#5A7FB0');
+  const stroke = sel ? '#17171A' : '#FFFFFF';
+  let inner;
+  if(origin)       inner = '<circle cx="20" cy="18" r="6.5" fill="#fff"/><circle cx="20" cy="18" r="3" fill="#17171A"/>';
+  else if(isRoute) inner = `<text x="20" y="23.2" text-anchor="middle" font-family="Manrope,Arial,sans-serif" font-size="15" font-weight="800" fill="#1A1207">${o.label||''}</text>`;
+  else             inner = CAT_GLYPH[o.cat] || '<circle cx="20" cy="18" r="4" fill="#fff"/>';
+  return `<svg viewBox="0 0 40 48" width="100%" height="100%" aria-hidden="true" style="display:block;overflow:visible;filter:drop-shadow(0 2px 2.5px rgba(23,23,26,.38))${sel?';transform:scale(1.18);transform-origin:50% 100%':''}">
+    <path d="M20 46C20 46 4 30.5 4 18a16 16 0 0 1 32 0C36 30.5 20 46 20 46z" fill="${fill}" stroke="${stroke}" stroke-width="${sel?3:2}" stroke-linejoin="round"/>${inner}</svg>`;
+}
 
 /* ---------- Yandex Maps JS API v3 ---------- */
 function loadYandexScript(){
@@ -1288,6 +1300,7 @@ function withTimeout(promise, ms, msg){
 async function createYandexBackend(el){
   await withTimeout(loadYandexScript().then(()=>ymaps3.ready), 12000, 'Yandex Maps took too long to load');
   const { YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapMarker, YMapFeature, YMapControls } = ymaps3;
+  try{ ymaps3.getDefaultConfig().setApikeys({ router: YANDEX_ROUTER_KEY || YANDEX_MAPS_KEY }); }catch(e){ console.warn('router key not set', e); }
   const map = new YMap(el, { location:{ center:[44.7, 40.3], zoom:8 } });
   map.addChild(new YMapDefaultSchemeLayer({}));
   map.addChild(new YMapDefaultFeaturesLayer({}));
@@ -1300,33 +1313,37 @@ async function createYandexBackend(el){
 
   let routeFeatures = [];
   const paint = (h)=>{
-    const o = h.o, [w,hh] = hexSize(o.size);
+    const o = h.o, w = o.size, hh = Math.round(w*1.2);
     h.el.style.width = w+'px'; h.el.style.height = hh+'px';
-    h.el.innerHTML = `<div class="hexwrap"><div class="hexpin ${o.kind}"><i>${o.label||''}</i></div></div>`;
+    h.el.innerHTML = pinSvg(o);
   };
   return {
     name:'yandex',
     addMarker(o){
       const node = document.createElement('div');
       node.className = 'hexicon ymk';
-      node.style.transform = 'translate(-50%,-50%)';
+      node.style.transform = 'translate(-50%,-100%)';   // the pin's tip sits on the exact spot
       node.title = o.title;
       if(!o.origin){
         node.setAttribute('role','button'); node.tabIndex = 0;
         node.setAttribute('aria-label', o.title);
         node.addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && o.onClick){ e.preventDefault(); o.onClick(); } });
       }
-      const h = { o, el:node, mk:null };
+      const h = { o, el:node, mk:null, on:true };
       paint(h);
       if(o.onClick) node.addEventListener('click', e=>{ e.stopPropagation(); o.onClick(); });
       h.mk = new YMapMarker({ coordinates:[o.lon, o.lat], zIndex:o.z||0 }, node);
       map.addChild(h.mk);
       return h;
     },
+    setVisible(h, show){
+      if(!h || !h.mk || h.on === show) return;
+      try{ if(show) map.addChild(h.mk); else map.removeChild(h.mk); h.on = show; }catch(e){}
+    },
     updateMarker(h, o){
       h.o = Object.assign({}, h.o, o);
       paint(h);
-      h.mk.update({ zIndex:o.z||0 });
+      try{ h.mk.update({ zIndex:o.z||0 }); }catch(e){}
     },
     drawRoute(pts, live){
       this.clearRoute();
@@ -1395,16 +1412,20 @@ async function startMap(){
   if(token!==mapInitToken){ api.destroy(); return; }
   mapApi = api;
   renderMap(pendingStops);
+  { const rr = state.routes && state.routes[state.activeRoute]; if(rr) refineRoute(rr); }
 }
 
 function ensureMarkers(){
   if(originMarker || !mapApi) return;
-  originMarker = mapApi.addMarker({ lat:YEREVAN.lat, lon:YEREVAN.lon, kind:'origin', label:'', size:34, title:'Yerevan', origin:true, z:500 });
+  originMarker = mapApi.addMarker({ lat:YEREVAN.lat, lon:YEREVAN.lon, kind:'origin', label:'', size:36, title:'Yerevan', origin:true, z:500 });
   SIGHTS.forEach(s=>{
-    markers[s.id] = mapApi.addMarker({ lat:s.lat, lon:s.lon, kind:'idle', label:'', size:26, title:s.name.en, z:0, onClick: ()=> selectSight(s.id) });
+    markers[s.id] = mapApi.addMarker({ lat:s.lat, lon:s.lon, kind:'idle', cat:s.cat[0], label:'', size:32, title:s.name.en, z:0, onClick: ()=> selectSight(s.id) });
   });
 }
 
+function sightPassesFilter(s){
+  return !state.cats.length || s.cat.some(c => state.cats.includes(c));
+}
 function refreshMarkers(orderedStops){
   if(!mapApi) return;
   ensureMarkers();
@@ -1413,9 +1434,24 @@ function refreshMarkers(orderedStops){
     const sel = s.id===selectedSightId;
     let kind = idx!==-1 ? 'route' : 'idle';
     if(sel) kind += ' sel';
-    const size = idx!==-1 ? 34 : 26;
+    const size = idx!==-1 ? 38 : 32;
+    // show a sight if it matches "Interested in", or it is on the trip, or it is the one you clicked
+    const visible = sightPassesFilter(s) || idx!==-1 || sel;
+    if(mapApi.setVisible) mapApi.setVisible(markers[s.id], visible);
     mapApi.updateMarker(markers[s.id], { kind, label: idx!==-1 ? String(idx+1) : '', size, z: sel ? 900 : (idx!==-1 ? 300 : 0) });
   });
+}
+
+/* Called when an "Interested in" button is pressed: the map shows only the matching sights. */
+function syncMapToFilter(){
+  if(!mapApi) return;
+  const r = state.routes && state.routes[state.activeRoute];
+  const stops = r ? r.order : [];
+  refreshMarkers(stops);
+  if(!stops.length){
+    const vis = SIGHTS.filter(sightPassesFilter);
+    if(vis.length) mapApi.fit([[YEREVAN.lat,YEREVAN.lon], ...vis.map(s=>[s.lat,s.lon])], 9);
+  }
 }
 
 function drawRoute(orderedStops, r){
@@ -1438,9 +1474,52 @@ function renderMap(orderedStops){
 }
 
 /* ---------------- OpenRouteService: real driving time + geometry ------- */
+async function yandexLeg(a, b){
+  const routes = await ymaps3.route({ points:[[a.lon,a.lat],[b.lon,b.lat]], type:'driving', bounds:true });
+  if(!routes || !routes[0]) throw new Error('Yandex found no road');
+  const feat = routes[0].toRoute();
+  const coords = feat.geometry && feat.geometry.coordinates ? feat.geometry.coordinates : [];
+  if(!coords.length) throw new Error('Yandex returned an empty route');
+  const w = (routes[0].metadata && routes[0].metadata.weight) || (feat.properties && feat.properties.weight) || {};
+  let sec = w.time && w.time.value, meters = w.distance && w.distance.value;
+  if(!(meters > 0)){                       // no distance reported: measure the line itself
+    meters = 0;
+    for(let i=1;i<coords.length;i++){
+      const dLat=(coords[i][1]-coords[i-1][1])*111320, dLon=(coords[i][0]-coords[i-1][0])*111320*Math.cos(coords[i][1]*Math.PI/180);
+      meters += Math.hypot(dLat,dLon);
+    }
+  }
+  if(!(sec > 0)) sec = meters / (55*1000/3600);   // 55 km/h if no time reported
+  return { sec, meters, pts: coords.map(c=>[c[1],c[0]]) };
+}
+async function refineRouteYandex(r){
+  const stops = [YEREVAN, ...r.order];
+  const legs = await Promise.all(stops.slice(1).map((s,i)=> yandexLeg(stops[i], s)));
+  const segMin = legs.map(l=> l.sec/60);
+  const oneWay = segMin.reduce((x,y)=>x+y,0);
+  r.segs = [...segMin, oneWay];
+  r.driveMin = oneWay*2;
+  r.total = r.driveMin + r.visitMin;
+  r.km = legs.reduce((x,l)=>x+l.meters,0)/1000;
+  r.geometry = legs.reduce((all,l,i)=> all.concat(i ? l.pts.slice(1) : l.pts), []);
+  r.live = true;
+}
 async function refineRoute(r){
-  if(!ORS_API_KEY || r.live || r.busy || r.failed) return;
+  if(r.live || r.busy || r.failed) return;
+  const yandexReady = !!(mapApi && mapApi.name==='yandex' && window.ymaps3 && ymaps3.route);
+  if(!yandexReady && !ORS_API_KEY) return;
   r.busy = true; updateSourceBadge(r);
+  if(yandexReady){
+    try{
+      await refineRouteYandex(r);
+      r.busy = false;
+      if(state.routes && state.routes[state.activeRoute]===r){ renderResults(); }
+      return;
+    }catch(e){
+      console.warn('Yandex road routing unavailable', e);
+      if(!ORS_API_KEY){ r.failed = true; r.busy = false; if(state.routes && state.routes[state.activeRoute]===r) renderResults(); return; }
+    }
+  }
   try{
     const coords = [[YEREVAN.lon,YEREVAN.lat], ...r.order.map(s=>[s.lon,s.lat])];
     const res = await fetch('https://api.openrouteservice.org/v2/directions/driving-car/geojson', {
@@ -1477,8 +1556,8 @@ function updateSourceBadge(r){
   if(el) el.outerHTML = sourceBadgeHtml(r);
 }
 function updateDataNote(){
-  const live = ORS_API_KEY
-    ? 'Drive times and the route line come from OpenRouteService road routing for the route you are viewing; if it is unreachable they fall back to straight-line estimates.'
+  const live = (ORS_API_KEY || YANDEX_MAPS_KEY)
+    ? 'Drive times and the route line come from road routing (Yandex) for the route you are viewing; if it is unreachable they fall back to straight-line estimates.'
     : 'Drive times are estimates computed from straight-line distance and typical road speeds, and the route line joins stops directly. Add a free OpenRouteService key to use real roads.';
   document.getElementById('data-note').textContent = live + " Hours, pricing and accessibility carry a dotted underline where they haven't been independently verified; confirm locally before you go. Routes are kept clear of border-adjacent areas by design. Sight photos come from Wikipedia and Wikimedia Commons under their free licenses; open a place's Wikipedia article for the photographer credit. Site build: map-v3.";
 }
