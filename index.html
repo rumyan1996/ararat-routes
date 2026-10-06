@@ -3,82 +3,82 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ararat Routes — detour-worthy day trips from Yerevan (live build)</title>
+<title>Ararat Routes — detour-worthy day trips from Yerevan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;500;600;700&display=swap" rel="stylesheet">
 <style>
 
-/* ============ TOKENS — Soft Structuralism ============ */
-/* Fixed light identity by design (silver-white ground, bold grotesk type):
+/* ============ TOKENS — Ararat Dusk ============ */
+/* Fixed dark identity by design (deep indigo ground, apricot accent):
    the palette stays the same regardless of the viewer's system light/dark
    setting, so all three blocks below carry the same values on purpose. */
 :root{
-  --bg: #F5F4F1;
-  --surface: #FFFFFF;
-  --surface-2: #EDEBE5;
-  --ink: #17171A;
-  --ink-muted: #6B6B70;
-  --ink-faint: #7A7A80;
-  --border: rgba(23,23,26,0.10);
-  --border-strong: rgba(23,23,26,0.18);
-  --rose: #F0692B;
-  --rose-ink: #D9581F;
-  --gold: #E8B030;
-  --gold-ink: #8A5A0B;
-  --blue: #5A7FB0;
-  --blue-ink: #3E5C82;
-  --green: #6E8F6A;
-  --on-accent: #1A1207;
-  --shadow: 0 20px 44px -28px rgba(23,23,26,0.22);
-  --shadow-sm: 0 10px 24px -18px rgba(23,23,26,0.18);
-  --radius-s: 10px;
-  --radius-m: 14px;
-  --radius-l: 22px;
+  --bg: #14173A;
+  --surface: #1D2150;
+  --surface-2: #262B63;
+  --ink: #F4EEF6;
+  --ink-muted: #B8B5D8;
+  --ink-faint: #9C99C4;
+  --border: rgba(255,255,255,0.12);
+  --border-strong: rgba(255,255,255,0.26);
+  --rose: #FFA062;
+  --rose-ink: #FFC196;
+  --gold: #F4C95D;
+  --gold-ink: #F4C95D;
+  --blue: #8FB0E8;
+  --blue-ink: #B9CEF3;
+  --green: #8FD0A0;
+  --on-accent: #2A1020;
+  --shadow: 0 26px 56px -26px rgba(0,0,0,0.65);
+  --shadow-sm: 0 12px 28px -16px rgba(0,0,0,0.55);
+  --radius-s: 14px;
+  --radius-m: 18px;
+  --radius-l: 26px;
   --radius-pill: 999px;
-  --font-display: 'Bricolage Grotesque', ui-sans-serif, sans-serif;
-  --font-body: 'Manrope', ui-sans-serif, sans-serif;
-  color-scheme: light;
+  --font-display: 'Sora', ui-sans-serif, sans-serif;
+  --font-body: 'DM Sans', ui-sans-serif, sans-serif;
+  color-scheme: dark;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="dark"]) {
-    --bg: #F5F4F1;
-    --surface: #FFFFFF;
-    --surface-2: #EDEBE5;
-    --ink: #17171A;
-    --ink-muted: #6B6B70;
-    --ink-faint: #7A7A80;
-    --border: rgba(23,23,26,0.10);
-    --border-strong: rgba(23,23,26,0.18);
-    --rose: #F0692B;
-    --rose-ink: #D9581F;
-    --gold: #E8B030;
-    --gold-ink: #8A5A0B;
-    --blue: #5A7FB0;
-    --blue-ink: #3E5C82;
-    --green: #6E8F6A;
-    --on-accent: #1A1207;
-    color-scheme: light;
+    --bg: #14173A;
+    --surface: #1D2150;
+    --surface-2: #262B63;
+    --ink: #F4EEF6;
+    --ink-muted: #B8B5D8;
+    --ink-faint: #9C99C4;
+    --border: rgba(255,255,255,0.12);
+    --border-strong: rgba(255,255,255,0.26);
+    --rose: #FFA062;
+    --rose-ink: #FFC196;
+    --gold: #F4C95D;
+    --gold-ink: #F4C95D;
+    --blue: #8FB0E8;
+    --blue-ink: #B9CEF3;
+    --green: #8FD0A0;
+    --on-accent: #2A1020;
+    color-scheme: dark;
   }
 }
 :root[data-theme="light"]{
-  --bg: #F5F4F1;
-  --surface: #FFFFFF;
-  --surface-2: #EDEBE5;
-  --ink: #17171A;
-  --ink-muted: #6B6B70;
-  --ink-faint: #7A7A80;
-  --border: rgba(23,23,26,0.10);
-  --border-strong: rgba(23,23,26,0.18);
-  --rose: #F0692B;
-  --rose-ink: #D9581F;
-  --gold: #E8B030;
-  --gold-ink: #8A5A0B;
-  --blue: #5A7FB0;
-  --blue-ink: #3E5C82;
-  --green: #6E8F6A;
-  --on-accent: #1A1207;
-  color-scheme: light;
+  --bg: #14173A;
+  --surface: #1D2150;
+  --surface-2: #262B63;
+  --ink: #F4EEF6;
+  --ink-muted: #B8B5D8;
+  --ink-faint: #9C99C4;
+  --border: rgba(255,255,255,0.12);
+  --border-strong: rgba(255,255,255,0.26);
+  --rose: #FFA062;
+  --rose-ink: #FFC196;
+  --gold: #F4C95D;
+  --gold-ink: #F4C95D;
+  --blue: #8FB0E8;
+  --blue-ink: #B9CEF3;
+  --green: #8FD0A0;
+  --on-accent: #2A1020;
+  color-scheme: dark;
 }
 
 *{ box-sizing: border-box; }
@@ -528,38 +528,125 @@ select{
   .tp-btn{ margin-left:42px; }
 }
 
+/* ============ ARARAT DUSK ============ */
+html,body{ height:auto; }
+body{ background: var(--bg); }
+.dusk-hero{ position:relative; overflow:hidden; background: linear-gradient(180deg,#171A47 0%,#3B2D6B 38%,#B8566E 70%,#F1A56F 100%); }
+.hero-in{ position:relative; z-index:2; max-width:1280px; margin:0 auto; min-height:700px; }
+.hero-sun{ position:absolute; right:16%; bottom:30%; width:170px; height:170px; border-radius:50%; background: radial-gradient(circle,#FFE2B0 0%,rgba(255,200,140,0) 70%); }
+.hero-mt{ position:absolute; left:0; right:0; bottom:0; width:100%; height:58%; }
+.topbar{ display:flex; align-items:center; gap:26px; padding:22px 40px; }
+.topbar .brand-name{ font-size:21px; font-weight:700; color:#fff; letter-spacing:-.01em; }
+.topbar .brand-tag{ color:rgba(255,255,255,.75); }
+.topnav{ display:flex; gap:22px; margin-left:14px; }
+.topnav a{ color:rgba(255,255,255,.88); text-decoration:none; font-size:15px; }
+.topnav a:hover{ color:#fff; text-decoration:underline; text-underline-offset:4px; }
+.sp{ flex:1; }
+.topbar .tp-user{ color:rgba(255,255,255,.9); }
+.topbar .tp-google, .topbar .tp-btn{ background:rgba(255,255,255,.14); color:#fff; border:1px solid rgba(255,255,255,.3); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+.hero-copy{ padding:34px 40px 0; max-width:640px; }
+.hero-copy h1{ font-family:var(--font-display); font-weight:700; font-size:clamp(38px,5vw,60px); line-height:1.02; letter-spacing:-.035em; margin:0; color:#fff; }
+.hero-copy p{ margin:16px 0 0; font-size:18px; line-height:1.5; color:rgba(255,255,255,.92); max-width:44ch; }
+
+/* the planner: a frosted glass card over the sunset */
+.sidebar{ position:absolute; right:40px; top:96px; width:380px; height:auto; align-self:auto; overflow:visible; z-index:3;
+  background:rgba(255,255,255,.13); border:1px solid rgba(255,255,255,.3); border-radius:26px; padding:22px; gap:14px;
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); }
+.glass-title{ margin:0 0 2px; font-size:19px; font-weight:600; color:#fff; }
+.sidebar .field-label{ color:#fff; }
+.sidebar .field-help{ color:rgba(255,255,255,.78); }
+.sidebar .start-chip{ background:rgba(20,23,58,.5); border:0; color:rgba(255,255,255,.8); }
+.sidebar .start-chip strong{ color:#fff; }
+.sidebar .mode-switch{ background:rgba(20,23,58,.5); border:0; }
+.sidebar .mode-switch button{ color:rgba(255,255,255,.82); }
+.sidebar .mode-switch button.active{ background:#fff; color:#2A1D55; }
+.sidebar .budget-value{ color:#fff; } .sidebar .budget-value span{ color:rgba(255,255,255,.8); }
+.sidebar input[type="range"]{ background:rgba(255,255,255,.3); }
+.sidebar input[type="range"]::-webkit-slider-thumb{ background:#FFB36B; border:3px solid #fff; box-shadow:none; }
+.sidebar input[type="range"]::-moz-range-thumb{ background:#FFB36B; border:3px solid #fff; box-shadow:none; }
+.sidebar select{ background:rgba(20,23,58,.55); border:0; color:#fff; }
+.sidebar select option{ color:#14173A; background:#fff; }
+.sidebar .chip{ background:transparent; border:1px solid rgba(255,255,255,.4); color:#fff; }
+.sidebar .chip.active{ background:#fff; border-color:#fff; color:#2A1D55; font-weight:600; }
+.sidebar .cta{ background:linear-gradient(90deg,#FFB36B,#FF7E6B); color:#2A1020; font-weight:700; border-radius:16px; padding:14px 16px; box-shadow:none; }
+.sidebar .cta:hover{ background:linear-gradient(90deg,#FFC184,#FF8F7E); }
+
+/* map + trip */
+.dusk-body{ background:var(--bg); padding:34px 40px 60px; }
+.dusk-in{ max-width:1200px; margin:0 auto; }
+.body-grid{ display:grid; grid-template-columns:1.1fr 1fr; gap:24px; align-items:start; }
+.col-map{ min-width:0; }
+@media (min-width: 901px) and (min-height: 820px){ .col-map{ position:sticky; top:16px; } }
+.col-trip{ min-width:0; }
+.map-wrap{ border-radius:26px; overflow:hidden; border:1px solid var(--border); box-shadow:var(--shadow); background:var(--surface); }
+#map{ border-radius:26px; height:520px; }
+.sight-panel{ background:var(--surface); border:1px solid var(--border); border-radius:26px; }
+#results{ background:var(--surface); border:1px solid var(--border); border-radius:26px; padding:22px; }
+#results > .status{ border:0; padding:4px 2px; }
+.saved-box{ margin-top:16px; background:var(--surface); border:1px solid var(--border); border-radius:26px; padding:20px; display:flex; flex-direction:column; gap:10px; }
+.top-places{ margin-top:48px; }
+.footer-note{ margin-top:44px; }
+.stop-card, .route-note{ border-radius:var(--radius-m); }
+.chip.active{ background:var(--green); color:var(--on-accent); }
+
+@media (max-width: 1180px){
+  .hero-copy{ max-width:calc(100% - 470px); }
+  .hero-copy h1{ font-size:clamp(32px,4.4vw,50px); }
+}
+@media (max-width: 900px){
+  .hero-copy{ max-width:none; }
+  .hero-in{ min-height:0; padding-bottom:130px; }
+  .topbar{ padding:18px 18px; gap:12px; flex-wrap:wrap; } .topnav{ display:none; }
+  .hero-copy{ padding:24px 18px 0; }
+  .sidebar{ position:relative; right:auto; top:auto; width:auto; margin:22px 18px 0; }
+  .dusk-body{ padding:24px 16px 44px; } .body-grid{ grid-template-columns:1fr; } .col-map{ position:static; } #map{ height:360px; }
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
 <body>
-<div class="app">
+<div class="page">
 
-  <!-- ============ SIDEBAR ============ -->
-  <aside class="sidebar">
-    <div class="brand">
-      <svg class="brand-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M2 30 L14 11 L20 20 L24 14 L38 30 Z" fill="var(--blue)" opacity="0.85"/>
-        <path d="M14 11 L20 20 L17 24 L11 24 Z" fill="var(--surface)"/>
-        <path d="M24 14 L28 20 L26 22.5 L22 22.5 Z" fill="var(--surface)"/>
-        <circle cx="33" cy="9" r="3.4" fill="var(--gold)"/>
-      </svg>
-      <div>
-        <div class="brand-name display" data-i18n="brandName">Ararat Routes</div>
-        <div class="brand-tag" data-i18n="brandTag">detours worth taking</div>
+  <!-- ============ HERO + PLANNER ============ -->
+  <section class="dusk-hero" id="plan">
+    <div class="hero-sun" aria-hidden="true"></div>
+    <svg class="hero-mt" viewBox="0 0 1280 380" preserveAspectRatio="none" aria-hidden="true"><path d="M0 300 L180 220 L320 270 L470 190 L620 280 L760 240 L860 120 L930 215 L1010 70 L1120 230 L1200 190 L1280 250 V380 H0Z" fill="#6B3F78" opacity=".55"/><path d="M0 330 L150 270 L300 310 L470 250 L640 320 L800 280 L960 330 L1120 290 L1280 330 V380 H0Z" fill="#3A2B66"/><path d="M0 360 L200 335 L420 355 L700 330 L980 355 L1280 335 V380 H0Z" fill="#171A47"/></svg>
+    <div class="hero-in">
+      <header class="topbar">
+        <div class="brand">
+          <svg class="brand-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M2 30 L14 11 L20 20 L24 14 L38 30 Z" fill="#FFB36B" opacity="0.95"/>
+            <path d="M14 11 L20 20 L17 24 L11 24 Z" fill="#FFF4E8"/>
+            <path d="M24 14 L28 20 L26 22.5 L22 22.5 Z" fill="#FFF4E8"/>
+            <circle cx="33" cy="9" r="3.4" fill="#FFE2B0"/>
+          </svg>
+          <div>
+            <div class="brand-name display" data-i18n="brandName">Ararat Routes</div>
+            <div class="brand-tag" data-i18n="brandTag">detours worth taking</div>
+          </div>
+        </div>
+        <nav class="topnav" aria-label="Sections"><a href="#plan">Plan</a><a href="#top-places">Top rated</a><a href="#saved">Saved trips</a></nav>
+        <div class="sp"></div>
+        <div class="tp-auth" id="tp-auth-top"></div>
+      </header>
+
+      <div class="hero-copy">
+        <h1 class="display" data-i18n="heroTitle">The road there is half the sight</h1>
+        <p data-i18n="heroSub">Pick how much time you have, or a place you want to reach. Get a day trip from Yerevan along one road, with the stops that are worth the detour.</p>
       </div>
-    </div>
 
-    <div class="field">
+      <aside class="sidebar" aria-label="Plan a day trip">
+        <h2 class="glass-title display">Plan a day trip</h2>
+        <div class="field">
       <div class="field-label" data-i18n="startLabel">Starting point</div>
       <div class="start-chip">
         <span class="origin-hex" aria-hidden="true"></span><strong>Yerevan</strong>
       </div>
     </div>
 
-    <div class="divider"></div>
-
-    <div class="field">
+        <div class="field">
       <div class="field-label" data-i18n="modeLabel">Plan by</div>
       <div class="mode-switch">
         <button id="mode-time" class="active" onclick="setMode('time')" data-i18n="modeTime">Time I have</button>
@@ -589,26 +676,19 @@ select{
       <div class="chipset" id="interest-chips"></div>
     </div>
 
-    <button class="cta" onclick="runSearch()" data-i18n="findRoutes">Find routes</button>
-
-    <div class="divider"></div>
-
-    <div class="field">
-      <div class="field-label" data-i18n="savedLabel">Saved trips</div>
-      <div class="saved-list" id="saved-list"></div>
+    <button class="cta" onclick="runSearch(); focusTrip()" data-i18n="findRoutes">Find routes</button>
+      </aside>
     </div>
-  </aside>
+  </section>
 
-  <!-- ============ MAIN ============ -->
-  <main class="main">
-    <div class="hero">
-      <h1 class="display" data-i18n="heroTitle">The road there is half the sight</h1>
-      <p data-i18n="heroSub">Set a time budget or a place you already want to reach, and get an out-and-back trip along one road that folds in what's genuinely worth the detour — with an honest note on anything we're not fully sure of.</p>
-    </div>
+  <!-- ============ MAP + TRIP ============ -->
+  <section class="dusk-body" id="trip">
+    <div class="dusk-in">
+      <div class="body-grid">
+        <div class="col-map">
+          <div class="map-wrap"><div id="map" role="application" aria-label="Map of sights and the active route"></div></div>
 
-    <div class="map-wrap"><div id="map" role="application" aria-label="Map of sights and the active route"></div></div>
-
-    <div class="sight-panel" id="sight-panel" hidden>
+          <div class="sight-panel" id="sight-panel" hidden>
       <button class="sight-panel-close" onclick="closeSightPanel()" aria-label="Close">x</button>
       <div class="sight-panel-thumb" id="sight-panel-thumb"></div>
       <div class="sight-panel-body">
@@ -623,12 +703,19 @@ select{
       </div>
     </div>
     <p class="map-hint" id="map-hint">Click a pin on the map to see details about that sight here.</p>
+        </div>
+        <div class="col-trip">
+          <div id="results">
+            <div class="status" data-i18n="statusIdle">Choose your time in the card at the top and press <strong>Find routes</strong> — or switch to a must-see place instead.</div>
+          </div>
+          <div class="saved-box" id="saved">
+            <div class="field-label" data-i18n="savedLabel">Saved trips</div>
+            <div class="saved-list" id="saved-list"></div>
+          </div>
+        </div>
+      </div>
 
-    <div id="results">
-      <div class="status" data-i18n="statusIdle">Set your time budget on the left and press <strong>Find routes</strong> — or open the search another way and pick a must-see place instead.</div>
-    </div>
-
-    <section class="top-places" id="top-places" aria-labelledby="top-places-title">
+      <section class="top-places" id="top-places" aria-labelledby="top-places-title">
       <div class="tp-head">
         <div>
           <h2 class="display tp-title" id="top-places-title">Top rated places</h2>
@@ -639,8 +726,9 @@ select{
       <div id="tp-list" class="tp-list"><div class="status">Loading ratings…</div></div>
     </section>
 
-    <div class="footer-note" id="data-note"></div>
-  </main>
+      <div class="footer-note" id="data-note"></div>
+    </div>
+  </section>
 </div>
 
 <script>
@@ -953,8 +1041,8 @@ const I18N = {
     sightHelp:"We'll plan an out-and-back trip on the road to it, adding stops along the way.",
     interestLabel:'Interested in', findRoutes:'Find routes', savedLabel:'Saved trips',
     heroTitle:'The road there is half the sight',
-    heroSub:"Set a time budget or a place you already want to reach, and get an out-and-back trip along one road that folds in what's genuinely worth the detour — with an honest note on anything we're not fully sure of.",
-    statusIdle:'Set your time budget on the left and press <strong>Find routes</strong> — or switch to a must-see place instead.',
+    heroSub:"Pick how much time you have, or a place you want to reach. Get a day trip from Yerevan along one road, with the stops that are worth the detour.",
+    statusIdle:'Choose your time in the card at the top and press <strong>Find routes</strong> — or switch to a must-see place instead.',
     dataNote:"Coordinates and drive-time estimates are approximate, computed from straight-line distance and typical road speeds — not a live routing service. Hours, pricing and accessibility carry a dotted underline where we haven't independently verified them; confirm locally before you go. Routes are kept clear of border-adjacent areas by design.",
     noFit:"Nothing fits inside {h}h round trip from Yerevan with your current filters.",
     noFitHelp:"We won't shrink your time budget to force a stop in — try a longer budget, fewer interest filters, or a closer must-see place.",
@@ -1876,7 +1964,9 @@ function tpSorted(){
 }
 
 function tpRenderAuth(){
-  const el = document.getElementById('tp-auth');
+  ['tp-auth','tp-auth-top'].forEach(id=>tpRenderAuthInto(document.getElementById(id)));
+}
+function tpRenderAuthInto(el){
   if(!el) return;
   if(!sb){ el.innerHTML = '<span class="tp-msg">Reviews are temporarily unavailable.</span>'; return; }
   if(tp.user){
@@ -2053,6 +2143,10 @@ async function tpInit(){
     const sec = document.getElementById('top-places');
     if(sec) setTimeout(() => sec.scrollIntoView({ behavior:'smooth', block:'start' }), 150);
   }
+}
+function focusTrip(){
+  const el = document.getElementById('trip');
+  if(el) setTimeout(()=>el.scrollIntoView({ behavior:'smooth', block:'start' }), 60);
 }
 function rateSelectedSight(){
   if(!selectedSightId) return;
