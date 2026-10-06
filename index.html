@@ -441,6 +441,18 @@ select{
 .hexicon{ background:none; border:none; }
 .ymk{ cursor:pointer; }
 .ymk:focus-visible{ outline:2px solid var(--ink); outline-offset:3px; border-radius:6px; }
+/* Hexagon map pins (basalt-column shape): gold = Yerevan, slate = sights, ember = on the trip (numbered), dark ring = selected */
+.hexwrap{ position:relative; display:block; width:100%; height:100%; filter: drop-shadow(0 2px 3px rgba(23,23,26,0.35)); transition: transform .15s ease; }
+.hexwrap::before, .hexpin{ clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
+.hexwrap::before{ content:''; position:absolute; inset:0; background:#FFFFFF; }
+.hexpin{ position:absolute; inset:2px; display:flex; align-items:center; justify-content:center; background: var(--blue); }
+.hexpin i{ font-style:normal; font: 700 12px/1 var(--font-body); color:#FFFFFF; }
+.hexpin.origin{ background: var(--gold); }
+.hexpin.route{ background: var(--rose); }
+.hexpin.route i{ color: var(--on-accent); }
+.hexwrap:has(.hexpin.sel){ transform: scale(1.18); }
+.hexwrap:has(.hexpin.sel)::before{ background: var(--ink); }
+.ymk:hover .hexwrap{ transform: scale(1.12); }
 .map-msg{ height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:24px; text-align:center; color: var(--ink-muted); font-size:14px; }
 .map-msg-detail{ font-size:12px; color: var(--ink-faint); max-width:520px; }
 .map-msg button{ font:inherit; font-weight:600; padding:9px 18px; border-radius: var(--radius-pill); border:1px solid var(--border-strong); background: var(--surface); color: var(--ink); cursor:pointer; }
