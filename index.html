@@ -407,6 +407,15 @@ select{
 .drive-chip svg{ width:13px; height:13px; }
 
 .route-actions{ display:flex; gap:10px; margin-top: 6px; flex-wrap:wrap; }
+.share-row{ display:flex; gap:8px; margin-top: 12px; flex-wrap:wrap; align-items:center; }
+.share-label{ font: 600 12px var(--font-body); color: var(--ink-faint); text-transform: uppercase; letter-spacing: .06em; margin-right: 2px; }
+.stop-remove{
+  margin-left:auto; padding: 4px 10px; border-radius: var(--radius-pill); border:1px solid var(--border-strong);
+  background: transparent; color: var(--ink-muted); font: 600 12px var(--font-body); cursor:pointer;
+}
+.stop-remove:hover{ border-color:#B3341A; color:#B3341A; }
+.edited-note{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.link-btn{ background:none; border:0; padding:0; color: var(--rose-ink); font: 600 13px var(--font-body); text-decoration: underline; cursor:pointer; }
 .btn-ghost{
   border: 1px solid var(--border-strong);
   background: var(--surface);
@@ -471,6 +480,8 @@ select{
 }
 .tp-google:hover{ border-color: var(--ink-faint); }
 .tp-list{ display:flex; flex-direction:column; gap:10px; }
+.tp-more-wrap{ display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; padding:14px 0 4px; }
+.tp-count{ font-size:13px; color:var(--ink-muted); }
 .tp-row{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-m); box-shadow:var(--shadow-sm); }
 .tp-row-main{ display:flex; align-items:center; gap:14px; padding:12px 14px; }
 .tp-rank{ width:28px; text-align:center; font: 700 15px var(--font-display); color:var(--ink-faint); flex:none; }
@@ -670,12 +681,12 @@ const YEREVAN = { lat: 40.1792, lon: 44.4991 };
 
 const SIGHTS = [
   { id:'garni', corridor:'east', icon:'temple', name:{en:'Garni Temple'}, lat:40.1064, lon:44.7300,
-    cat:['hist','view'], visitMin:60, roadFactor:1.25, speed:55,
+    cat:['fortress'], visitMin:60, roadFactor:1.25, speed:55,
     why:{en:"Armenia's only standing Greco-Roman colonnaded temple, perched over a gorge — the one clearly classical building in a country of medieval stone churches."},
     hours:{en:"Grounds open roughly 9:00–19:00"}, hoursFlagged:true, price:{en:"Small entry fee"}, priceFlagged:true },
 
   { id:'geghard', corridor:'east', icon:'cliffMonastery', name:{en:'Geghard Monastery'}, lat:40.1439, lon:44.8151,
-    cat:['hist'], visitMin:60, roadFactor:1.25, speed:55,
+    cat:['church'], visitMin:60, roadFactor:1.25, speed:55,
     why:{en:"A UNESCO monastery with chapels carved directly into the cliff face — some rooms are literally hewn from the mountain, not built on it."},
     hours:{en:"Typically open dawn–dusk"}, hoursFlagged:true, price:{en:"Free, donations welcome"}, priceFlagged:false },
 
@@ -685,27 +696,23 @@ const SIGHTS = [
     hours:{en:"Accessible dawn–dusk, no gate"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
 
   { id:'khorvirap', corridor:'south', icon:'domeChurch', name:{en:'Khor Virap Monastery'}, lat:39.8791, lon:44.5701,
-    cat:['hist','view'], visitMin:45, roadFactor:1.2, speed:60,
+    cat:['church'], visitMin:45, roadFactor:1.2, speed:60,
     why:{en:"The closest, clearest view of Mount Ararat from Armenian soil, over the pit where Gregory the Illuminator was reportedly imprisoned before converting the kingdom."},
     hours:{en:"Typically open 9:00–18:00"}, hoursFlagged:true, price:{en:"Free, small pit-descent fee"}, priceFlagged:true },
 
   { id:'etchmiadzin', corridor:'west', icon:'domeChurch', name:{en:'Etchmiadzin Cathedral'}, lat:40.1608, lon:44.2925,
-    cat:['hist'], visitMin:60, roadFactor:1.15, speed:55,
+    cat:['church'], visitMin:60, roadFactor:1.15, speed:55,
     why:{en:"The seat of the Armenian Apostolic Church and, by most accounts, among the oldest cathedrals in the world — still an active place of worship."},
     hours:{en:"Grounds open roughly 8:00–20:00"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
 
   { id:'zvartnots', corridor:'west', icon:'ruins', name:{en:'Zvartnots Cathedral (ruins)'}, lat:40.1594, lon:44.3536,
-    cat:['hist'], visitMin:30, roadFactor:1.15, speed:55,
+    cat:['church'], visitMin:30, roadFactor:1.15, speed:55,
     why:{en:"The circular footprint of a 7th-century cathedral that collapsed centuries ago — its scale is easier to read from the ruins than most standing buildings nearby."},
     hours:{en:"Typically open 10:00–17:00"}, hoursFlagged:true, price:{en:"Small entry fee"}, priceFlagged:true },
 
-  { id:'sardarapat', corridor:'west', icon:'memorial', name:{en:'Sardarapat Memorial'}, lat:40.1546, lon:44.0435,
-    cat:['hist'], visitMin:45, roadFactor:1.2, speed:60,
-    why:{en:"A vast Soviet-era memorial to the 1918 battle that's widely credited with saving the First Republic of Armenia from collapse — stone bulls, a bell tower, and a lot of open sky."},
-    hours:{en:"Grounds always open; museum has set hours"}, hoursFlagged:true, price:{en:"Museum has small entry fee"}, priceFlagged:true },
 
   { id:'sevanavank', corridor:'northeast', icon:'domeChurch', name:{en:'Sevanavank, Lake Sevan'}, lat:40.5691, lon:44.9391,
-    cat:['nature','hist'], visitMin:75, roadFactor:1.15, speed:65,
+    cat:['church'], visitMin:75, roadFactor:1.15, speed:65,
     why:{en:"A 9th-century monastery on a peninsula overlooking one of the highest large lakes in the world — the water alone justifies the drive."},
     hours:{en:"Grounds open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
 
@@ -715,24 +722,20 @@ const SIGHTS = [
     hours:{en:"Town is open access; trails best in daylight"}, hoursFlagged:false, price:{en:"Free to walk the old town"}, priceFlagged:false },
 
   { id:'amberd', corridor:'northwest', icon:'fortress', name:{en:'Amberd Fortress'}, lat:40.4067, lon:44.2306,
-    cat:['hist','view'], visitMin:60, roadFactor:1.4, speed:45,
+    cat:['fortress'], visitMin:60, roadFactor:1.4, speed:45,
     why:{en:"A 7th-century fortress wedged onto a cliff at 2,300m on Mount Aragats' slopes, with a small church and views down two river gorges at once."},
     hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Small entry fee"}, priceFlagged:true,
     closedMonths:[10,11,0,1,2,3] /* Nov(10)-Apr(3): mountain road often snow/ice affected */ },
 
   { id:'karilake', corridor:'northwest', icon:'lake', name:{en:'Kari Lake, Mt Aragats'}, lat:40.5378, lon:44.1897,
-    cat:['nature','view'], visitMin:60, roadFactor:1.5, speed:40,
+    cat:['nature'], visitMin:60, roadFactor:1.5, speed:40,
     why:{en:"A stark alpine lake at roughly 3,200m below Aragats' four summits — the road up feels like leaving Armenia's climate entirely."},
     hours:{en:"Seasonal — road generally closed by snow"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false,
     closedMonths:[9,10,11,0,1,2,3,4] /* Oct-May: snow closure, real and material to routing */ },
 
-  { id:'byurakan', corridor:'northwest', icon:'observatory', name:{en:'Byurakan Observatory'}, lat:40.3400, lon:44.2778,
-    cat:['view'], visitMin:60, roadFactor:1.3, speed:50,
-    why:{en:"A working astrophysics observatory on Aragats' slopes, where Viktor Ambartsumian's team once catalogued whole classes of galaxies — tours run through the old domes on request."},
-    hours:{en:"Visits generally need advance booking"}, hoursFlagged:true, price:{en:"Guided-tour fee"}, priceFlagged:true },
 
   { id:'saghmosavank', corridor:'northwest', icon:'domeChurch', name:{en:'Saghmosavank, Kasagh Gorge'}, lat:40.3242, lon:44.3346,
-    cat:['hist','view'], visitMin:45, roadFactor:1.25, speed:50,
+    cat:['church'], visitMin:45, roadFactor:1.25, speed:50,
     why:{en:"A 13th-century monastery balanced right at the lip of a sheer gorge — the drop below the back wall is most of the view."},
     hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
 
@@ -742,11 +745,11 @@ const SIGHTS = [
     hours:{en:"Always accessible"}, hoursFlagged:false, price:{en:"Free"}, priceFlagged:false },
 
   { id:'noravank', corridor:'south', icon:'cliffMonastery', name:{en:'Noravank Monastery'}, lat:39.6852, lon:45.2306,
-    cat:['hist','view'], visitMin:60, roadFactor:1.3, speed:55,
+    cat:['church'], visitMin:60, roadFactor:1.3, speed:55,
     why:{en:"A 13th-century monastery set against sheer red-rock cliffs in Vayots Dzor — the drive in through the canyon is as memorable as the buildings."},
     hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Small entry fee"}, priceFlagged:true },
   { id:'havutstar', corridor:'east', icon:'cliffMonastery', name:{en:'Havuts Tar (ruins)'}, lat:40.1213, lon:44.7364,
-    cat:['hist','view'], visitMin:40, roadFactor:1.35, speed:45,
+    cat:['church'], visitMin:40, roadFactor:1.35, speed:45,
     why:{en:"A ruined cliffside monastery above Garni Gorge, reached by a short hike — quieter and less restored than Geghard, with the same gorge views."},
     hours:{en:"No gate, accessible in daylight"}, hoursFlagged:false, price:{en:"Free"}, priceFlagged:false },
 
@@ -756,100 +759,124 @@ const SIGHTS = [
     hours:{en:"Entry generally needs a permit"}, hoursFlagged:true, price:{en:"Entry/permit fee"}, priceFlagged:true },
 
   { id:'areniCave', corridor:'south', icon:'cave', name:{en:'Areni-1 Cave'}, lat:39.7167, lon:45.1937,
-    cat:['hist'], visitMin:45, roadFactor:1.2, speed:60,
+    cat:['nature'], visitMin:45, roadFactor:1.2, speed:60,
     why:{en:"The cave where archaeologists found the world's oldest known leather shoe and winery, both over 5,500 years old — a short stop right off the road to Noravank."},
     hours:{en:"Typically open by day, hours vary"}, hoursFlagged:true, price:{en:"Small entry fee"}, priceFlagged:true },
 
   { id:'gndevank', corridor:'south', icon:'domeChurch', name:{en:'Gndevank Monastery'}, lat:39.7667, lon:45.3670,
-    cat:['hist'], visitMin:40, roadFactor:1.25, speed:55,
+    cat:['church'], visitMin:40, roadFactor:1.25, speed:55,
     why:{en:"A 10th-century monastery in a narrow Vayots Dzor gorge, built by a princess in memory of her husband — smaller and quieter than Noravank, on the same road."},
     hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
 
-  { id:'karahunj', corridor:'south', icon:'megalith', name:{en:'Karahunj (Zorats Karer)'}, lat:39.5667, lon:46.0333,
-    cat:['hist','view'], visitMin:60, roadFactor:1.2, speed:70,
-    why:{en:"A field of over 200 standing stones, some aligned with sunrise and sunset points — often nicknamed \"Armenia's Stonehenge,\" though its original purpose is still debated."},
-    hours:{en:"Open access, daylight hours"}, hoursFlagged:false, price:{en:"Small entry fee"}, priceFlagged:true },
 
   { id:'tatev', corridor:'south', icon:'cliffMonastery', name:{en:'Tatev Monastery'}, lat:39.3800, lon:46.2483,
-    cat:['hist','view'], visitMin:90, roadFactor:1.3, speed:55,
+    cat:['church'], visitMin:90, roadFactor:1.3, speed:55,
     why:{en:"A 9th-century monastery on a plateau above the Vorotan gorge, reached by the Wings of Tatev cable car — one of the longest reversible aerial tramways in the world."},
     hours:{en:"Cable car and grounds keep set hours"}, hoursFlagged:true, price:{en:"Cable car ticket + small monastery fee"}, priceFlagged:true },
 
   { id:'talin', corridor:'west', icon:'ruins', name:{en:'Talin Cathedral (ruins)'}, lat:40.3833, lon:43.8667,
-    cat:['hist'], visitMin:30, roadFactor:1.2, speed:60,
+    cat:['church'], visitMin:30, roadFactor:1.2, speed:60,
     why:{en:"A ruined 7th-century cathedral on the way to Gyumri — once one of the largest domed churches in Armenia, now roofless but still imposing."},
     hours:{en:"Open access, daylight hours"}, hoursFlagged:false, price:{en:"Free"}, priceFlagged:false },
 
-  { id:'gyumri', corridor:'west', icon:'cityBlock', name:{en:'Gyumri, Kumayri district'}, lat:40.7833, lon:43.8500,
-    cat:['hist'], visitMin:120, roadFactor:1.15, speed:70,
-    why:{en:"Armenia's second city, rebuilt in black volcanic tuff after the 1926 earthquake — the Kumayri quarter's 19th-century merchant houses survived, along with a dry local wit Armenians joke is a Gyumri trademark."},
-    hours:{en:"Museums keep set hours; streets always open"}, hoursFlagged:true, price:{en:"Museum entry fees vary"}, priceFlagged:true },
 
   { id:'harichavank', corridor:'west', icon:'domeChurch', name:{en:'Harichavank Monastery'}, lat:40.6167, lon:43.9667,
-    cat:['hist'], visitMin:45, roadFactor:1.25, speed:55,
+    cat:['church'], visitMin:45, roadFactor:1.25, speed:55,
     why:{en:"A monastery complex near Artik combining a 7th-century church with a 13th-century one built beside it — a rare chance to compare two very different centuries of Armenian church architecture side by side."},
     hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
 
   { id:'karmravor', corridor:'northwest', icon:'domeChurch', name:{en:'Karmravor Church'}, lat:40.2986, lon:44.3592,
-    cat:['hist'], visitMin:20, roadFactor:1.1, speed:55,
+    cat:['church'], visitMin:20, roadFactor:1.1, speed:55,
     why:{en:"A tiny 7th-century church in Ashtarak, barely large enough for a handful of people — one of the few Armenian churches from this period that has never needed rebuilding."},
     hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
 
   { id:'aruchavank', corridor:'northwest', icon:'ruins', name:{en:'Aruchavank Cathedral'}, lat:40.3350, lon:44.2350,
-    cat:['hist'], visitMin:30, roadFactor:1.2, speed:55,
+    cat:['church'], visitMin:30, roadFactor:1.2, speed:55,
     why:{en:"A large 7th-century domed cathedral in Aruch village, with faded frescoes still visible inside — usually far quieter than the better-known churches nearer Yerevan."},
     hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
 
   { id:'tegher', corridor:'northwest', icon:'domeChurch', name:{en:'Tegher Monastery'}, lat:40.3944, lon:44.2167,
-    cat:['hist','view'], visitMin:30, roadFactor:1.3, speed:50,
+    cat:['church'], visitMin:30, roadFactor:1.3, speed:50,
     why:{en:"A 13th-century monastery on Aragats' lower slopes, built by the same royal family as Harichavank — a quiet stop with views back down toward Ashtarak on the way up to Byurakan."},
     hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
 
   { id:'noratus', corridor:'northeast', icon:'khachkarField', name:{en:'Noratus Cemetery'}, lat:40.2394, lon:45.1897,
-    cat:['hist'], visitMin:45, roadFactor:1.2, speed:60,
+    cat:['church'], visitMin:45, roadFactor:1.2, speed:60,
     why:{en:"The largest surviving field of khachkars — carved cross-stones — anywhere in Armenia, with examples spanning nearly a thousand years standing in open rows by Lake Sevan's southern shore."},
     hours:{en:"Open access, daylight hours"}, hoursFlagged:false, price:{en:"Small entry fee"}, priceFlagged:true },
 
   { id:'hayravank', corridor:'northeast', icon:'domeChurch', name:{en:'Hayravank Monastery'}, lat:40.3800, lon:45.0100,
-    cat:['hist','view'], visitMin:30, roadFactor:1.2, speed:55,
+    cat:['church'], visitMin:30, roadFactor:1.2, speed:55,
     why:{en:"A small 9th-century monastery on a rocky outcrop over Lake Sevan's western shore — fewer crowds than Sevanavank, with a similar view of the water."},
     hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
 
   { id:'haghartsin', corridor:'northeast', icon:'domeChurch', name:{en:'Haghartsin Monastery'}, lat:40.7647, lon:44.9508,
-    cat:['hist','nature'], visitMin:50, roadFactor:1.35, speed:50,
+    cat:['church'], visitMin:50, roadFactor:1.35, speed:50,
     why:{en:"A monastery complex tucked into forested hills near Dilijan, with three churches built across three different centuries — restored in recent years with support from the ruling family of Sharjah."},
     hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
 
   { id:'goshavank', corridor:'northeast', icon:'domeChurch', name:{en:'Goshavank Monastery'}, lat:40.7961, lon:44.9297,
-    cat:['hist'], visitMin:40, roadFactor:1.35, speed:50,
+    cat:['church'], visitMin:40, roadFactor:1.35, speed:50,
     why:{en:"A 12th-century monastery named for the medieval scholar-monk who founded it and wrote one of Armenia's earliest law codes here — known for some of the finest carved khachkars in the country."},
     hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
 
   { id:'loriberd', corridor:'north', icon:'fortress', name:{en:'Lori Berd Fortress'}, lat:41.0167, lon:44.3667,
-    cat:['hist','view'], visitMin:40, roadFactor:1.25, speed:60,
+    cat:['fortress'], visitMin:40, roadFactor:1.25, speed:60,
     why:{en:"An 11th-century fortress on a promontory surrounded on three sides by river gorges — the natural defenses did most of the work, which is why so much of the wall still stands."},
     hours:{en:"Open access, daylight hours"}, hoursFlagged:false, price:{en:"Free"}, priceFlagged:false },
 
   { id:'odzun', corridor:'north', icon:'domeChurch', name:{en:'Odzun Church'}, lat:41.0500, lon:44.6000,
-    cat:['hist'], visitMin:30, roadFactor:1.3, speed:55,
+    cat:['church'], visitMin:30, roadFactor:1.3, speed:55,
     why:{en:"A large 6th-century basilica on a plateau above the Debed Canyon, with an unusual two-tier arcaded gallery running around its exterior."},
     hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
 
   { id:'sanahin', corridor:'north', icon:'domeChurch', name:{en:'Sanahin Monastery'}, lat:41.1206, lon:44.6394,
-    cat:['hist'], visitMin:50, roadFactor:1.3, speed:55,
+    cat:['church'], visitMin:50, roadFactor:1.3, speed:55,
     why:{en:"A UNESCO World Heritage monastery complex whose name reportedly means \"this one is older than that one\" — a friendly dig at its sister monastery Haghpat, just across the gorge."},
     hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
 
   { id:'haghpat', corridor:'north', icon:'domeChurch', name:{en:'Haghpat Monastery'}, lat:41.0964, lon:44.7169,
-    cat:['hist'], visitMin:50, roadFactor:1.3, speed:55,
+    cat:['church'], visitMin:50, roadFactor:1.3, speed:55,
     why:{en:"Sanahin's sister UNESCO monastery on the other side of the Debed Canyon, with a book-repository building that once held one of medieval Armenia's most important manuscript collections."},
     hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'erebuni', corridor:'south', icon:'fortress', name:{en:'Erebuni Fortress'}, lat:40.1406, lon:44.5381,
+    cat:['fortress'], visitMin:60, roadFactor:1.2, speed:35,
+    why:{en:"The Urartian hilltop fortress founded in 782 BC, the origin of Yerevan's name — reconstructed halls and a small museum at the foot of the hill, inside the city itself."},
+    hours:{en:"Museum-reserve hours, check before going"}, hoursFlagged:true, price:{en:"Separate small fees for museum and fortress"}, priceFlagged:true },
+
+  { id:'bjni', corridor:'northeast', icon:'fortress', name:{en:'Bjni Fortress'}, lat:40.4607, lon:44.6544,
+    cat:['fortress'], visitMin:45, roadFactor:1.25, speed:60,
+    why:{en:"A 9th–10th century fortress of the Pahlavuni princes on a rocky promontory above the Hrazdan river, with a restored upper citadel, a medieval reservoir and the legend of a secret passage."},
+    hours:{en:"Open access, daylight hours"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'smbataberd', corridor:'south', icon:'fortress', name:{en:'Smbataberd Fortress'}, lat:39.8717, lon:45.3381,
+    cat:['fortress'], visitMin:150, roadFactor:1.35, speed:50,
+    why:{en:"One of the largest medieval fortresses in Vayots Dzor, sitting on a cliff crest between two gorges. Allow about an hour's climb from Artabuynk village, and the Tsaghats Kar monastery is close by."},
+    hours:{en:"Open access, daylight hours"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'jermuk', corridor:'south', icon:'waterfall', name:{en:'Jermuk Waterfall'}, lat:39.8417, lon:45.6722,
+    cat:['waterfall'], visitMin:60, roadFactor:1.3, speed:50,
+    why:{en:"A waterfall of roughly 70 m dropping into the Arpa gorge inside the mountain spa town of Jermuk, nicknamed \"Mermaid's Hair\". Add a walk through the town's mineral springs."},
+    hours:{en:"Open access"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'shaki', corridor:'south', icon:'waterfall', name:{en:'Shaki Waterfall'}, lat:39.5523, lon:45.9938,
+    cat:['waterfall'], visitMin:45, roadFactor:1.3, speed:55,
+    why:{en:"An 18 m waterfall pouring over a basalt lava ledge in the Vorotan gorge near Sisian, with small grottoes around it. A long drive from Yerevan, so it suits a full-day trip."},
+    hours:{en:"Open access"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'trchkan', corridor:'north', icon:'waterfall', name:{en:'Trchkan Waterfall'}, lat:40.9164, lon:44.1160,
+    cat:['waterfall'], visitMin:180, roadFactor:1.4, speed:45,
+    why:{en:"Armenia's tallest waterfall at about 23 m, on the Shirak–Lori border and named for the trout that leap up it. Reached through the Chichkhan gorge by track and a hike, strongest from March to June."},
+    hours:{en:"Open access, rough track and hike in"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false }
 ];
 
 const CATEGORIES = {
-  hist:{ en:'Historical & religious' },
+  fortress:{ en:'Fortress' },
+  church:{ en:'Church' },
   nature:{ en:'Nature' },
-  view:{ en:'Viewpoints' }
+  view:{ en:'Viewpoint' },
+  waterfall:{ en:'Waterfall' }
 };
 
 /* ======================================================================
@@ -867,6 +894,8 @@ const ICON_SVGS = {
   domeChurch: `<rect x="30" y="55" width="40" height="35" fill="var(--ink)"/><polygon points="50,25 32,55 68,55" fill="var(--ink)"/><rect x="47" y="12" width="6" height="14" fill="var(--rose)"/><rect x="41" y="16" width="18" height="6" fill="var(--rose)"/>`,
 
   ruins: `<ellipse cx="50" cy="80" rx="34" ry="8" fill="none" stroke="var(--ink)" stroke-width="4"/><rect x="20" y="45" width="7" height="30" fill="var(--ink)"/><rect x="46" y="35" width="7" height="40" fill="var(--ink)"/><rect x="73" y="50" width="7" height="25" fill="var(--ink)"/><circle cx="50" cy="28" r="6" fill="var(--rose)"/>`,
+
+  waterfall: `<rect x="0" y="22" width="40" height="78" fill="var(--ink)" opacity="0.85"/><rect x="60" y="22" width="40" height="78" fill="var(--ink)" opacity="0.6"/><path d="M44 22V68M50 22V76M56 22V68" stroke="var(--blue)" stroke-width="5" stroke-linecap="round" fill="none"/><ellipse cx="50" cy="86" rx="18" ry="6" fill="var(--blue)" opacity="0.6"/>`,
 
   fortress: `<polygon points="10,100 30,55 70,55 90,100" fill="var(--ink)" opacity="0.5"/><rect x="25" y="35" width="50" height="25" fill="var(--ink)"/><rect x="25" y="25" width="8" height="12" fill="var(--ink)"/><rect x="41" y="25" width="8" height="12" fill="var(--ink)"/><rect x="57" y="25" width="8" height="12" fill="var(--ink)"/><rect x="67" y="25" width="8" height="12" fill="var(--ink)"/><rect x="45" y="70" width="10" height="20" fill="var(--rose)"/>`,
 
@@ -967,8 +996,13 @@ function pointOf(sightOrYerevan){ return {lat:sightOrYerevan.lat, lon:sightOrYer
 ====================================================================== */
 function distanceFromYerevanKm(s){ return haversineKm(YEREVAN, s); }
 
-function buildCorridorRoute(stopSights){
-  const sorted = stopSights.slice().sort((a,b)=> distanceFromYerevanKm(a)-distanceFromYerevanKm(b));
+function buildCorridorRoute(stopSights, finalId){
+  let sorted = stopSights.slice().sort((a,b)=> distanceFromYerevanKm(a)-distanceFromYerevanKm(b));
+  // the sight you chose is always the last stop: the place the trip turns around
+  if(finalId){
+    const f = sorted.find(x=>x.id===finalId);
+    if(f) sorted = sorted.filter(x=>x!==f).concat([f]);
+  }
   let prevPoint=YEREVAN, prevFactor=1.25, prevSpeed=55;
   const outSegs = [];
   sorted.forEach(s=>{
@@ -981,6 +1015,12 @@ function buildCorridorRoute(stopSights){
   const segs = [...outSegs, oneWayMin]; // last entry: the whole way back, same road
   const driveMin = oneWayMin * 2;
   return { order: sorted, driveMin, segs };
+}
+
+function makeRouteFromSights(sights, finalId){
+  const r = buildCorridorRoute(sights, finalId);
+  const visitMin = r.order.reduce((a,x)=>a+x.visitMin,0);
+  return { order:r.order, segs:r.segs, driveMin:r.driveMin, visitMin, total:r.driveMin+visitMin, size:r.order.length };
 }
 
 function currentMonth(){ return new Date().getMonth(); } // 0=Jan
@@ -1010,6 +1050,9 @@ function combinations(arr, k){
    silently substituted.
 ====================================================================== */
 function generateRoutes({budgetMin, mustSeeId, cats}){
+  // ignore anything left over from older saved trips (retired categories or removed sights)
+  cats = (cats||[]).filter(c=>CATEGORIES[c]);
+  if(mustSeeId && !SIGHTS.some(s=>s.id===mustSeeId)) mustSeeId = '';
   let pool = SIGHTS.filter(s=>!isClosedNow(s));
   if(cats && cats.length){
     pool = pool.filter(s=> s.cat.some(c=>cats.includes(c)));
@@ -1022,8 +1065,8 @@ function generateRoutes({budgetMin, mustSeeId, cats}){
   const maxStops = 4; // largest corridor (4 sights) sets the ceiling
   const evaluated = [];
 
-  function tryAdd(set){
-    const r = buildCorridorRoute(set);
+  function tryAdd(set, finalId){
+    const r = buildCorridorRoute(set, finalId);
     const visitMin = set.reduce((a,s)=>a+s.visitMin,0);
     const total = r.driveMin + visitMin;
     if(total <= budgetMin){
@@ -1037,9 +1080,9 @@ function generateRoutes({budgetMin, mustSeeId, cats}){
     // those are genuine "on the way" detours, not a different direction.
     const mustDistKm = distanceFromYerevanKm(mustSee);
     const onTheWay = pool.filter(s=> s.corridor===mustSee.corridor && s.id!==mustSee.id
-      && distanceFromYerevanKm(s) <= mustDistKm + 3);
+      && distanceFromYerevanKm(s) < mustDistKm);   // only stops BEFORE the destination, never beyond it
     for(let k=0;k<=Math.min(maxStops-1, onTheWay.length);k++){
-      combinations(onTheWay, k).forEach(combo=> tryAdd([mustSee, ...combo]));
+      combinations(onTheWay, k).forEach(combo=> tryAdd([mustSee, ...combo], mustSee.id));
     }
   } else {
     // No fixed destination: try each corridor (each real road out of
@@ -1212,6 +1255,7 @@ function renderResults(){
           <span>${s.visitMin} min suggested</span>
           <span class="flag" title="Not independently verified">${s.hoursFlagged?'~ ':''}${s.hours.en}</span>
           <span class="flag" title="Not independently verified">${s.priceFlagged?'~ ':''}${s.price.en}</span>
+          <button class="stop-remove" onclick="removeStop(${i})" title="Remove this sight from the trip" aria-label="Remove ${tpEsc(s.name[LANG])} from the trip">✕ Remove</button>
         </div>
       </div>
     </div>`;
@@ -1224,9 +1268,18 @@ function renderResults(){
     </div>`;
   html += `</div>`;
 
+  if(r.original){
+    html += `<div class="route-note edited-note">You changed this trip. Drive times were recalculated. <button class="link-btn" onclick="restoreTrip()">Restore the original trip</button></div>`;
+  }
   html += `<div class="route-actions">
     <button class="btn-ghost" onclick="saveCurrentRoute()">${t('saveTrip')}</button>
+  </div>
+  <div class="share-row" role="group" aria-label="Share this trip">
+    <span class="share-label">Share</span>
     <button class="btn-ghost" id="copy-btn" onclick="copyShareLink()">${t('copyLink')}</button>
+    <button class="btn-ghost" onclick="shareTrip('whatsapp')">WhatsApp</button>
+    <button class="btn-ghost" onclick="shareTrip('telegram')">Telegram</button>
+    ${navigator.share ? '<button class="btn-ghost" onclick="shareTrip(\'native\')">More…</button>' : ''}
   </div>`;
 
   document.getElementById('results').innerHTML = html;
@@ -1235,6 +1288,32 @@ function renderResults(){
 }
 
 function selectRoute(i){ state.activeRoute = i; renderResults(); }
+
+/* Remove a sight from the trip you are looking at; times and the road are recalculated. */
+function removeStop(i){
+  const r = state.routes && state.routes[state.activeRoute];
+  if(!r) return;
+  const left = r.order.filter((_,k)=>k!==i);
+  if(!left.length){
+    state.routes.splice(state.activeRoute, 1);
+    if(!state.routes.length){
+      document.getElementById('results').innerHTML = `<div class="status"><strong>Your trip has no sights left.</strong><br>Press <strong>Find routes</strong> to plan a new one.</div>`;
+      renderMap([]);
+      return;
+    }
+    state.activeRoute = Math.min(state.activeRoute, state.routes.length-1);
+    renderResults();
+    return;
+  }
+  const nr = makeRouteFromSights(left);
+  nr.original = r.original || r;
+  state.routes[state.activeRoute] = nr;
+  renderResults();
+}
+function restoreTrip(){
+  const r = state.routes && state.routes[state.activeRoute];
+  if(r && r.original){ state.routes[state.activeRoute] = r.original; renderResults(); }
+}
 
 function driveIcon(){
   return `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 13l1.5-4.5A2 2 0 0 1 6.4 7h11.2a2 2 0 0 1 1.9 1.5L21 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><rect x="3" y="13" width="18" height="5" rx="1.4" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="18" r="1.4" fill="currentColor"/><circle cx="17" cy="18" r="1.4" fill="currentColor"/></svg>`;
@@ -1262,11 +1341,14 @@ let mapInitToken = 0;       // guards against overlapping (re)initialisations
 const markers = {};
 let originMarker = null;
 
-const CAT_COLOR = { hist:'#B5532A', nature:'#4F8A5B', view:'#3E6FA8' };
+const ARMENIA_RINGS = [[[44.768,39.703],[44.732,39.746],[44.559,39.887],[44.401,39.996],[44.289,40.04],[44.178,40.036],[44.005,40.014],[43.94,40.022],[43.793,40.071],[43.667,40.127],[43.685,40.149],[43.71,40.167],[43.677,40.239],[43.609,40.356],[43.616,40.394],[43.595,40.444],[43.569,40.482],[43.667,40.574],[43.713,40.647],[43.724,40.72],[43.695,40.795],[43.631,40.929],[43.591,40.969],[43.519,41.005],[43.454,41.064],[43.44,41.107],[43.49,41.116],[43.645,41.116],[43.793,41.132],[43.908,41.16],[44.077,41.182],[44.145,41.203],[44.228,41.213],[44.473,41.191],[44.563,41.208],[44.84,41.212],[44.847,41.22],[44.811,41.248],[44.811,41.26],[44.977,41.278],[45.002,41.291],[45.024,41.246],[45.085,41.196],[45.153,41.175],[45.189,41.147],[45.189,41.127],[45.071,41.101],[45.063,41.088],[45.071,41.076],[45.107,41.069],[45.272,41.007],[45.369,41.005],[45.42,40.986],[45.445,40.948],[45.524,40.897],[45.589,40.847],[45.593,40.83],[45.578,40.804],[45.402,40.706],[45.38,40.673],[45.377,40.639],[45.456,40.533],[45.571,40.417],[45.737,40.33],[45.963,40.234],[45.967,40.175],[45.931,40.104],[45.899,40.057],[45.884,40.024],[45.859,40.012],[45.629,40.014],[45.596,40.003],[45.582,39.989],[45.578,39.977],[45.661,39.956],[45.791,39.882],[45.863,39.809],[45.938,39.776],[46.025,39.719],[46.093,39.665],[46.201,39.594],[46.323,39.618],[46.482,39.555],[46.489,39.512],[46.478,39.476],[46.377,39.434],[46.367,39.417],[46.367,39.403],[46.377,39.382],[46.439,39.349],[46.507,39.299],[46.586,39.224],[46.55,39.201],[46.478,39.198],[46.421,39.207],[46.399,39.193],[46.403,39.168],[46.475,39.111],[46.489,39.069],[46.485,38.998],[46.489,38.906],[46.316,38.913],[46.169,38.87],[46.115,38.878],[46.079,38.955],[46.046,39.017],[45.953,39.179],[45.978,39.245],[45.924,39.281],[45.798,39.351],[45.765,39.378],[45.783,39.417],[45.798,39.488],[45.783,39.545],[45.751,39.562],[45.686,39.564],[45.611,39.55],[45.456,39.495],[45.351,39.529],[45.287,39.566],[45.254,39.595],[45.171,39.571],[45.153,39.583],[45.15,39.656],[45.125,39.696],[45.078,39.743],[45.031,39.766],[44.865,39.719],[44.768,39.703]],[[45.553,40.616],[45.513,40.599],[45.477,40.607],[45.477,40.649],[45.506,40.665],[45.535,40.665],[45.564,40.649],[45.553,40.616]]];   // country outline (Natural Earth, simplified)
+const CAT_COLOR = { church:'#B5532A', fortress:'#6B4E9B', nature:'#4F8A5B', view:'#3E6FA8', waterfall:'#1D96B4' };
 const CAT_GLYPH = {
-  hist:   '<path d="M9.5 15.5 20 10l10.5 5.5z" fill="#fff"/><path d="M13 17.5v6M18 17.5v6M22 17.5v6M27 17.5v6M10 25.5h20" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/>',
-  nature: '<path d="M9.5 25.5 16 14l4.2 6.2 3-4.2 7.3 9.5z" fill="#fff"/>',
-  view:   '<path d="M9.5 18c3-4.6 6.2-6.8 10.5-6.8S27.5 13.4 30.5 18c-3 4.6-6.2 6.8-10.5 6.8S12.5 22.6 9.5 18z" fill="none" stroke="#fff" stroke-width="2"/><circle cx="20" cy="18" r="3.4" fill="#fff"/>'
+  church:    c=>'<path d="M20 5.8v6M17.4 8.6h5.2" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M12 25v-8l8-5.4 8 5.4v8z" fill="#fff"/><path d="M18 25v-4a2 2 0 0 1 4 0v4z" fill="'+c+'"/>',
+  fortress:  c=>'<path d="M12 12h4v3.4h2.4V12h3.2v3.4H24V12h4v13H12z" fill="#fff"/><path d="M18 25v-4.2a2 2 0 0 1 4 0V25z" fill="'+c+'"/>',
+  nature:    c=>'<path d="M9.5 25.5 16 14l4.2 6.2 3-4.2 7.3 9.5z" fill="#fff"/>',
+  view:      c=>'<path d="M9.5 18c3-4.6 6.2-6.8 10.5-6.8S27.5 13.4 30.5 18c-3 4.6-6.2 6.8-10.5 6.8S12.5 22.6 9.5 18z" fill="none" stroke="#fff" stroke-width="2"/><circle cx="20" cy="18" r="3.4" fill="#fff"/>',
+  waterfall: c=>'<path d="M9 11.5h22v3H9z" fill="#fff"/><path d="M14 15v8.5M20 15v10.5M26 15v8.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M11 27.2q3-2.4 6 0t6 0 6 0" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>'
 };
 /* A pin: round head, pointed tip on the exact spot. Colour + icon = category,
    orange + number = stop on the planned trip, gold = Yerevan. */
@@ -1278,7 +1360,7 @@ function pinSvg(o){
   let inner;
   if(origin)       inner = '<circle cx="20" cy="18" r="6.5" fill="#fff"/><circle cx="20" cy="18" r="3" fill="#17171A"/>';
   else if(isRoute) inner = `<text x="20" y="23.2" text-anchor="middle" font-family="Manrope,Arial,sans-serif" font-size="15" font-weight="800" fill="#1A1207">${o.label||''}</text>`;
-  else             inner = CAT_GLYPH[o.cat] || '<circle cx="20" cy="18" r="4" fill="#fff"/>';
+  else             inner = CAT_GLYPH[o.cat] ? CAT_GLYPH[o.cat](fill) : '<circle cx="20" cy="18" r="4" fill="#fff"/>';
   return `<svg viewBox="0 0 40 48" width="100%" height="100%" aria-hidden="true" style="display:block;overflow:visible;filter:drop-shadow(0 2px 2.5px rgba(23,23,26,.38))${sel?';transform:scale(1.18);transform-origin:50% 100%':''}">
     <path d="M20 46C20 46 4 30.5 4 18a16 16 0 0 1 32 0C36 30.5 20 46 20 46z" fill="${fill}" stroke="${stroke}" stroke-width="${sel?3:2}" stroke-linejoin="round"/>${inner}</svg>`;
 }
@@ -1310,6 +1392,15 @@ async function createYandexBackend(el){
     controls.addChild(new YMapZoomControl({}));
     map.addChild(controls);
   }catch(e){ console.warn('Yandex zoom buttons unavailable (scroll / pinch still zoom)', e); }
+
+  // Highlight Armenia: soft orange tint + outline inside, and the world around it dimmed.
+  try{
+    const world = [[25,25],[65,25],[65,55],[25,55],[25,25]];                 // outer ring (opposite direction to the country = hole)
+    map.addChild(new YMapFeature({ geometry:{ type:'Polygon', coordinates:[ world, ...ARMENIA_RINGS ] },
+      style:{ fill:'#17171A', fillOpacity:0.26, stroke:[] }, zIndex:0 }));
+    map.addChild(new YMapFeature({ geometry:{ type:'MultiPolygon', coordinates: ARMENIA_RINGS.map(r=>[r]) },
+      style:{ fill:'#F0692B', fillOpacity:0.07, stroke:[ { color:'#F0692B', width:3 }, { color:'#FFFFFF', width:7, opacity:0.9 } ] }, zIndex:0 }));
+  }catch(e){ console.warn('Armenia highlight unavailable', e); }
 
   let routeFeatures = [];
   const paint = (h)=>{
@@ -1626,7 +1717,7 @@ function saveCurrentRoute(){
     const list = JSON.parse(localStorage.getItem('araratRoutesSaved') || '[]');
     const r = state.routes[state.activeRoute];
     const label = r.order.map(s=>s.name.en).join(' → ');
-    list.unshift({ id: Date.now(), label, query: state.lastQuery, activeRoute: state.activeRoute });
+    list.unshift({ id: Date.now(), label, query: state.lastQuery, activeRoute: state.activeRoute, ids: r.order.map(x=>x.id) });
     localStorage.setItem('araratRoutesSaved', JSON.stringify(list.slice(0,20)));
     renderSaved();
   }catch(e){ console.error('save failed', e); }
@@ -1647,6 +1738,14 @@ function loadSaved(id){
     const list = JSON.parse(localStorage.getItem('araratRoutesSaved') || '[]');
     const item = list.find(x=>x.id===id);
     if(!item) return;
+    const saved = Array.isArray(item.ids) ? item.ids.map(id=>SIGHTS.find(x=>x.id===id)).filter(Boolean) : [];
+    if(saved.length){
+      state.routes = [ makeRouteFromSights(saved, item.query && item.query.mustSeeId && saved.some(x=>x.id===item.query.mustSeeId) ? item.query.mustSeeId : undefined) ];
+      state.activeRoute = 0;
+      state.lastQuery = item.query;
+      renderResults();
+      return;
+    }
     const routes = generateRoutes(item.query);
     state.routes = routes;
     state.activeRoute = Math.min(item.activeRoute, Math.max(routes.length-1,0));
@@ -1663,19 +1762,39 @@ function deleteSaved(id){
   }catch(e){ console.error(e); }
 }
 
+function tripShareUrl(){
+  const r = state.routes[state.activeRoute];
+  // the exact sights are included, so the person who opens the link sees your edited trip
+  const payload = { q: state.lastQuery, a: state.activeRoute, s: r.order.map(x=>x.id), l: LANG };
+  const encoded = btoa(encodeURIComponent(JSON.stringify(payload)));
+  return location.href.split('#')[0] + '#trip=' + encoded;
+}
+function tripShareText(){
+  const r = state.routes[state.activeRoute];
+  return 'Day trip from Yerevan: ' + r.order.map(x=>x.name.en).join(' → ') + ' · about ' + fmtHours(r.total) + ' h round trip (Ararat Routes)';
+}
 function copyShareLink(){
   try{
-    const payload = { q: state.lastQuery, a: state.activeRoute, l: LANG };
-    const encoded = btoa(encodeURIComponent(JSON.stringify(payload)));
-    const url = location.href.split('#')[0] + '#trip=' + encoded;
-    navigator.clipboard.writeText(url).then(()=>{
+    const url = tripShareUrl();
+    const done = ()=>{
       const btn = document.getElementById('copy-btn');
+      if(!btn) return;
       const orig = btn.textContent;
       btn.textContent = '✓ ' + t('linkCopied');
       btn.classList.add('copied');
       setTimeout(()=>{ btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
-    });
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, ()=> window.prompt('Copy this link:', url));
+    else window.prompt('Copy this link:', url);
   }catch(e){ console.error('copy failed', e); }
+}
+function shareTrip(channel){
+  try{
+    const url = tripShareUrl(), text = tripShareText();
+    if(channel === 'whatsapp') window.open('https://wa.me/?text=' + encodeURIComponent(text + '\n' + url), '_blank', 'noopener');
+    else if(channel === 'telegram') window.open('https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(text), '_blank', 'noopener');
+    else if(channel === 'native' && navigator.share) navigator.share({ title:'Ararat Routes', text, url }).catch(()=>{});
+  }catch(e){ console.error('share failed', e); }
 }
 
 function loadFromHash(){
@@ -1694,11 +1813,17 @@ function loadFromHash(){
       state.budgetHours = hrs;
       document.getElementById('budget-num').textContent = hrs;
     }
-    state.cats = q.cats || [];
+    state.cats = (q.cats || []).filter(c=>CATEGORIES[c]);
     buildInterestChips();
-    const routes = generateRoutes(q);
-    state.routes = routes;
+    let routes = generateRoutes(q);
     state.activeRoute = Math.min(payload.a||0, Math.max(routes.length-1,0));
+    // a shared link carries the exact sights, so an edited trip arrives exactly as it was sent
+    const shared = Array.isArray(payload.s) ? payload.s.map(id=>SIGHTS.find(x=>x.id===id)).filter(Boolean) : [];
+    if(shared.length){
+      routes = [ makeRouteFromSights(shared, q.mustSeeId && shared.some(x=>x.id===q.mustSeeId) ? q.mustSeeId : undefined) ];
+      state.activeRoute = 0;
+    }
+    state.routes = routes;
     state.lastQuery = q;
     if(routes.length) renderResults(); else runSearch();
     return true;
@@ -1728,7 +1853,8 @@ try{
   if(window.supabase) sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { flowType: 'pkce' } });
 }catch(e){ console.error('reviews unavailable', e); }
 
-const tp = { user:null, stats:{}, openId:null, reviews:{}, draft:{ rating:0, comment:'' }, msg:'', busy:false };
+const TP_PAGE = 10;   // how many places show at first, and how many each "Load more" adds
+const tp = { user:null, stats:{}, openId:null, reviews:{}, draft:{ rating:0, comment:'' }, msg:'', busy:false, visible:TP_PAGE };
 
 function tpEsc(s){
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1780,10 +1906,14 @@ function tpRender(){
   const list = document.getElementById('tp-list');
   if(!list) return;
   const rows = tpSorted();
+  // a place you opened (e.g. from the map) must always be visible
+  const openIdx = tp.openId ? rows.findIndex(r => r.s.id === tp.openId) : -1;
+  if(openIdx >= tp.visible) tp.visible = Math.ceil((openIdx + 1) / TP_PAGE) * TP_PAGE;
   let rank = 0;
-  list.innerHTML = rows.map(({s, st}) => {
+  const html = rows.map(({s, st}, idx) => {
     const rated = st && st.count > 0;
     if(rated) rank++;
+    if(idx >= tp.visible) return '';
     const open = tp.openId === s.id;
     return `<div class="tp-row" id="tp-row-${tpEsc(s.id)}">
       <div class="tp-row-main">
@@ -1800,6 +1930,21 @@ function tpRender(){
       ${open ? `<div class="tp-detail" id="tp-detail">${tpDetailHtml(s)}</div>` : ''}
     </div>`;
   }).join('');
+  const shown = Math.min(tp.visible, rows.length), left = rows.length - shown;
+  const more = left > 0
+    ? `<div class="tp-more-wrap"><span class="tp-count">Showing ${shown} of ${rows.length} places</span>
+       <button class="tp-btn" onclick="tpLoadMore()">Load ${Math.min(TP_PAGE, left)} more</button></div>`
+    : (rows.length > TP_PAGE
+        ? `<div class="tp-more-wrap"><span class="tp-count">Showing all ${rows.length} places</span>
+           <button class="tp-btn" onclick="tpShowLess()">Show top ${TP_PAGE} only</button></div>` : '');
+  list.innerHTML = html + more;
+}
+function tpLoadMore(){ tp.visible += TP_PAGE; tpRender(); }
+function tpShowLess(){
+  tp.visible = TP_PAGE;
+  if(tp.openId && tpSorted().findIndex(r => r.s.id === tp.openId) >= TP_PAGE) tp.openId = null;
+  tpRender();
+  const sec = document.getElementById('top-places'); if(sec) sec.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
 function tpDetailHtml(s){
@@ -1935,15 +2080,16 @@ tpInit();
 ====================================================================== */
 const WIKI_TITLES = {
   garni:'Garni Temple', geghard:'Geghard', garnigorge:'Garni Gorge', khorvirap:'Khor Virap',
-  etchmiadzin:'Etchmiadzin Cathedral', zvartnots:'Zvartnots Cathedral', sardarapat:'Sardarapat Memorial',
-  sevanavank:'Sevanavank', dilijan:'Dilijan', amberd:'Amberd', karilake:'Lake Kari',
-  byurakan:'Byurakan Observatory', saghmosavank:'Saghmosavank', charentsarch:'Charents Arch',
+  etchmiadzin:'Etchmiadzin Cathedral', zvartnots:'Zvartnots Cathedral',
+  sevanavank:'Sevanavank', dilijan:'Dilijan', amberd:'Amberd', karilake:'Lake Kari', saghmosavank:'Saghmosavank', charentsarch:'Charents Arch',
   noravank:'Noravank', havutstar:'Havuts Tar', khosrovreserve:'Khosrov Forest State Reserve',
-  areniCave:'Areni-1 cave', gndevank:'Gndevank', karahunj:'Carahunge', tatev:'Tatev Monastery',
-  talin:'Talin Cathedral', gyumri:'Gyumri', harichavank:'Harichavank', karmravor:'Karmravor Church',
+  areniCave:'Areni-1 cave', gndevank:'Gndevank', tatev:'Tatev Monastery',
+  talin:'Talin Cathedral', harichavank:'Harichavank', karmravor:'Karmravor Church',
   aruchavank:'Aruchavank', tegher:'Tegher Monastery', noratus:'Noratus cemetery', hayravank:'Hayravank',
   haghartsin:'Haghartsin Monastery', goshavank:'Goshavank', loriberd:'Lori Berd', odzun:'Odzun Church',
-  sanahin:'Sanahin Monastery', haghpat:'Haghpat Monastery'
+  sanahin:'Sanahin Monastery', haghpat:'Haghpat Monastery',
+  erebuni:'Erebuni Fortress', bjni:'Bjni Fortress', smbataberd:'Smbataberd',
+  jermuk:'Jermuk Waterfall', shaki:'Shaki Waterfall', trchkan:'Trchkan Waterfall'
 };
 const PHOTO_CACHE_KEY = 'ararat_photos_v1';
 const PHOTO_TTL = 30*24*3600*1000;
