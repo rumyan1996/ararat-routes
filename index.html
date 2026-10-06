@@ -442,6 +442,7 @@ select{
 .ymk{ cursor:pointer; }
 .ymk:focus-visible{ outline:2px solid var(--ink); outline-offset:3px; border-radius:6px; }
 .map-msg{ height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:24px; text-align:center; color: var(--ink-muted); font-size:14px; }
+.map-msg-detail{ font-size:12px; color: var(--ink-faint); max-width:520px; }
 .map-msg button{ font:inherit; font-weight:600; padding:9px 18px; border-radius: var(--radius-pill); border:1px solid var(--border-strong); background: var(--surface); color: var(--ink); cursor:pointer; }
 .map-msg button:focus-visible{ outline:2px solid var(--ink); outline-offset:2px; }
 .origin-hex{ width:14px; height:16px; background: var(--gold);
@@ -577,7 +578,7 @@ const ORS_API_KEY = '';
 /* Yandex Maps (map view only). Browser-visible key: it must have an
    HTTP Referer restriction set to this site's address in the Yandex
    developer dashboard. */
-const YANDEX_MAPS_KEY = 'b387716c-a1bf-440c-bd99-e4ceea318c5a';
+const YANDEX_MAPS_KEY = '6eb53885-339f-467a-b278-3ede26e5b785';
 const PHOTOS = {
   // garni: { url:'', credit:'' },
 };
@@ -1192,7 +1193,7 @@ function loadYandexScript(){
     const s = document.createElement('script');
     s.src = 'https://api-maps.yandex.ru/v3/?apikey=' + encodeURIComponent(YANDEX_MAPS_KEY) + '&lang=en_US';
     s.onload = ()=> resolve();
-    s.onerror = ()=> reject(new Error('Yandex script failed to load'));
+    s.onerror = ()=> reject(new Error('Yandex refused to send the map library (key not active, linked to another product, or not allowed for this address)'));
     document.head.appendChild(s);
   });
 }
@@ -1276,14 +1277,19 @@ async function createYandexBackend(el){
 }
 
 /* ---------- Start the map ---------- */
-function showMapMessage(text){
+function showMapMessage(text, detail){
   const el = document.getElementById('map');
   el.innerHTML = '';
   const box = document.createElement('div'); box.className = 'map-msg';
   const p = document.createElement('p'); p.textContent = text; p.style.margin = '0';
+  if(detail){
+    const d = document.createElement('p'); d.className = 'map-msg-detail'; d.textContent = detail; d.style.margin = '0';
+    box.appendChild(p); box.appendChild(d);
+  }
   const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Try again';
   b.onclick = ()=> startMap();
-  box.appendChild(p); box.appendChild(b); el.appendChild(box);
+  if(!detail) box.appendChild(p);
+  box.appendChild(b); el.appendChild(box);
 }
 async function startMap(){
   const token = ++mapInitToken;
@@ -1298,7 +1304,7 @@ async function startMap(){
   catch(e){
     console.warn('Yandex Maps could not load', e);
     if(token!==mapInitToken) return;
-    showMapMessage('The map could not load right now. Your trip planning below still works.');
+    showMapMessage('The map could not load right now. Your trip planning below still works.', 'Details: ' + (e && e.message ? e.message : 'unknown error') + ' | Site address: ' + location.origin);
     return;
   }
   if(token!==mapInitToken){ api.destroy(); return; }
@@ -1389,7 +1395,7 @@ function updateDataNote(){
   const live = ORS_API_KEY
     ? 'Drive times and the route line come from OpenRouteService road routing for the route you are viewing; if it is unreachable they fall back to straight-line estimates.'
     : 'Drive times are estimates computed from straight-line distance and typical road speeds, and the route line joins stops directly. Add a free OpenRouteService key to use real roads.';
-  document.getElementById('data-note').textContent = live + " Hours, pricing and accessibility carry a dotted underline where they haven't been independently verified; confirm locally before you go. Routes are kept clear of border-adjacent areas by design.";
+  document.getElementById('data-note').textContent = live + " Hours, pricing and accessibility carry a dotted underline where they haven't been independently verified; confirm locally before you go. Routes are kept clear of border-adjacent areas by design. Site build: map-v3.";
 }
 
 /* ======================================================================
