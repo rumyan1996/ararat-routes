@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ararat Routes — detour-worthy day trips from Yerevan (live build)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+/* ============ TOKENS — Soft Structuralism ============ */
+/* Fixed light identity by design (silver-white ground, bold grotesk type):
+   the palette stays the same regardless of the viewer's system light/dark
+   setting, so all three blocks below carry the same values on purpose. */
+:root{
+  --bg: #F5F4F1;
+  --surface: #FFFFFF;
+  --surface-2: #EDEBE5;
+  --ink: #17171A;
+  --ink-muted: #6B6B70;
+  --ink-faint: #7A7A80;
+  --border: rgba(23,23,26,0.10);
+  --border-strong: rgba(23,23,26,0.18);
+  --rose: #F0692B;
+  --rose-ink: #D9581F;
+  --gold: #E8B030;
+  --gold-ink: #8A5A0B;
+  --blue: #5A7FB0;
+  --blue-ink: #3E5C82;
+  --green: #6E8F6A;
+  --on-accent: #1A1207;
+  --shadow: 0 20px 44px -28px rgba(23,23,26,0.22);
+  --shadow-sm: 0 10px 24px -18px rgba(23,23,26,0.18);
+  --radius-s: 10px;
+  --radius-m: 14px;
+  --radius-l: 22px;
+  --radius-pill: 999px;
+  --font-display: 'Bricolage Grotesque', ui-sans-serif, sans-serif;
+  --font-body: 'Manrope', ui-sans-serif, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="dark"]) {
+    --bg: #F5F4F1;
+    --surface: #FFFFFF;
+    --surface-2: #EDEBE5;
+    --ink: #17171A;
+    --ink-muted: #6B6B70;
+    --ink-faint: #7A7A80;
+    --border: rgba(23,23,26,0.10);
+    --border-strong: rgba(23,23,26,0.18);
+    --rose: #F0692B;
+    --rose-ink: #D9581F;
+    --gold: #E8B030;
+    --gold-ink: #8A5A0B;
+    --blue: #5A7FB0;
+    --blue-ink: #3E5C82;
+    --green: #6E8F6A;
+    --on-accent: #1A1207;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"]{
+  --bg: #F5F4F1;
+  --surface: #FFFFFF;
+  --surface-2: #EDEBE5;
+  --ink: #17171A;
+  --ink-muted: #6B6B70;
+  --ink-faint: #7A7A80;
+  --border: rgba(23,23,26,0.10);
+  --border-strong: rgba(23,23,26,0.18);
+  --rose: #F0692B;
+  --rose-ink: #D9581F;
+  --gold: #E8B030;
+  --gold-ink: #8A5A0B;
+  --blue: #5A7FB0;
+  --blue-ink: #3E5C82;
+  --green: #6E8F6A;
+  --on-accent: #1A1207;
+  color-scheme: light;
+}
+
+*{ box-sizing: border-box; }
+html{
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+html,body{ height: 100%; }
+body{
+  margin:0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  -webkit-font-smoothing: antialiased;
+}
+
+a{ color: inherit; }
+button{ font-family: inherit; }
+::selection{ background: var(--rose); color: var(--on-accent); }
+:focus-visible{ outline: 2px solid var(--blue); outline-offset: 2px; }
+
+.display{ font-family: var(--font-display); font-optical-sizing: auto; letter-spacing: -0.01em; }
+
+/* ============ LAYOUT SHELL ============ */
+.app{
+  min-height: 100%;
+  display: grid;
+  grid-template-columns: 356px 1fr;
+}
+@media (max-width: 900px){
+  .app{ grid-template-columns: 1fr; }
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar{
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 28px 26px 40px;
+  display:flex;
+  flex-direction:column;
+  gap: 26px;
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+}
+@media (max-width: 900px){
+  .sidebar{ position: static; height: auto; border-right:none; border-bottom: 1px solid var(--border); }
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+}
+.brand-mark{ width: 34px; height:34px; flex: none; }
+.brand-name{ font-size: 19px; font-weight: 600; }
+.brand-tag{ color: var(--ink-muted); font-size: 12.5px; margin-top: 2px; }
+
+
+.field{ display:flex; flex-direction:column; gap:8px; }
+.field-label{ font-size: 13px; font-weight: 600; color: var(--ink); }
+.field-help{ font-size: 12.5px; color: var(--ink-muted); margin-top: -4px; }
+
+.start-chip{
+  display:flex; align-items:center; gap:8px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  padding: 9px 12px;
+  border-radius: var(--radius-m);
+  font-size: 13.5px;
+  color: var(--ink-muted);
+}
+.start-chip strong{ color: var(--ink); font-weight: 600; }
+
+.mode-switch{
+  display:flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--bg);
+  padding: 3px;
+  overflow:hidden;
+}
+.mode-switch button{
+  flex:1;
+  border:none;
+  background: transparent;
+  color: var(--ink-muted);
+  padding: 9px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  cursor:pointer;
+  transition: background 200ms, color 200ms;
+}
+.mode-switch button:last-child{ border-right:none; }
+.mode-switch button.active{ background: var(--ink); color: var(--bg); }
+
+.budget-row{ display:flex; align-items:baseline; justify-content:space-between; }
+.budget-value{ font-family: var(--font-display); font-size: 26px; font-weight:500; }
+.budget-value span{ font-size: 14px; font-family: var(--font-body); color: var(--ink-muted); font-weight: 500; }
+
+input[type="range"]{
+  -webkit-appearance:none; appearance:none;
+  width:100%; height: 4px;
+  background: var(--border-strong);
+  border-radius: 3px;
+  outline:none;
+}
+input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none;
+  width:17px; height:17px; border-radius:50%;
+  background: var(--rose);
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--rose-ink);
+  cursor:pointer;
+}
+input[type="range"]::-moz-range-thumb{
+  width:17px; height:17px; border-radius:50%;
+  background: var(--rose); border: 2px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--rose-ink); cursor:pointer;
+}
+
+select{
+  width:100%;
+  padding: 9px 10px;
+  border-radius: var(--radius-m);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13.5px;
+}
+
+.chipset{ display:flex; flex-wrap:wrap; gap:8px; }
+.chip{
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--ink-muted);
+  padding: 7px 13px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 500;
+  cursor:pointer;
+  user-select:none;
+  transition: background 200ms, border-color 200ms, color 200ms;
+}
+.chip.active{ background: var(--green); border-color: var(--green); color: var(--on-accent); }
+
+.cta{
+  border:none;
+  background: var(--rose);
+  color: var(--on-accent);
+  font-weight: 600;
+  font-size: 14.5px;
+  padding: 13px 16px;
+  border-radius: var(--radius-pill);
+  cursor:pointer;
+  width:100%;
+  box-shadow: var(--shadow-sm);
+  transition: transform 700ms cubic-bezier(.2,.7,.2,1), background 200ms, box-shadow 200ms;
+}
+.cta:hover{ background: var(--rose-ink); transform: translateY(-1px); }
+.cta:active{ transform: translateY(0) scale(0.98); }
+.cta:disabled{ opacity:0.5; cursor:default; box-shadow:none; }
+
+.divider{ height:1px; background: var(--border); margin: 2px 0; }
+
+.saved-list{ display:flex; flex-direction:column; gap:8px; }
+.saved-item{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  padding: 8px 10px;
+  font-size: 12.5px;
+}
+.saved-item button{
+  border:none; background:none; color: var(--ink-faint); cursor:pointer; font-size: 12px;
+  padding: 2px 4px;
+}
+.saved-item button:hover{ color: var(--rose-ink); }
+.saved-open{ background:none; border:none; text-align:left; cursor:pointer; color: var(--ink); font-weight:500; flex:1; padding:0; font-size:12.5px; }
+.empty-note{ color: var(--ink-faint); font-size: 12.5px; }
+
+/* ---------- Main ---------- */
+.main{ padding: 30px 34px 60px; max-width: 980px; }
+@media (max-width: 900px){ .main{ padding: 22px 18px 48px; } }
+
+.hero{ margin-bottom: 28px; }
+.hero h1{ font-size: 34px; font-weight: 500; margin: 0 0 10px; max-width: 20ch; }
+.hero p{ color: var(--ink-muted); max-width: 62ch; font-size: 15px; margin:0; }
+
+.map-wrap{
+  border: 1px solid var(--border);
+  border-radius: var(--radius-l);
+  background: var(--surface);
+  padding: 8px;
+  margin-bottom: 26px;
+  overflow:hidden;
+  box-shadow: var(--shadow-sm);
+}
+.map-wrap svg{ display:block; width:100%; height:auto; }
+
+.map-hint{ font-size: 12.5px; color: var(--ink-faint); margin: -4px 0 22px; }
+.sight-panel{
+  display:flex; gap:16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-l);
+  background: var(--surface);
+  padding: 18px;
+  margin: 0 0 18px;
+  position: relative;
+  box-shadow: var(--shadow);
+}
+.sight-panel[hidden]{ display:none; }
+.sight-panel-close{
+  position:absolute; top:8px; right:8px;
+  border:none; background:none; color: var(--ink-faint);
+  cursor:pointer; font-size:13px; line-height:1; padding:4px;
+}
+.sight-panel-close:hover{ color: var(--ink); }
+.sight-panel-thumb{ flex:none; width:96px; height:96px; }
+.sight-panel-thumb svg, .sight-panel-thumb img{ width:100%; height:100%; display:block; border-radius: var(--radius-m); object-fit:cover; }
+.sight-panel-body{ flex:1; min-width:0; padding-right:20px; }
+.sight-panel-title-row{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+.sight-panel-name{ font-family: var(--font-display); font-size:18px; font-weight:600; color: var(--ink); }
+.sight-panel-cat{ font-size:11px; color: var(--ink-muted); border:1px solid var(--border); padding:3px 10px; border-radius: var(--radius-pill); white-space:nowrap; }
+.sight-panel-why{ font-size:13px; color: var(--ink-muted); margin:7px 0 9px; max-width:60ch; line-height:1.5; }
+.sight-panel-meta{ display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color: var(--ink-faint); margin-bottom:12px; }
+
+.status{
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-m);
+  padding: 22px;
+  color: var(--ink-muted);
+  font-size: 14px;
+  line-height:1.6;
+}
+.status strong{ color: var(--ink); }
+
+.route-tabs{ display:flex; gap: 6px; margin-bottom: 18px; flex-wrap:wrap; }
+.route-tab{
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink-muted);
+  padding: 9px 15px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  cursor:pointer;
+  transition: background 200ms, border-color 200ms, color 200ms;
+}
+.route-tab.active{ background: var(--blue); border-color: var(--blue); color: var(--on-accent); }
+
+.route-summary{
+  display:flex; gap: 22px; flex-wrap:wrap;
+  margin-bottom: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+.summary-stat .num{ font-family: var(--font-display); font-size: 22px; font-weight:500; }
+.summary-stat .lbl{ font-size: 12px; color: var(--ink-muted); }
+
+.route-note{
+  font-size: 13px;
+  color: var(--gold-ink);
+  background: color-mix(in srgb, var(--gold) 12%, var(--surface));
+  border: 1px solid var(--gold);
+  border-radius: var(--radius-m);
+  padding: 10px 13px;
+  margin-bottom: 20px;
+}
+
+.stops{ display:flex; flex-direction:column; }
+.stop{
+  display:grid;
+  grid-template-columns: 34px 1fr;
+  gap: 16px;
+  padding: 2px 0 22px;
+  position:relative;
+}
+.stop-rail{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.stop-dot{
+  width: 32px; height:32px;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  background: var(--surface-2);
+  border: 1.5px solid var(--border-strong);
+  display:flex; align-items:center; justify-content:center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight:700;
+  flex:none;
+}
+.stop:last-child .stop-line{ display:none; }
+.stop-line{
+  flex:1;
+  width: 1.5px;
+  background: var(--border-strong);
+  margin-top: 4px;
+  min-height: 24px;
+}
+.stop-card{ padding-top: 2px; }
+.stop-top{ display:flex; gap:14px; align-items:flex-start; margin-bottom: 2px; }
+.stop-thumb{ flex:none; width:64px; height:64px; }
+.stop-thumb svg{ display:block; width:100%; height:100%; }
+.stop-top-text{ flex:1; min-width:0; }
+.stop-title-row{ display:flex; align-items:baseline; justify-content:space-between; gap: 10px; flex-wrap:wrap; }
+.stop-name{ font-family: var(--font-display); font-size: 19px; font-weight: 600; }
+.stop-cat{ font-size: 11.5px; color: var(--ink-muted); border: 1px solid var(--border); padding: 3px 10px; border-radius: var(--radius-pill); white-space:nowrap; }
+.stop-why{ color: var(--ink-muted); font-size: 14px; margin: 7px 0 10px; max-width: 62ch; }
+.stop-meta{ display:flex; gap: 16px; flex-wrap:wrap; font-size: 12.5px; color: var(--ink-faint); }
+.flag{ text-decoration: underline dotted var(--ink-faint); text-underline-offset: 3px; cursor: help; }
+.drive-chip{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size: 12.5px; color: var(--ink-muted);
+  padding: 8px 0 2px;
+}
+.drive-chip svg{ width:13px; height:13px; }
+
+.route-actions{ display:flex; gap:10px; margin-top: 6px; flex-wrap:wrap; }
+.btn-ghost{
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--ink);
+  padding: 9px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  cursor:pointer;
+  transition: border-color 200ms, transform 300ms cubic-bezier(.2,.7,.2,1);
+}
+.btn-ghost:hover{ border-color: var(--ink-faint); transform: translateY(-1px); }
+.btn-ghost:active{ transform: translateY(0); }
+.btn-ghost.copied{ background: var(--green); color: var(--on-accent); border-color: var(--green); }
+
+.footer-note{ margin-top: 40px; font-size: 12px; color: var(--ink-faint); max-width: 62ch; line-height: 1.6; }
+
+@media (prefers-reduced-motion: no-preference){
+  .stop{ animation: rise .4s ease both; }
+  .stop:nth-child(1){ animation-delay: .02s; }
+  .stop:nth-child(2){ animation-delay: .08s; }
+  .stop:nth-child(3){ animation-delay: .14s; }
+  .stop:nth-child(4){ animation-delay: .2s; }
+}
+@keyframes rise{ from{ opacity:0; transform: translateY(6px);} to{opacity:1; transform:none;} }
+
+
+/* ============ LIVE BUILD ADDITIONS ============ */
+.map-wrap{ isolation:isolate; }
+#map{ height: 470px; width:100%; border-radius: var(--radius-m); background: var(--surface-2); }
+@media (max-width: 900px){ #map{ height: 360px; } }
+.hexicon{ background:none; border:none; }
+.ymk{ cursor:pointer; }
+.ymk:focus-visible{ outline:2px solid var(--ink); outline-offset:3px; border-radius:6px; }
+.map-msg{ height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:24px; text-align:center; color: var(--ink-muted); font-size:14px; }
+.map-msg button{ font:inherit; font-weight:600; padding:9px 18px; border-radius: var(--radius-pill); border:1px solid var(--border-strong); background: var(--surface); color: var(--ink); cursor:pointer; }
+.map-msg button:focus-visible{ outline:2px solid var(--ink); outline-offset:2px; }
+.origin-hex{ width:14px; height:16px; background: var(--gold);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); display:inline-block; }
+.stop-thumb img{ display:block; width:100%; height:100%; object-fit:cover; border-radius: var(--radius-m); border:1px solid var(--border); }
+.route-source{ display:inline-flex; align-items:center; gap:6px; font-size:12px; color: var(--ink-muted);
+  border:1px solid var(--border); border-radius: var(--radius-pill); padding:3px 10px; margin-bottom: 14px; }
+.route-source.live{ color: var(--ink); border-color: var(--green); }
+.route-source::before{ content:""; width:7px; height:7px; border-radius:50%; background: var(--ink-faint); }
+.route-source.live::before{ background: var(--green); }
+.route-source.busy::before{ background: var(--gold); }
+
+</style>
+
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 30 L14 11 L20 20 L24 14 L38 30 Z" fill="var(--blue)" opacity="0.85"/>
+        <path d="M14 11 L20 20 L17 24 L11 24 Z" fill="var(--surface)"/>
+        <path d="M24 14 L28 20 L26 22.5 L22 22.5 Z" fill="var(--surface)"/>
+        <circle cx="33" cy="9" r="3.4" fill="var(--gold)"/>
+      </svg>
+      <div>
+        <div class="brand-name display" data-i18n="brandName">Ararat Routes</div>
+        <div class="brand-tag" data-i18n="brandTag">detours worth taking</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label" data-i18n="startLabel">Starting point</div>
+      <div class="start-chip">
+        <span class="origin-hex" aria-hidden="true"></span><strong>Yerevan</strong>
+        <span data-i18n="startFixed" style="margin-left:auto;font-size:11.5px;">v1: fixed</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="field">
+      <div class="field-label" data-i18n="modeLabel">Plan by</div>
+      <div class="mode-switch">
+        <button id="mode-time" class="active" onclick="setMode('time')" data-i18n="modeTime">Time I have</button>
+        <button id="mode-sight" onclick="setMode('sight')" data-i18n="modeSight">A place I want to see</button>
+      </div>
+    </div>
+
+    <div class="field" id="time-field">
+      <div class="budget-row">
+        <div class="field-label" data-i18n="budgetLabel">Time budget</div>
+        <div class="budget-value"><span id="budget-num">4</span><span data-i18n="hoursShort"> hours, round trip</span></div>
+      </div>
+      <input type="range" id="budget" min="2" max="12" step="0.5" value="4" oninput="onBudgetChange()">
+      <div class="field-help" data-i18n="budgetHelp">Includes driving and time at each stop.</div>
+    </div>
+
+    <div class="field" id="sight-field" style="display:none;">
+      <div class="field-label" data-i18n="sightLabel">Must include</div>
+      <select id="mustSee">
+        <option value="" data-i18n="sightPick">Choose a sight…</option>
+      </select>
+      <div class="field-help" data-i18n="sightHelp">We'll plan an out-and-back trip on the road to it, adding stops along the way.</div>
+    </div>
+
+    <div class="field">
+      <div class="field-label" data-i18n="interestLabel">Interested in</div>
+      <div class="chipset" id="interest-chips"></div>
+    </div>
+
+    <button class="cta" onclick="runSearch()" data-i18n="findRoutes">Find routes</button>
+
+    <div class="divider"></div>
+
+    <div class="field">
+      <div class="field-label" data-i18n="savedLabel">Saved trips</div>
+      <div class="saved-list" id="saved-list"></div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <div class="hero">
+      <h1 class="display" data-i18n="heroTitle">The road there is half the sight</h1>
+      <p data-i18n="heroSub">Set a time budget or a place you already want to reach, and get an out-and-back trip along one road that folds in what's genuinely worth the detour — with an honest note on anything we're not fully sure of.</p>
+    </div>
+
+    <div class="map-wrap"><div id="map" role="application" aria-label="Map of sights and the active route"></div></div>
+
+    <div class="sight-panel" id="sight-panel" hidden>
+      <button class="sight-panel-close" onclick="closeSightPanel()" aria-label="Close">x</button>
+      <div class="sight-panel-thumb" id="sight-panel-thumb"></div>
+      <div class="sight-panel-body">
+        <div class="sight-panel-title-row">
+          <div class="sight-panel-name" id="sight-panel-name"></div>
+          <div class="sight-panel-cat" id="sight-panel-cat"></div>
+        </div>
+        <p class="sight-panel-why" id="sight-panel-why"></p>
+        <div class="sight-panel-meta" id="sight-panel-meta"></div>
+        <button class="btn-ghost" onclick="planTripToSelected()">Plan a trip to this sight</button>
+      </div>
+    </div>
+    <p class="map-hint" id="map-hint">Click a pin on the map to see details about that sight here.</p>
+
+    <div id="results">
+      <div class="status" data-i18n="statusIdle">Set your time budget on the left and press <strong>Find routes</strong> — or open the search another way and pick a must-see place instead.</div>
+    </div>
+
+    <div class="footer-note" id="data-note"></div>
+  </main>
+</div>
+
+<script>
+/* ======================================================================
+   CONFIG — edit these two things, nothing else is required.
+
+   1) ORS_API_KEY — free key from https://openrouteservice.org/dev
+      (2,000 requests/day, no card). Paste it between the quotes.
+      While it is empty the app still works: drive times fall back to the
+      straight-line estimate and the route is drawn as straight segments.
+      Note: the key is visible to anyone who opens the page. Restrict it by
+      HTTP referrer in the ORS dashboard if you host this publicly.
+
+   2) PHOTOS — real image URLs per sight id. Nothing is set yet, so every
+      sight shows its flat icon. Add entries like:
+        garni: { url:'https://…/garni.jpg', credit:'Photographer, CC BY-SA 4.0' },
+      A broken or missing URL falls back to the icon automatically.
+====================================================================== */
+const ORS_API_KEY = '';
+/* Yandex Maps (map view only). Browser-visible key: it must have an
+   HTTP Referer restriction set to this site's address in the Yandex
+   developer dashboard. */
+const YANDEX_MAPS_KEY = '6eb53885-339f-467a-b278-3ede26e5b785';
+const PHOTOS = {
+  // garni: { url:'', credit:'' },
+};
+
+/* ======================================================================
+   DATA — real, named Armenian sights reachable by road from Yerevan.
+   Coordinates are approximate (public-knowledge locations), used only to
+   compute straight-line distance for time estimates, never presented as
+   surveyed GPS. Categories: hist (historical & religious), nature, view.
+====================================================================== */
+const YEREVAN = { lat: 40.1792, lon: 44.4991 };
+
+const SIGHTS = [
+  { id:'garni', corridor:'east', icon:'temple', name:{en:'Garni Temple'}, lat:40.1064, lon:44.7300,
+    cat:['hist','view'], visitMin:60, roadFactor:1.25, speed:55,
+    why:{en:"Armenia's only standing Greco-Roman colonnaded temple, perched over a gorge — the one clearly classical building in a country of medieval stone churches."},
+    hours:{en:"Grounds open roughly 9:00–19:00"}, hoursFlagged:true, price:{en:"Small entry fee"}, priceFlagged:true },
+
+  { id:'geghard', corridor:'east', icon:'cliffMonastery', name:{en:'Geghard Monastery'}, lat:40.1439, lon:44.8151,
+    cat:['hist'], visitMin:60, roadFactor:1.25, speed:55,
+    why:{en:"A UNESCO monastery with chapels carved directly into the cliff face — some rooms are literally hewn from the mountain, not built on it."},
+    hours:{en:"Typically open dawn–dusk"}, hoursFlagged:true, price:{en:"Free, donations welcome"}, priceFlagged:false },
+
+  { id:'garnigorge', corridor:'east', icon:'gorge', name:{en:'Symphony of the Stones'}, lat:40.0975, lon:44.7167,
+    cat:['nature'], visitMin:30, roadFactor:1.3, speed:45,
+    why:{en:"A short walk down into Garni Gorge to a wall of hexagonal basalt columns, cooled into place by an ancient lava flow."},
+    hours:{en:"Accessible dawn–dusk, no gate"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'khorvirap', corridor:'south', icon:'domeChurch', name:{en:'Khor Virap Monastery'}, lat:39.8791, lon:44.5701,
+    cat:['hist','view'], visitMin:45, roadFactor:1.2, speed:60,
+    why:{en:"The closest, clearest view of Mount Ararat from Armenian soil, over the pit where Gregory the Illuminator was reportedly imprisoned before converting the kingdom."},
+    hours:{en:"Typically open 9:00–18:00"}, hoursFlagged:true, price:{en:"Free, small pit-descent fee"}, priceFlagged:true },
+
+  { id:'etchmiadzin', corridor:'west', icon:'domeChurch', name:{en:'Etchmiadzin Cathedral'}, lat:40.1608, lon:44.2925,
+    cat:['hist'], visitMin:60, roadFactor:1.15, speed:55,
+    why:{en:"The seat of the Armenian Apostolic Church and, by most accounts, among the oldest cathedrals in the world — still an active place of worship."},
+    hours:{en:"Grounds open roughly 8:00–20:00"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'zvartnots', corridor:'west', icon:'ruins', name:{en:'Zvartnots Cathedral (ruins)'}, lat:40.1594, lon:44.3536,
+    cat:['hist'], visitMin:30, roadFactor:1.15, speed:55,
+    why:{en:"The circular footprint of a 7th-century cathedral that collapsed centuries ago — its scale is easier to read from the ruins than most standing buildings nearby."},
+    hours:{en:"Typically open 10:00–17:00"}, hoursFlagged:true, price:{en:"Small entry fee"}, priceFlagged:true },
+
+  { id:'sardarapat', corridor:'west', icon:'memorial', name:{en:'Sardarapat Memorial'}, lat:40.1546, lon:44.0435,
+    cat:['hist'], visitMin:45, roadFactor:1.2, speed:60,
+    why:{en:"A vast Soviet-era memorial to the 1918 battle that's widely credited with saving the First Republic of Armenia from collapse — stone bulls, a bell tower, and a lot of open sky."},
+    hours:{en:"Grounds always open; museum has set hours"}, hoursFlagged:true, price:{en:"Museum has small entry fee"}, priceFlagged:true },
+
+  { id:'sevanavank', corridor:'northeast', icon:'domeChurch', name:{en:'Sevanavank, Lake Sevan'}, lat:40.5691, lon:44.9391,
+    cat:['nature','hist'], visitMin:75, roadFactor:1.15, speed:65,
+    why:{en:"A 9th-century monastery on a peninsula overlooking one of the highest large lakes in the world — the water alone justifies the drive."},
+    hours:{en:"Grounds open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'dilijan', corridor:'northeast', icon:'town', name:{en:'Dilijan old town & forest'}, lat:40.7431, lon:44.8654,
+    cat:['nature'], visitMin:120, roadFactor:1.35, speed:50,
+    why:{en:"Forested hills, timber-balcony houses and mineral-water springs — the town Armenians nickname \"little Switzerland,\" and it's easy to see why on arrival."},
+    hours:{en:"Town is open access; trails best in daylight"}, hoursFlagged:false, price:{en:"Free to walk the old town"}, priceFlagged:false },
+
+  { id:'amberd', corridor:'northwest', icon:'fortress', name:{en:'Amberd Fortress'}, lat:40.4067, lon:44.2306,
+    cat:['hist','view'], visitMin:60, roadFactor:1.4, speed:45,
+    why:{en:"A 7th-century fortress wedged onto a cliff at 2,300m on Mount Aragats' slopes, with a small church and views down two river gorges at once."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Small entry fee"}, priceFlagged:true,
+    closedMonths:[10,11,0,1,2,3] /* Nov(10)-Apr(3): mountain road often snow/ice affected */ },
+
+  { id:'karilake', corridor:'northwest', icon:'lake', name:{en:'Kari Lake, Mt Aragats'}, lat:40.5378, lon:44.1897,
+    cat:['nature','view'], visitMin:60, roadFactor:1.5, speed:40,
+    why:{en:"A stark alpine lake at roughly 3,200m below Aragats' four summits — the road up feels like leaving Armenia's climate entirely."},
+    hours:{en:"Seasonal — road generally closed by snow"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false,
+    closedMonths:[9,10,11,0,1,2,3,4] /* Oct-May: snow closure, real and material to routing */ },
+
+  { id:'byurakan', corridor:'northwest', icon:'observatory', name:{en:'Byurakan Observatory'}, lat:40.3400, lon:44.2778,
+    cat:['view'], visitMin:60, roadFactor:1.3, speed:50,
+    why:{en:"A working astrophysics observatory on Aragats' slopes, where Viktor Ambartsumian's team once catalogued whole classes of galaxies — tours run through the old domes on request."},
+    hours:{en:"Visits generally need advance booking"}, hoursFlagged:true, price:{en:"Guided-tour fee"}, priceFlagged:true },
+
+  { id:'saghmosavank', corridor:'northwest', icon:'domeChurch', name:{en:'Saghmosavank, Kasagh Gorge'}, lat:40.3242, lon:44.3346,
+    cat:['hist','view'], visitMin:45, roadFactor:1.25, speed:50,
+    why:{en:"A 13th-century monastery balanced right at the lip of a sheer gorge — the drop below the back wall is most of the view."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'charentsarch', corridor:'east', icon:'arch', name:{en:"Charents Arch viewpoint"}, lat:40.1467, lon:44.6467,
+    cat:['view'], visitMin:15, roadFactor:1.2, speed:55,
+    why:{en:"A roadside stone arch framing Mount Ararat across the valley — the single most-photographed pull-off on the road to Garni, and a genuinely good five-minute stop."},
+    hours:{en:"Always accessible"}, hoursFlagged:false, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'noravank', corridor:'south', icon:'cliffMonastery', name:{en:'Noravank Monastery'}, lat:39.6852, lon:45.2306,
+    cat:['hist','view'], visitMin:60, roadFactor:1.3, speed:55,
+    why:{en:"A 13th-century monastery set against sheer red-rock cliffs in Vayots Dzor — the drive in through the canyon is as memorable as the buildings."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Small entry fee"}, priceFlagged:true },
+  { id:'havutstar', corridor:'east', icon:'cliffMonastery', name:{en:'Havuts Tar (ruins)'}, lat:40.1213, lon:44.7364,
+    cat:['hist','view'], visitMin:40, roadFactor:1.35, speed:45,
+    why:{en:"A ruined cliffside monastery above Garni Gorge, reached by a short hike — quieter and less restored than Geghard, with the same gorge views."},
+    hours:{en:"No gate, accessible in daylight"}, hoursFlagged:false, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'khosrovreserve', corridor:'east', icon:'gorge', name:{en:'Khosrov Forest Reserve'}, lat:40.0550, lon:44.7850,
+    cat:['nature'], visitMin:90, roadFactor:1.3, speed:45,
+    why:{en:"One of Armenia's oldest protected forests, said to have been planted by a 4th-century king to reforest the Ararat plain — gorge trails and juniper woodland, far fewer visitors than Garni next door."},
+    hours:{en:"Entry generally needs a permit"}, hoursFlagged:true, price:{en:"Entry/permit fee"}, priceFlagged:true },
+
+  { id:'areniCave', corridor:'south', icon:'cave', name:{en:'Areni-1 Cave'}, lat:39.7167, lon:45.1937,
+    cat:['hist'], visitMin:45, roadFactor:1.2, speed:60,
+    why:{en:"The cave where archaeologists found the world's oldest known leather shoe and winery, both over 5,500 years old — a short stop right off the road to Noravank."},
+    hours:{en:"Typically open by day, hours vary"}, hoursFlagged:true, price:{en:"Small entry fee"}, priceFlagged:true },
+
+  { id:'gndevank', corridor:'south', icon:'domeChurch', name:{en:'Gndevank Monastery'}, lat:39.7667, lon:45.3670,
+    cat:['hist'], visitMin:40, roadFactor:1.25, speed:55,
+    why:{en:"A 10th-century monastery in a narrow Vayots Dzor gorge, built by a princess in memory of her husband — smaller and quieter than Noravank, on the same road."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'karahunj', corridor:'south', icon:'megalith', name:{en:'Karahunj (Zorats Karer)'}, lat:39.5667, lon:46.0333,
+    cat:['hist','view'], visitMin:60, roadFactor:1.2, speed:70,
+    why:{en:"A field of over 200 standing stones, some aligned with sunrise and sunset points — often nicknamed \"Armenia's Stonehenge,\" though its original purpose is still debated."},
+    hours:{en:"Open access, daylight hours"}, hoursFlagged:false, price:{en:"Small entry fee"}, priceFlagged:true },
+
+  { id:'tatev', corridor:'south', icon:'cliffMonastery', name:{en:'Tatev Monastery'}, lat:39.3800, lon:46.2483,
+    cat:['hist','view'], visitMin:90, roadFactor:1.3, speed:55,
+    why:{en:"A 9th-century monastery on a plateau above the Vorotan gorge, reached by the Wings of Tatev cable car — one of the longest reversible aerial tramways in the world."},
+    hours:{en:"Cable car and grounds keep set hours"}, hoursFlagged:true, price:{en:"Cable car ticket + small monastery fee"}, priceFlagged:true },
+
+  { id:'talin', corridor:'west', icon:'ruins', name:{en:'Talin Cathedral (ruins)'}, lat:40.3833, lon:43.8667,
+    cat:['hist'], visitMin:30, roadFactor:1.2, speed:60,
+    why:{en:"A ruined 7th-century cathedral on the way to Gyumri — once one of the largest domed churches in Armenia, now roofless but still imposing."},
+    hours:{en:"Open access, daylight hours"}, hoursFlagged:false, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'gyumri', corridor:'west', icon:'cityBlock', name:{en:'Gyumri, Kumayri district'}, lat:40.7833, lon:43.8500,
+    cat:['hist'], visitMin:120, roadFactor:1.15, speed:70,
+    why:{en:"Armenia's second city, rebuilt in black volcanic tuff after the 1926 earthquake — the Kumayri quarter's 19th-century merchant houses survived, along with a dry local wit Armenians joke is a Gyumri trademark."},
+    hours:{en:"Museums keep set hours; streets always open"}, hoursFlagged:true, price:{en:"Museum entry fees vary"}, priceFlagged:true },
+
+  { id:'harichavank', corridor:'west', icon:'domeChurch', name:{en:'Harichavank Monastery'}, lat:40.6167, lon:43.9667,
+    cat:['hist'], visitMin:45, roadFactor:1.25, speed:55,
+    why:{en:"A monastery complex near Artik combining a 7th-century church with a 13th-century one built beside it — a rare chance to compare two very different centuries of Armenian church architecture side by side."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'karmravor', corridor:'northwest', icon:'domeChurch', name:{en:'Karmravor Church'}, lat:40.2986, lon:44.3592,
+    cat:['hist'], visitMin:20, roadFactor:1.1, speed:55,
+    why:{en:"A tiny 7th-century church in Ashtarak, barely large enough for a handful of people — one of the few Armenian churches from this period that has never needed rebuilding."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'aruchavank', corridor:'northwest', icon:'ruins', name:{en:'Aruchavank Cathedral'}, lat:40.3350, lon:44.2350,
+    cat:['hist'], visitMin:30, roadFactor:1.2, speed:55,
+    why:{en:"A large 7th-century domed cathedral in Aruch village, with faded frescoes still visible inside — usually far quieter than the better-known churches nearer Yerevan."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'tegher', corridor:'northwest', icon:'domeChurch', name:{en:'Tegher Monastery'}, lat:40.3944, lon:44.2167,
+    cat:['hist','view'], visitMin:30, roadFactor:1.3, speed:50,
+    why:{en:"A 13th-century monastery on Aragats' lower slopes, built by the same royal family as Harichavank — a quiet stop with views back down toward Ashtarak on the way up to Byurakan."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'noratus', corridor:'northeast', icon:'khachkarField', name:{en:'Noratus Cemetery'}, lat:40.2394, lon:45.1897,
+    cat:['hist'], visitMin:45, roadFactor:1.2, speed:60,
+    why:{en:"The largest surviving field of khachkars — carved cross-stones — anywhere in Armenia, with examples spanning nearly a thousand years standing in open rows by Lake Sevan's southern shore."},
+    hours:{en:"Open access, daylight hours"}, hoursFlagged:false, price:{en:"Small entry fee"}, priceFlagged:true },
+
+  { id:'hayravank', corridor:'northeast', icon:'domeChurch', name:{en:'Hayravank Monastery'}, lat:40.3800, lon:45.0100,
+    cat:['hist','view'], visitMin:30, roadFactor:1.2, speed:55,
+    why:{en:"A small 9th-century monastery on a rocky outcrop over Lake Sevan's western shore — fewer crowds than Sevanavank, with a similar view of the water."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'haghartsin', corridor:'northeast', icon:'domeChurch', name:{en:'Haghartsin Monastery'}, lat:40.7647, lon:44.9508,
+    cat:['hist','nature'], visitMin:50, roadFactor:1.35, speed:50,
+    why:{en:"A monastery complex tucked into forested hills near Dilijan, with three churches built across three different centuries — restored in recent years with support from the ruling family of Sharjah."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'goshavank', corridor:'northeast', icon:'domeChurch', name:{en:'Goshavank Monastery'}, lat:40.7961, lon:44.9297,
+    cat:['hist'], visitMin:40, roadFactor:1.35, speed:50,
+    why:{en:"A 12th-century monastery named for the medieval scholar-monk who founded it and wrote one of Armenia's earliest law codes here — known for some of the finest carved khachkars in the country."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'loriberd', corridor:'north', icon:'fortress', name:{en:'Lori Berd Fortress'}, lat:41.0167, lon:44.3667,
+    cat:['hist','view'], visitMin:40, roadFactor:1.25, speed:60,
+    why:{en:"An 11th-century fortress on a promontory surrounded on three sides by river gorges — the natural defenses did most of the work, which is why so much of the wall still stands."},
+    hours:{en:"Open access, daylight hours"}, hoursFlagged:false, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'odzun', corridor:'north', icon:'domeChurch', name:{en:'Odzun Church'}, lat:41.0500, lon:44.6000,
+    cat:['hist'], visitMin:30, roadFactor:1.3, speed:55,
+    why:{en:"A large 6th-century basilica on a plateau above the Debed Canyon, with an unusual two-tier arcaded gallery running around its exterior."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'sanahin', corridor:'north', icon:'domeChurch', name:{en:'Sanahin Monastery'}, lat:41.1206, lon:44.6394,
+    cat:['hist'], visitMin:50, roadFactor:1.3, speed:55,
+    why:{en:"A UNESCO World Heritage monastery complex whose name reportedly means \"this one is older than that one\" — a friendly dig at its sister monastery Haghpat, just across the gorge."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'haghpat', corridor:'north', icon:'domeChurch', name:{en:'Haghpat Monastery'}, lat:41.0964, lon:44.7169,
+    cat:['hist'], visitMin:50, roadFactor:1.3, speed:55,
+    why:{en:"Sanahin's sister UNESCO monastery on the other side of the Debed Canyon, with a book-repository building that once held one of medieval Armenia's most important manuscript collections."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+];
+
+const CATEGORIES = {
+  hist:{ en:'Historical & religious' },
+  nature:{ en:'Nature' },
+  view:{ en:'Viewpoints' }
+};
+
+/* ======================================================================
+   SIGHT BADGES — one small original illustration per sight, all drawn to
+   the same 100x100 template (same background tile, same two-tone
+   treatment: --ink for the main shape, --rose for a single accent) so
+   the set reads as one consistent icon system rather than mismatched
+   photos. Not photographs of the real places — flat illustrations.
+====================================================================== */
+const ICON_SVGS = {
+  temple: `<rect x="18" y="60" width="64" height="6" fill="var(--ink)"/><rect x="24" y="35" width="6" height="25" fill="var(--ink)"/><rect x="38" y="35" width="6" height="25" fill="var(--ink)"/><rect x="56" y="35" width="6" height="25" fill="var(--ink)"/><rect x="70" y="35" width="6" height="25" fill="var(--ink)"/><polygon points="50,18 20,35 80,35" fill="var(--rose)"/>`,
+
+  cliffMonastery: `<polygon points="0,100 35,18 65,18 100,100" fill="var(--ink)" opacity="0.85"/><path d="M40 100 V60 A10 10 0 0 1 60 60 V100 Z" fill="var(--surface-2)"/><rect x="47" y="10" width="6" height="16" fill="var(--rose)"/><rect x="41" y="14" width="18" height="6" fill="var(--rose)"/>`,
+
+  domeChurch: `<rect x="30" y="55" width="40" height="35" fill="var(--ink)"/><polygon points="50,25 32,55 68,55" fill="var(--ink)"/><rect x="47" y="12" width="6" height="14" fill="var(--rose)"/><rect x="41" y="16" width="18" height="6" fill="var(--rose)"/>`,
+
+  ruins: `<ellipse cx="50" cy="80" rx="34" ry="8" fill="none" stroke="var(--ink)" stroke-width="4"/><rect x="20" y="45" width="7" height="30" fill="var(--ink)"/><rect x="46" y="35" width="7" height="40" fill="var(--ink)"/><rect x="73" y="50" width="7" height="25" fill="var(--ink)"/><circle cx="50" cy="28" r="6" fill="var(--rose)"/>`,
+
+  fortress: `<polygon points="10,100 30,55 70,55 90,100" fill="var(--ink)" opacity="0.5"/><rect x="25" y="35" width="50" height="25" fill="var(--ink)"/><rect x="25" y="25" width="8" height="12" fill="var(--ink)"/><rect x="41" y="25" width="8" height="12" fill="var(--ink)"/><rect x="57" y="25" width="8" height="12" fill="var(--ink)"/><rect x="67" y="25" width="8" height="12" fill="var(--ink)"/><rect x="45" y="70" width="10" height="20" fill="var(--rose)"/>`,
+
+  gorge: `<polygon points="0,100 40,18 55,45 20,100" fill="var(--ink)" opacity="0.9"/><polygon points="100,100 60,18 45,45 80,100" fill="var(--ink)" opacity="0.6"/><path d="M40 100 Q50 68 50 100" fill="none" stroke="var(--rose)" stroke-width="5"/>`,
+
+  lake: `<circle cx="50" cy="40" r="14" fill="var(--rose)"/><path d="M10 65 Q25 58 40 65 T70 65 T100 65" fill="none" stroke="var(--ink)" stroke-width="5"/><path d="M10 78 Q25 71 40 78 T70 78 T100 78" fill="none" stroke="var(--ink)" stroke-width="5"/>`,
+
+  arch: `<circle cx="50" cy="26" r="6" fill="var(--rose)" opacity="0.7"/><path d="M25 95 V50 A25 25 0 0 1 75 50 V95" fill="none" stroke="var(--ink)" stroke-width="9"/><rect x="16" y="88" width="18" height="10" fill="var(--ink)"/><rect x="66" y="88" width="18" height="10" fill="var(--ink)"/>`,
+
+  observatory: `<rect x="30" y="60" width="40" height="30" fill="var(--ink)"/><path d="M25 60 A25 20 0 0 1 75 60 Z" fill="var(--ink)"/><rect x="48" y="25" width="30" height="10" fill="var(--rose)" transform="rotate(-30 48 30)"/><circle cx="50" cy="60" r="4" fill="var(--surface-2)"/>`,
+
+  memorial: `<polygon points="42,90 42,30 50,15 58,30 58,90" fill="var(--ink)"/><rect x="20" y="90" width="60" height="8" fill="var(--ink)"/><rect x="46" y="45" width="8" height="8" fill="var(--rose)"/>`,
+
+  cave: `<path d="M10 95 Q10 40 50 35 Q90 40 90 95 Z" fill="var(--ink)"/><path d="M30 95 Q30 60 50 58 Q70 60 70 95 Z" fill="var(--surface-2)"/><polygon points="45,58 50,70 55,58" fill="var(--rose)"/>`,
+
+  megalith: `<rect x="15" y="55" width="10" height="35" fill="var(--ink)" transform="rotate(-8 20 72)"/><rect x="35" y="45" width="10" height="45" fill="var(--ink)"/><rect x="55" y="50" width="10" height="40" fill="var(--ink)"/><rect x="75" y="58" width="10" height="32" fill="var(--ink)" transform="rotate(8 80 74)"/><circle cx="50" cy="26" r="6" fill="var(--rose)"/>`,
+
+  khachkarField: `<rect x="38" y="25" width="24" height="65" rx="3" fill="var(--ink)"/><rect x="46" y="35" width="8" height="30" fill="var(--rose)"/><rect x="36" y="46" width="28" height="8" fill="var(--rose)"/>`,
+
+  cityBlock: `<rect x="15" y="50" width="20" height="40" fill="var(--ink)"/><rect x="40" y="35" width="20" height="55" fill="var(--ink)"/><rect x="65" y="55" width="20" height="35" fill="var(--ink)"/><rect x="44" y="20" width="12" height="15" fill="var(--rose)"/>`,
+
+  town: `<rect x="15" y="60" width="24" height="30" fill="var(--ink)"/><polygon points="12,60 42,60 27,42" fill="var(--ink)"/><rect x="55" y="55" width="28" height="35" fill="var(--ink)"/><polygon points="51,55 87,55 69,36" fill="var(--ink)"/><circle cx="45" cy="55" r="10" fill="var(--rose)"/><rect x="42" y="55" width="6" height="20" fill="var(--rose)"/>`,
+};
+
+function iconBadge(sight){
+  const inner = ICON_SVGS[sight.icon] || ICON_SVGS.domeChurch;
+  return `<svg viewBox="0 0 100 100" role="img" aria-label="${sight.name.en}">
+    <rect x="0" y="0" width="100" height="100" rx="14" fill="var(--surface-2)" stroke="var(--border-strong)" stroke-width="1.5"/>
+    ${inner}
+  </svg>`;
+}
+function photoFailed(img, id){
+  const s = SIGHTS.find(x=>x.id===id);
+  if(s && img.parentElement) img.parentElement.innerHTML = iconBadge(s);
+}
+function renderSightBadge(sight){
+  const p = PHOTOS[sight.id];
+  if(p && p.url){
+    return `<img src="${p.url}" alt="${sight.name.en}" title="${(p.credit||'').replace(/"/g,'&quot;')}" loading="lazy" referrerpolicy="no-referrer" onerror="photoFailed(this,'${sight.id}')">`;
+  }
+  return iconBadge(sight);
+}
+
+
+/* ======================================================================
+   I18N — UI strings
+====================================================================== */
+const I18N = {
+  en: {
+    brandName:'Ararat Routes', brandTag:'detours worth taking',
+    startLabel:'Starting point', startFixed:'v1: fixed',
+    modeLabel:'Plan by', modeTime:'Time I have', modeSight:'A place I want to see',
+    hoursShort:' hours, round trip', budgetHelp:'Includes driving and time at each stop.',
+    sightLabel:'Must include', sightPick:'Choose a sight…',
+    sightHelp:"We'll plan an out-and-back trip on the road to it, adding stops along the way.",
+    interestLabel:'Interested in', findRoutes:'Find routes', savedLabel:'Saved trips',
+    heroTitle:'The road there is half the sight',
+    heroSub:"Set a time budget or a place you already want to reach, and get an out-and-back trip along one road that folds in what's genuinely worth the detour — with an honest note on anything we're not fully sure of.",
+    statusIdle:'Set your time budget on the left and press <strong>Find routes</strong> — or switch to a must-see place instead.',
+    dataNote:"Coordinates and drive-time estimates are approximate, computed from straight-line distance and typical road speeds — not a live routing service. Hours, pricing and accessibility carry a dotted underline where we haven't independently verified them; confirm locally before you go. Routes are kept clear of border-adjacent areas by design.",
+    noFit:"Nothing fits inside {h}h round trip from Yerevan with your current filters.",
+    noFitHelp:"We won't shrink your time budget to force a stop in — try a longer budget, fewer interest filters, or a closer must-see place.",
+    tooFarAlone:"{name} alone is roughly {h}h round trip, which is already over your {b}h budget. Raise the budget to route it in.",
+    routeLabel:'Route', copyLink:'Copy shareable link', linkCopied:'Link copied', saveTrip:'Save this trip',
+    driveTime:'drive', totalDrive:'Total driving', totalVisit:'Time at stops', totalTrip:'Whole trip',
+    stops:'Stops', seasonNote:'Seasonal note', closedNow:'closed this time of year — left out of every route below',
+    savedEmpty:'Nothing saved yet.', savedOpen:'Open', savedDelete:'Remove',
+    yerevanReturn:'same road back to Yerevan',
+    corridorNote:'Out and back on one road — the stops above are on the way to {name}, not a separate detour.',
+    catFilterAll:'All interests included by default — tap one or more to narrow it down.',
+    entryFee:'Entry', hoursWord:'Hours',
+  }
+};
+let LANG = 'en';
+
+/* ======================================================================
+   GEO / TIME ESTIMATES
+====================================================================== */
+function haversineKm(a,b){
+  const R=6371, toRad=d=>d*Math.PI/180;
+  const dLat=toRad(b.lat-a.lat), dLon=toRad(b.lon-a.lon);
+  const s=Math.sin(dLat/2)**2 + Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(s));
+}
+function driveMinutesBetween(a,b, roadFactor, speed){
+  const km = haversineKm(a,b) * roadFactor;
+  return (km/speed)*60;
+}
+function pointOf(sightOrYerevan){ return {lat:sightOrYerevan.lat, lon:sightOrYerevan.lon}; }
+
+/* ======================================================================
+   OUT-AND-BACK ROUTING (not a loop): every route stays on a single
+   corridor — the one real road a stop sits on out of Yerevan. Stops are
+   ordered by increasing distance from Yerevan (the order you'd actually
+   pass them driving out), and the trip back retraces the same road, so
+   the "back to Yerevan" leg is the whole outbound distance mirrored, not
+   a different path through other stops.
+====================================================================== */
+function distanceFromYerevanKm(s){ return haversineKm(YEREVAN, s); }
+
+function buildCorridorRoute(stopSights){
+  const sorted = stopSights.slice().sort((a,b)=> distanceFromYerevanKm(a)-distanceFromYerevanKm(b));
+  let prevPoint=YEREVAN, prevFactor=1.25, prevSpeed=55;
+  const outSegs = [];
+  sorted.forEach(s=>{
+    const f=(prevFactor+s.roadFactor)/2, sp=(prevSpeed+s.speed)/2;
+    const m = driveMinutesBetween(prevPoint, s, f, sp);
+    outSegs.push(m);
+    prevPoint = s; prevFactor = s.roadFactor; prevSpeed = s.speed;
+  });
+  const oneWayMin = outSegs.reduce((a,b)=>a+b, 0);
+  const segs = [...outSegs, oneWayMin]; // last entry: the whole way back, same road
+  const driveMin = oneWayMin * 2;
+  return { order: sorted, driveMin, segs };
+}
+
+function currentMonth(){ return new Date().getMonth(); } // 0=Jan
+
+function isClosedNow(sight){
+  return Array.isArray(sight.closedMonths) && sight.closedMonths.includes(currentMonth());
+}
+
+function combinations(arr, k){
+  const out=[];
+  function go(start, chosen){
+    if(chosen.length===k){ out.push(chosen.slice()); return; }
+    for(let i=start;i<arr.length;i++){
+      chosen.push(arr[i]);
+      go(i+1, chosen);
+      chosen.pop();
+    }
+  }
+  go(0, []);
+  return out;
+}
+
+/* ======================================================================
+   ROUTE GENERATION
+   Never silently drops the user's time budget: if nothing fits, we say so
+   explicitly rather than exceeding it or returning something smaller
+   silently substituted.
+====================================================================== */
+function generateRoutes({budgetMin, mustSeeId, cats}){
+  let pool = SIGHTS.filter(s=>!isClosedNow(s));
+  if(cats && cats.length){
+    pool = pool.filter(s=> s.cat.some(c=>cats.includes(c)));
+  }
+  const mustSee = mustSeeId ? SIGHTS.find(s=>s.id===mustSeeId) : null;
+  if(mustSee && !pool.find(p=>p.id===mustSee.id)){
+    pool = pool.concat([mustSee]); // must-see always eligible even if filtered by interest
+  }
+
+  const maxStops = 4; // largest corridor (4 sights) sets the ceiling
+  const evaluated = [];
+
+  function tryAdd(set){
+    const r = buildCorridorRoute(set);
+    const visitMin = set.reduce((a,s)=>a+s.visitMin,0);
+    const total = r.driveMin + visitMin;
+    if(total <= budgetMin){
+      evaluated.push({ order:r.order, segs:r.segs, driveMin:r.driveMin, visitMin, total, size:set.length });
+    }
+  }
+
+  if(mustSee){
+    // The must-see stop is the destination/turn-around point of the trip.
+    // Only stops on the SAME road, no farther out than it, can be added —
+    // those are genuine "on the way" detours, not a different direction.
+    const mustDistKm = distanceFromYerevanKm(mustSee);
+    const onTheWay = pool.filter(s=> s.corridor===mustSee.corridor && s.id!==mustSee.id
+      && distanceFromYerevanKm(s) <= mustDistKm + 3);
+    for(let k=0;k<=Math.min(maxStops-1, onTheWay.length);k++){
+      combinations(onTheWay, k).forEach(combo=> tryAdd([mustSee, ...combo]));
+    }
+  } else {
+    // No fixed destination: try each corridor (each real road out of
+    // Yerevan) independently, so every candidate route stays on one road.
+    const byCorridor = {};
+    pool.forEach(s=>{ (byCorridor[s.corridor] = byCorridor[s.corridor] || []).push(s); });
+    Object.values(byCorridor).forEach(list=>{
+      for(let k=1;k<=Math.min(maxStops, list.length);k++){
+        combinations(list, k).forEach(combo=> tryAdd(combo));
+      }
+    });
+  }
+
+  evaluated.sort((a,b)=> (b.size-a.size) || (b.total-a.total));
+  return dedupeTop(evaluated, 3);
+}
+
+function dedupeTop(list, n){
+  const seen = new Set();
+  const out = [];
+  for(const e of list){
+    const key = e.order.map(s=>s.id).sort().join('|');
+    if(seen.has(key)) continue;
+    seen.add(key);
+    out.push(e);
+    if(out.length>=n) break;
+  }
+  return out;
+}
+
+/* ======================================================================
+   STATE + RENDER
+====================================================================== */
+let state = { mode:'time', budgetHours:4, mustSeeId:'', cats:[], routes:[], activeRoute:0 };
+
+function t(key){ return I18N[LANG][key]; }
+
+function setMode(m){
+  state.mode = m;
+  document.getElementById('mode-time').classList.toggle('active', m==='time');
+  document.getElementById('mode-sight').classList.toggle('active', m==='sight');
+  document.getElementById('time-field').style.display = m==='time' ? 'flex' : 'none';
+  document.getElementById('sight-field').style.display = m==='sight' ? 'flex' : 'none';
+}
+
+function onBudgetChange(){
+  const v = document.getElementById('budget').value;
+  state.budgetHours = parseFloat(v);
+  document.getElementById('budget-num').textContent = v;
+}
+
+function buildMustSeeOptions(){
+  const sel = document.getElementById('mustSee');
+  const current = sel.value;
+  sel.innerHTML = '';
+  const optDefault = document.createElement('option');
+  optDefault.value=''; optDefault.textContent = t('sightPick');
+  sel.appendChild(optDefault);
+  SIGHTS.slice().sort((a,b)=> a.name[LANG].localeCompare(b.name[LANG])).forEach(s=>{
+    const o = document.createElement('option');
+    o.value = s.id; o.textContent = s.name[LANG];
+    sel.appendChild(o);
+  });
+  sel.value = current || '';
+}
+
+function buildInterestChips(){
+  const wrap = document.getElementById('interest-chips');
+  wrap.innerHTML='';
+  Object.keys(CATEGORIES).forEach(catId=>{
+    const b = document.createElement('button');
+    b.className = 'chip' + (state.cats.includes(catId) ? ' active' : '');
+    b.textContent = CATEGORIES[catId][LANG];
+    b.onclick = ()=>{
+      if(state.cats.includes(catId)) state.cats = state.cats.filter(c=>c!==catId);
+      else state.cats.push(catId);
+      buildInterestChips();
+    };
+    wrap.appendChild(b);
+  });
+}
+
+function fmtHours(min){
+  const h = min/60;
+  return (Math.round(h*10)/10).toString().replace(/\.0$/,'');
+}
+
+function runSearch(){
+  const budgetMin = state.mode==='time' ? state.budgetHours*60 : 12*60; // sight-mode: generous ceiling, still bounded (never unlimited)
+  const mustSeeId = state.mode==='sight' ? document.getElementById('mustSee').value : '';
+
+  if(state.mode==='sight' && !mustSeeId){
+    document.getElementById('results').innerHTML = `<div class="status">${t('sightHelp')}</div>`;
+    return;
+  }
+
+  const routes = generateRoutes({ budgetMin, mustSeeId, cats: state.cats });
+  state.routes = routes;
+  state.activeRoute = 0;
+  state.lastQuery = { budgetMin, mustSeeId, cats: state.cats.slice() };
+
+  if(!routes.length){
+    let msg = `<div class="status"><strong>${t('noFit').replace('{h}', state.mode==='time'?fmtHours(budgetMin):'12')}</strong><br>${t('noFitHelp')}`;
+    if(mustSeeId){
+      const s = SIGHTS.find(x=>x.id===mustSeeId);
+      const solo = buildCorridorRoute([s]);
+      const soloTotal = solo.driveMin + s.visitMin;
+      if(soloTotal > budgetMin){
+        msg += `<br><br>${t('tooFarAlone').replace('{name}', s.name[LANG]).replace('{h}', fmtHours(soloTotal)).replace('{b}', fmtHours(budgetMin))}`;
+      }
+    }
+    msg += `</div>`;
+    document.getElementById('results').innerHTML = msg;
+    renderMap([]);
+    return;
+  }
+  renderResults();
+}
+
+function seasonalNotes(){
+  const closedNow = SIGHTS.filter(isClosedNow);
+  if(!closedNow.length) return '';
+  const names = closedNow.map(s=>s.name[LANG]).join(', ');
+  return `<div class="route-note"><strong>${t('seasonNote')}:</strong> ${names} — ${t('closedNow')}.</div>`;
+}
+
+function renderResults(){
+  const routes = state.routes;
+  let html = '';
+
+  if(routes.length>1){
+    html += `<div class="route-tabs">`;
+    routes.forEach((r,i)=>{
+      html += `<button class="route-tab ${i===state.activeRoute?'active':''}" onclick="selectRoute(${i})">${t('routeLabel')} ${String.fromCharCode(65+i)} · ${r.order.length} ${t('stops').toLowerCase()}</button>`;
+    });
+    html += `</div>`;
+  }
+
+  html += seasonalNotes();
+  html += sourceBadgeHtml(routes[state.activeRoute]);
+
+  const r = routes[state.activeRoute];
+  const finalStop = r.order[r.order.length-1];
+  html += `<div class="route-note">${t('corridorNote').replace('{name}', finalStop.name[LANG])}</div>`;
+  html += `<div class="route-summary">
+    <div class="summary-stat"><div class="num">${r.order.length}</div><div class="lbl">${t('stops')}</div></div>
+    <div class="summary-stat"><div class="num">${fmtHours(r.driveMin)}h</div><div class="lbl">${t('totalDrive')}</div></div>
+    <div class="summary-stat"><div class="num">${fmtHours(r.visitMin)}h</div><div class="lbl">${t('totalVisit')}</div></div>
+    <div class="summary-stat"><div class="num">${fmtHours(r.total)}h</div><div class="lbl">${t('totalTrip')}</div></div>
+  </div>`;
+
+  html += `<div class="stops">`;
+  r.order.forEach((s,i)=>{
+    html += `<div class="stop">
+      <div class="stop-rail"><div class="stop-dot">${i+1}</div><div class="stop-line"></div></div>
+      <div class="stop-card">
+        <div class="stop-top">
+          <div class="stop-thumb">${renderSightBadge(s)}</div>
+          <div class="stop-top-text">
+            <div class="drive-chip">${driveIcon()} ${fmtMin(r.segs[i])} ${t('driveTime')} ${i===0? 'from Yerevan' : ''}</div>
+            <div class="stop-title-row">
+              <div class="stop-name">${s.name[LANG]}</div>
+              <div class="stop-cat">${s.cat.map(c=>CATEGORIES[c][LANG]).join(' · ')}</div>
+            </div>
+          </div>
+        </div>
+        <p class="stop-why">${s.why[LANG]}</p>
+        <div class="stop-meta">
+          <span>${s.visitMin} min suggested</span>
+          <span class="flag" title="Not independently verified">${s.hoursFlagged?'~ ':''}${s.hours.en}</span>
+          <span class="flag" title="Not independently verified">${s.priceFlagged?'~ ':''}${s.price.en}</span>
+        </div>
+      </div>
+    </div>`;
+  });
+  html += `<div class="stop">
+      <div class="stop-rail"><div class="stop-dot">🏁</div></div>
+      <div class="stop-card">
+        <div class="drive-chip">${driveIcon()} ${fmtMin(r.segs[r.segs.length-1])} ${t('driveTime')} — ${t('yerevanReturn')}</div>
+      </div>
+    </div>`;
+  html += `</div>`;
+
+  html += `<div class="route-actions">
+    <button class="btn-ghost" onclick="saveCurrentRoute()">${t('saveTrip')}</button>
+    <button class="btn-ghost" id="copy-btn" onclick="copyShareLink()">${t('copyLink')}</button>
+  </div>`;
+
+  document.getElementById('results').innerHTML = html;
+  renderMap(r.order);
+  refineRoute(r);
+}
+
+function selectRoute(i){ state.activeRoute = i; renderResults(); }
+
+function driveIcon(){
+  return `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 13l1.5-4.5A2 2 0 0 1 6.4 7h11.2a2 2 0 0 1 1.9 1.5L21 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><rect x="3" y="13" width="18" height="5" rx="1.4" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="18" r="1.4" fill="currentColor"/><circle cx="17" cy="18" r="1.4" fill="currentColor"/></svg>`;
+}
+function fmtMin(min){
+  min = Math.round(min);
+  if(min<60) return `${min}m`;
+  const h=Math.floor(min/60), m=min%60;
+  return m? `${h}h${m}m` : `${h}h`;
+}
+/* ======================================================================
+   MAP — Yandex Maps JavaScript API v3.
+   If Yandex can't load, the map area shows a short message with a
+   "Try again" button; the rest of the page keeps working.
+   Hexagon markers: ember = on the active route (numbered), slate = other
+   sights, gold = Yerevan, ink ring = selected.
+   Route line: real road geometry from OpenRouteService when ORS_API_KEY is
+   set, otherwise straight segments. Out and back on one road, so the line
+   is drawn once.
+====================================================================== */
+let mapApi = null;          // the active map backend
+let pendingStops = [];      // what to draw as soon as a backend is ready
+let mapInitToken = 0;       // guards against overlapping (re)initialisations
+
+const markers = {};
+let originMarker = null;
+
+function hexSize(size){ return [size, Math.round(size*1.1547)]; }
+
+/* ---------- Yandex Maps JS API v3 ---------- */
+function loadYandexScript(){
+  return new Promise((resolve, reject)=>{
+    if(window.ymaps3) return resolve();
+    const s = document.createElement('script');
+    s.src = 'https://api-maps.yandex.ru/v3/?apikey=' + encodeURIComponent(YANDEX_MAPS_KEY) + '&lang=en_US';
+    s.onload = ()=> resolve();
+    s.onerror = ()=> reject(new Error('Yandex script failed to load'));
+    document.head.appendChild(s);
+  });
+}
+function withTimeout(promise, ms, msg){
+  return Promise.race([promise, new Promise((_,rej)=> setTimeout(()=>rej(new Error(msg)), ms))]);
+}
+async function createYandexBackend(el){
+  await withTimeout(loadYandexScript().then(()=>ymaps3.ready), 12000, 'Yandex Maps took too long to load');
+  const { YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapMarker, YMapFeature, YMapControls } = ymaps3;
+  const map = new YMap(el, { location:{ center:[44.7, 40.3], zoom:8 } });
+  map.addChild(new YMapDefaultSchemeLayer({}));
+  map.addChild(new YMapDefaultFeaturesLayer({}));
+  try{
+    const { YMapZoomControl } = await ymaps3.import('@yandex/ymaps3-controls@0.0.1');
+    const controls = new YMapControls({ position:'right' });
+    controls.addChild(new YMapZoomControl({}));
+    map.addChild(controls);
+  }catch(e){ console.warn('Yandex zoom buttons unavailable (scroll / pinch still zoom)', e); }
+
+  let routeFeatures = [];
+  const paint = (h)=>{
+    const o = h.o, [w,hh] = hexSize(o.size);
+    h.el.style.width = w+'px'; h.el.style.height = hh+'px';
+    h.el.innerHTML = `<div class="hexwrap"><div class="hexpin ${o.kind}"><i>${o.label||''}</i></div></div>`;
+  };
+  return {
+    name:'yandex',
+    addMarker(o){
+      const node = document.createElement('div');
+      node.className = 'hexicon ymk';
+      node.style.transform = 'translate(-50%,-50%)';
+      node.title = o.title;
+      if(!o.origin){
+        node.setAttribute('role','button'); node.tabIndex = 0;
+        node.setAttribute('aria-label', o.title);
+        node.addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && o.onClick){ e.preventDefault(); o.onClick(); } });
+      }
+      const h = { o, el:node, mk:null };
+      paint(h);
+      if(o.onClick) node.addEventListener('click', e=>{ e.stopPropagation(); o.onClick(); });
+      h.mk = new YMapMarker({ coordinates:[o.lon, o.lat], zIndex:o.z||0 }, node);
+      map.addChild(h.mk);
+      return h;
+    },
+    updateMarker(h, o){
+      h.o = Object.assign({}, h.o, o);
+      paint(h);
+      h.mk.update({ zIndex:o.z||0 });
+    },
+    drawRoute(pts, live){
+      this.clearRoute();
+      const geometry = { type:'LineString', coordinates: pts.map(p=>[p[1],p[0]]) };
+      const casing = new YMapFeature({ geometry, style:{ stroke:[{ color:'#FFFFFF', width:9, opacity:.9 }] }, zIndex:1 });
+      const stroke = { color:'#F0692B', width:4 };
+      if(!live) stroke.dash = [2, 9];
+      const line = new YMapFeature({ geometry, style:{ stroke:[stroke] }, zIndex:2 });
+      map.addChild(casing); map.addChild(line);
+      routeFeatures = [casing, line];
+    },
+    clearRoute(){ routeFeatures.forEach(f=>{ try{ map.removeChild(f); }catch(e){} }); routeFeatures = []; },
+    flyTo(lat, lon, minZoom){
+      map.setLocation({ center:[lon,lat], zoom: Math.max(map.zoom||8, minZoom), duration:600 });
+    },
+    fit(pts, maxZoom){
+      // Fit the points in view with ~25% breathing room, capped at maxZoom.
+      const mx = lon => (lon+180)/360;
+      const my = lat => { const s=Math.sin(lat*Math.PI/180); return 0.5 - Math.log((1+s)/(1-s))/(4*Math.PI); };
+      const lats = pts.map(p=>p[0]), lons = pts.map(p=>p[1]);
+      const minLon=Math.min(...lons), maxLon=Math.max(...lons), minLat=Math.min(...lats), maxLat=Math.max(...lats);
+      const spanX = Math.max((mx(maxLon)-mx(minLon))*1.5, 1e-6);
+      const spanY = Math.max((my(minLat)-my(maxLat))*1.5, 1e-6);
+      const r = el.getBoundingClientRect();
+      const zx = Math.log2(Math.max(r.width,1)/(256*spanX)), zy = Math.log2(Math.max(r.height,1)/(256*spanY));
+      const zoom = Math.max(3, Math.min(maxZoom, zx, zy));
+      const yMid = (my(minLat)+my(maxLat))/2;
+      const latMid = (2*Math.atan(Math.exp((0.5-yMid)*2*Math.PI)) - Math.PI/2) * 180/Math.PI;
+      map.setLocation({ center:[(minLon+maxLon)/2, latMid], zoom, duration:600 });
+    },
+    destroy(){ try{ map.destroy(); }catch(e){} el.innerHTML=''; }
+  };
+}
+
+/* ---------- Start the map ---------- */
+function showMapMessage(text){
+  const el = document.getElementById('map');
+  el.innerHTML = '';
+  const box = document.createElement('div'); box.className = 'map-msg';
+  const p = document.createElement('p'); p.textContent = text; p.style.margin = '0';
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Try again';
+  b.onclick = ()=> startMap();
+  box.appendChild(p); box.appendChild(b); el.appendChild(box);
+}
+async function startMap(){
+  const token = ++mapInitToken;
+  if(mapApi){ mapApi.destroy(); mapApi = null; }
+  Object.keys(markers).forEach(k=> delete markers[k]);
+  originMarker = null;
+  const el = document.getElementById('map');
+  el.innerHTML = '';
+  if(!YANDEX_MAPS_KEY){ showMapMessage('The map is not set up yet.'); return; }
+  let api = null;
+  try{ api = await createYandexBackend(el); }
+  catch(e){
+    console.warn('Yandex Maps could not load', e);
+    if(token!==mapInitToken) return;
+    showMapMessage('The map could not load right now. Your trip planning below still works.');
+    return;
+  }
+  if(token!==mapInitToken){ api.destroy(); return; }
+  mapApi = api;
+  renderMap(pendingStops);
+}
+
+function ensureMarkers(){
+  if(originMarker || !mapApi) return;
+  originMarker = mapApi.addMarker({ lat:YEREVAN.lat, lon:YEREVAN.lon, kind:'origin', label:'', size:34, title:'Yerevan', origin:true, z:500 });
+  SIGHTS.forEach(s=>{
+    markers[s.id] = mapApi.addMarker({ lat:s.lat, lon:s.lon, kind:'idle', label:'', size:26, title:s.name.en, z:0, onClick: ()=> selectSight(s.id) });
+  });
+}
+
+function refreshMarkers(orderedStops){
+  if(!mapApi) return;
+  ensureMarkers();
+  SIGHTS.forEach(s=>{
+    const idx = orderedStops.findIndex(o=>o.id===s.id);
+    const sel = s.id===selectedSightId;
+    let kind = idx!==-1 ? 'route' : 'idle';
+    if(sel) kind += ' sel';
+    const size = idx!==-1 ? 34 : 26;
+    mapApi.updateMarker(markers[s.id], { kind, label: idx!==-1 ? String(idx+1) : '', size, z: sel ? 900 : (idx!==-1 ? 300 : 0) });
+  });
+}
+
+function drawRoute(orderedStops, r){
+  if(!mapApi) return;
+  mapApi.clearRoute();
+  if(!orderedStops.length) return;
+  const pts = r && r.geometry ? r.geometry : [[YEREVAN.lat,YEREVAN.lon], ...orderedStops.map(s=>[s.lat,s.lon])];
+  mapApi.drawRoute(pts, !!(r && r.geometry));
+}
+
+function renderMap(orderedStops){
+  pendingStops = orderedStops;
+  if(!mapApi) return;            // the map is still starting; startMap() redraws when ready
+  const r = orderedStops.length && state.routes ? state.routes[state.activeRoute] : null;
+  refreshMarkers(orderedStops);
+  drawRoute(orderedStops, r);
+  if(orderedStops.length){
+    mapApi.fit([[YEREVAN.lat,YEREVAN.lon], ...orderedStops.map(s=>[s.lat,s.lon])], 11);
+  }
+}
+
+/* ---------------- OpenRouteService: real driving time + geometry ------- */
+async function refineRoute(r){
+  if(!ORS_API_KEY || r.live || r.busy || r.failed) return;
+  r.busy = true; updateSourceBadge(r);
+  try{
+    const coords = [[YEREVAN.lon,YEREVAN.lat], ...r.order.map(s=>[s.lon,s.lat])];
+    const res = await fetch('https://api.openrouteservice.org/v2/directions/driving-car/geojson', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization': ORS_API_KEY },
+      body: JSON.stringify({ coordinates: coords })
+    });
+    if(!res.ok) throw new Error('ORS '+res.status);
+    const data = await res.json();
+    const f = data.features && data.features[0];
+    if(!f) throw new Error('no route');
+    const segMin = f.properties.segments.map(sg=> sg.duration/60);
+    const oneWay = segMin.reduce((a,b)=>a+b,0);
+    r.segs = [...segMin, oneWay];
+    r.driveMin = oneWay*2;
+    r.total = r.driveMin + r.visitMin;
+    r.km = f.properties.segments.reduce((a,sg)=>a+sg.distance,0)/1000;
+    r.geometry = f.geometry.coordinates.map(c=>[c[1],c[0]]);
+    r.live = true;
+  }catch(e){
+    console.warn('OpenRouteService unavailable, using estimates', e);
+    r.failed = true;
+  }
+  r.busy = false;
+  if(state.routes && state.routes[state.activeRoute]===r) renderResults();
+}
+function sourceBadgeHtml(r){
+  if(r.live) return `<div class="route-source live" id="route-source">Live road routing · ${Math.round(r.km)} km one way</div>`;
+  if(r.busy) return `<div class="route-source busy" id="route-source">Fetching road route…</div>`;
+  return `<div class="route-source" id="route-source">Estimated from straight-line distance</div>`;
+}
+function updateSourceBadge(r){
+  const el = document.getElementById('route-source');
+  if(el) el.outerHTML = sourceBadgeHtml(r);
+}
+function updateDataNote(){
+  const live = ORS_API_KEY
+    ? 'Drive times and the route line come from OpenRouteService road routing for the route you are viewing; if it is unreachable they fall back to straight-line estimates.'
+    : 'Drive times are estimates computed from straight-line distance and typical road speeds, and the route line joins stops directly. Add a free OpenRouteService key to use real roads.';
+  document.getElementById('data-note').textContent = live + " Hours, pricing and accessibility carry a dotted underline where they haven't been independently verified; confirm locally before you go. Routes are kept clear of border-adjacent areas by design.";
+}
+
+/* ======================================================================
+   SIGHT INFO PANEL — clicking any pin on the map shows that sight's
+   details in a panel just below the map, rather than nothing at all.
+====================================================================== */
+let selectedSightId = null;
+
+function selectSight(sightId){
+  selectedSightId = sightId;
+  renderSightPanel();
+  const sg = SIGHTS.find(x=>x.id===sightId);
+  const r = state.routes && state.routes[state.activeRoute];
+  refreshMarkers(r ? r.order : []);
+  if(sg && mapApi) mapApi.flyTo(sg.lat, sg.lon, 10);
+}
+
+function closeSightPanel(){
+  selectedSightId = null;
+  { const r = state.routes && state.routes[state.activeRoute]; refreshMarkers(r ? r.order : []); }
+  document.getElementById('sight-panel').hidden = true;
+  document.getElementById('map-hint').style.display = '';
+}
+
+function renderSightPanel(){
+  const s = SIGHTS.find(x=>x.id===selectedSightId);
+  const panel = document.getElementById('sight-panel');
+  if(!s){ panel.hidden = true; document.getElementById('map-hint').style.display=''; return; }
+
+  panel.hidden = false;
+  document.getElementById('map-hint').style.display = 'none';
+  document.getElementById('sight-panel-thumb').innerHTML = renderSightBadge(s);
+  document.getElementById('sight-panel-name').textContent = s.name.en;
+  document.getElementById('sight-panel-cat').textContent = s.cat.map(c=>CATEGORIES[c].en).join(' · ');
+  document.getElementById('sight-panel-why').textContent = s.why.en;
+
+  let metaHtml = `<span>${s.visitMin} min suggested</span>`;
+  metaHtml += `<span class="flag" title="Not independently verified">${s.hoursFlagged?'~ ':''}${s.hours.en}</span>`;
+  metaHtml += `<span class="flag" title="Not independently verified">${s.priceFlagged?'~ ':''}${s.price.en}</span>`;
+
+  const activeRoute = state.routes && state.routes[state.activeRoute];
+  if(activeRoute){
+    const idx = activeRoute.order.findIndex(o=>o.id===s.id);
+    if(idx !== -1){
+      metaHtml += `<span>${driveIcon()} ${fmtMin(activeRoute.segs[idx])} drive ${idx===0?'from Yerevan':'from previous stop'}</span>`;
+    }
+  }
+  document.getElementById('sight-panel-meta').innerHTML = metaHtml;
+}
+
+function planTripToSelected(){
+  if(!selectedSightId) return;
+  setMode('sight');
+  document.getElementById('mustSee').value = selectedSightId;
+  runSearch();
+}
+
+/* ======================================================================
+   SAVE / SHARE — localStorage only (per-viewer, no server); links encode
+   the query + chosen route index so recipients regenerate the same trip.
+====================================================================== */
+function saveCurrentRoute(){
+  try{
+    const list = JSON.parse(localStorage.getItem('araratRoutesSaved') || '[]');
+    const r = state.routes[state.activeRoute];
+    const label = r.order.map(s=>s.name.en).join(' → ');
+    list.unshift({ id: Date.now(), label, query: state.lastQuery, activeRoute: state.activeRoute });
+    localStorage.setItem('araratRoutesSaved', JSON.stringify(list.slice(0,20)));
+    renderSaved();
+  }catch(e){ console.error('save failed', e); }
+}
+function renderSaved(){
+  const wrap = document.getElementById('saved-list');
+  let list = [];
+  try{ list = JSON.parse(localStorage.getItem('araratRoutesSaved') || '[]'); }catch(e){ list=[]; }
+  if(!list.length){ wrap.innerHTML = `<div class="empty-note">${t('savedEmpty')}</div>`; return; }
+  wrap.innerHTML = list.map(item=>`
+    <div class="saved-item">
+      <button class="saved-open" onclick='loadSaved(${item.id})'>${item.label}</button>
+      <button onclick="deleteSaved(${item.id})" title="${t('savedDelete')}">✕</button>
+    </div>`).join('');
+}
+function loadSaved(id){
+  try{
+    const list = JSON.parse(localStorage.getItem('araratRoutesSaved') || '[]');
+    const item = list.find(x=>x.id===id);
+    if(!item) return;
+    const routes = generateRoutes(item.query);
+    state.routes = routes;
+    state.activeRoute = Math.min(item.activeRoute, Math.max(routes.length-1,0));
+    state.lastQuery = item.query;
+    if(routes.length) renderResults();
+  }catch(e){ console.error(e); }
+}
+function deleteSaved(id){
+  try{
+    let list = JSON.parse(localStorage.getItem('araratRoutesSaved') || '[]');
+    list = list.filter(x=>x.id!==id);
+    localStorage.setItem('araratRoutesSaved', JSON.stringify(list));
+    renderSaved();
+  }catch(e){ console.error(e); }
+}
+
+function copyShareLink(){
+  try{
+    const payload = { q: state.lastQuery, a: state.activeRoute, l: LANG };
+    const encoded = btoa(encodeURIComponent(JSON.stringify(payload)));
+    const url = location.href.split('#')[0] + '#trip=' + encoded;
+    navigator.clipboard.writeText(url).then(()=>{
+      const btn = document.getElementById('copy-btn');
+      const orig = btn.textContent;
+      btn.textContent = '✓ ' + t('linkCopied');
+      btn.classList.add('copied');
+      setTimeout(()=>{ btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
+    });
+  }catch(e){ console.error('copy failed', e); }
+}
+
+function loadFromHash(){
+  const m = location.hash.match(/trip=([^&]+)/);
+  if(!m) return false;
+  try{
+    const payload = JSON.parse(decodeURIComponent(atob(m[1])));
+    const q = payload.q;
+    if(q.mustSeeId){
+      setMode('sight');
+      document.getElementById('mustSee').value = q.mustSeeId;
+    } else {
+      setMode('time');
+      const hrs = Math.min(12, Math.max(2, Math.round((q.budgetMin/60)*2)/2));
+      document.getElementById('budget').value = hrs;
+      state.budgetHours = hrs;
+      document.getElementById('budget-num').textContent = hrs;
+    }
+    state.cats = q.cats || [];
+    buildInterestChips();
+    const routes = generateRoutes(q);
+    state.routes = routes;
+    state.activeRoute = Math.min(payload.a||0, Math.max(routes.length-1,0));
+    state.lastQuery = q;
+    if(routes.length) renderResults(); else runSearch();
+    return true;
+  }catch(e){ console.error('bad share link', e); return false; }
+}
+
+/* ======================================================================
+   INIT
+====================================================================== */
+buildMustSeeOptions();
+buildInterestChips();
+renderSaved();
+updateDataNote();
+startMap();
+if(!loadFromHash()){
+  // idle state already in markup
+}
+</script>
+</body>
+</html>
