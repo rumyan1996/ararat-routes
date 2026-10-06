@@ -1,0 +1,10 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Never commit a real routing key or local secrets
+.env
+*.local
+config.local.js
