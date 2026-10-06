@@ -1393,13 +1393,16 @@ async function createYandexBackend(el){
     map.addChild(controls);
   }catch(e){ console.warn('Yandex zoom buttons unavailable (scroll / pinch still zoom)', e); }
 
-  // Highlight Armenia: soft orange tint + outline inside, and the world around it dimmed.
+  // Highlight Armenia: soft orange tint, a glowing orange outline, one small shape per part of the country.
+  // (No huge "dim the rest of the world" shape: that confused the map and displaced other drawings.)
   try{
-    const world = [[25,25],[65,25],[65,55],[25,55],[25,25]];                 // outer ring (opposite direction to the country = hole)
-    map.addChild(new YMapFeature({ geometry:{ type:'Polygon', coordinates:[ world, ...ARMENIA_RINGS ] },
-      style:{ fill:'#17171A', fillOpacity:0.26, stroke:[] }, zIndex:0 }));
-    map.addChild(new YMapFeature({ geometry:{ type:'MultiPolygon', coordinates: ARMENIA_RINGS.map(r=>[r]) },
-      style:{ fill:'#F0692B', fillOpacity:0.07, stroke:[ { color:'#F0692B', width:3 }, { color:'#FFFFFF', width:7, opacity:0.9 } ] }, zIndex:0 }));
+    ARMENIA_RINGS.forEach(ring=>{
+      map.addChild(new YMapFeature({
+        geometry:{ type:'Polygon', coordinates:[ ring ] },
+        style:{ fill:'#F0692B', fillOpacity:0.08,
+                stroke:[ { color:'#F0692B', width:3 }, { color:'#FFFFFF', width:7, opacity:0.9 }, { color:'#F0692B', width:15, opacity:0.16 } ] },
+        zIndex:0 }));
+    });
   }catch(e){ console.warn('Armenia highlight unavailable', e); }
 
   let routeFeatures = [];
