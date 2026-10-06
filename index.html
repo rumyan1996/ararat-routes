@@ -455,8 +455,70 @@ select{
 .route-source.live::before{ background: var(--green); }
 .route-source.busy::before{ background: var(--gold); }
 
+/* ===== Top rated places (reviews) ===== */
+.top-places{ margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--border); }
+.tp-head{ display:flex; gap:20px; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; margin-bottom:20px; }
+.tp-title{ font-size: 28px; margin: 0 0 6px; }
+.tp-sub{ margin:0; color: var(--ink-muted); font-size:14px; line-height:1.55; max-width:56ch; }
+.tp-auth{ display:flex; align-items:center; gap:10px; }
+.tp-user{ display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-muted); }
+.tp-user img, .rv-avatar{ width:28px; height:28px; border-radius:50%; object-fit:cover; background:var(--surface-2); flex:none; }
+.tp-google{
+  display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:var(--radius-pill);
+  background:var(--surface); color:var(--ink); border:1px solid var(--border-strong);
+  font: 600 13px var(--font-body); cursor:pointer;
+}
+.tp-google:hover{ border-color: var(--ink-faint); }
+.tp-list{ display:flex; flex-direction:column; gap:10px; }
+.tp-row{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-m); box-shadow:var(--shadow-sm); }
+.tp-row-main{ display:flex; align-items:center; gap:14px; padding:12px 14px; }
+.tp-rank{ width:28px; text-align:center; font: 700 15px var(--font-display); color:var(--ink-faint); flex:none; }
+.tp-row:nth-child(-n+3) .tp-rank{ color: var(--rose-ink); }
+.tp-thumb{ width:52px; height:52px; border-radius:10px; overflow:hidden; flex:none; background:var(--surface-2); }
+.tp-thumb svg, .tp-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+.tp-info{ flex:1; min-width:0; }
+.tp-name{ font: 600 15px var(--font-display); color:var(--ink); }
+.tp-meta{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:12.5px; color:var(--ink-muted); margin-top:3px; }
+.stars{ position:relative; display:inline-block; color:var(--border-strong); letter-spacing:2px; font-size:15px; line-height:1; }
+.stars::before{ content:'★★★★★'; position:absolute; left:0; top:0; width:var(--pct,0%); overflow:hidden; color:var(--gold); white-space:nowrap; }
+.tp-btn{
+  flex:none; padding:8px 14px; border-radius:var(--radius-pill); border:1px solid var(--border-strong);
+  background:transparent; color:var(--ink); font:600 12.5px var(--font-body); cursor:pointer;
+}
+.tp-btn:hover{ border-color:var(--ink-faint); }
+.tp-btn.primary{ background:var(--rose); border-color:var(--rose); color:var(--on-accent); }
+.tp-btn[disabled]{ opacity:.55; cursor:default; }
+.tp-detail{ border-top:1px solid var(--border); padding:16px 18px 18px; }
+.tp-why{ margin:0 0 14px; font-size:13.5px; line-height:1.6; color:var(--ink-muted); }
+.tp-form{ background:var(--surface-2); border-radius:var(--radius-m); padding:14px; margin-bottom:16px; }
+.tp-form h4{ margin:0 0 8px; font:600 13px var(--font-body); }
+.tp-pick{ display:flex; gap:4px; margin-bottom:10px; }
+.tp-pick button{ background:none; border:0; padding:2px; font-size:30px; line-height:1; cursor:pointer; color:var(--border-strong); }
+.tp-pick button.on{ color:var(--gold); }
+.tp-form textarea{
+  width:100%; min-height:84px; resize:vertical; box-sizing:border-box; padding:10px 12px;
+  border-radius:var(--radius-s); border:1px solid var(--border-strong); background:var(--surface);
+  color:var(--ink); font:400 14px/1.5 var(--font-body);
+}
+.tp-form-actions{ display:flex; gap:8px; align-items:center; margin-top:10px; flex-wrap:wrap; }
+.tp-msg{ font-size:12.5px; color:var(--ink-muted); }
+.tp-msg.err{ color:#B3341A; }
+.rv{ display:flex; gap:10px; padding:12px 0; border-top:1px solid var(--border); }
+.rv:first-child{ border-top:0; }
+.rv-body{ min-width:0; }
+.rv-top{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:13px; }
+.rv-top strong{ font-weight:600; }
+.rv-date{ color:var(--ink-faint); font-size:12px; }
+.rv-text{ margin:4px 0 0; font-size:14px; line-height:1.55; white-space:pre-wrap; overflow-wrap:anywhere; }
+.rv-empty{ font-size:13.5px; color:var(--ink-muted); }
+@media (max-width: 600px){
+  .tp-row-main{ flex-wrap:wrap; }
+  .tp-btn{ margin-left:42px; }
+}
+
 </style>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 <div class="app">
@@ -480,7 +542,6 @@ select{
       <div class="field-label" data-i18n="startLabel">Starting point</div>
       <div class="start-chip">
         <span class="origin-hex" aria-hidden="true"></span><strong>Yerevan</strong>
-        <span data-i18n="startFixed" style="margin-left:auto;font-size:11.5px;">v1: fixed</span>
       </div>
     </div>
 
@@ -546,6 +607,7 @@ select{
         <p class="sight-panel-why" id="sight-panel-why"></p>
         <div class="sight-panel-meta" id="sight-panel-meta"></div>
         <button class="btn-ghost" onclick="planTripToSelected()">Plan a trip to this sight</button>
+        <button class="btn-ghost" onclick="rateSelectedSight()">Rate &amp; review</button>
       </div>
     </div>
     <p class="map-hint" id="map-hint">Click a pin on the map to see details about that sight here.</p>
@@ -553,6 +615,17 @@ select{
     <div id="results">
       <div class="status" data-i18n="statusIdle">Set your time budget on the left and press <strong>Find routes</strong> — or open the search another way and pick a must-see place instead.</div>
     </div>
+
+    <section class="top-places" id="top-places" aria-labelledby="top-places-title">
+      <div class="tp-head">
+        <div>
+          <h2 class="display tp-title" id="top-places-title">Top rated places</h2>
+          <p class="tp-sub">Every sight, ranked by traveler stars and number of reviews. A place with one lucky 5-star review won't beat one that many people love.</p>
+        </div>
+        <div class="tp-auth" id="tp-auth"></div>
+      </div>
+      <div id="tp-list" class="tp-list"><div class="status">Loading ratings…</div></div>
+    </section>
 
     <div class="footer-note" id="data-note"></div>
   </main>
@@ -840,7 +913,7 @@ function renderSightBadge(sight){
 const I18N = {
   en: {
     brandName:'Ararat Routes', brandTag:'detours worth taking',
-    startLabel:'Starting point', startFixed:'v1: fixed',
+    startLabel:'Starting point',
     modeLabel:'Plan by', modeTime:'Time I have', modeSight:'A place I want to see',
     hoursShort:' hours, round trip', budgetHelp:'Includes driving and time at each stop.',
     sightLabel:'Must include', sightPick:'Choose a sight…',
@@ -1552,6 +1625,217 @@ startMap();
 if(!loadFromHash()){
   // idle state already in markup
 }
+/* ======================================================================
+   TOP RATED PLACES — Google sign-in, 1–5 star ratings, written reviews.
+   Ranking: places with real reviews first, ordered by a fair score
+   (few reviews are pulled toward the overall average), then unrated places.
+====================================================================== */
+const SB_URL = 'https://ndjfqfsrkadpwfoymvxs.supabase.co';
+const SB_KEY = 'sb_publishable_QsSJX8Zua1_dK6hnxO-jeg_uyqZqnT5';
+let sb = null;
+try{
+  if(window.supabase) sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { flowType: 'pkce' } });
+}catch(e){ console.error('reviews unavailable', e); }
+
+const tp = { user:null, stats:{}, openId:null, reviews:{}, draft:{ rating:0, comment:'' }, msg:'', busy:false };
+
+function tpEsc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function tpAvatar(url){
+  return (typeof url === 'string' && /^https:\/\/[a-z0-9-]+\.googleusercontent\.com\//i.test(url)) ? url : '';
+}
+function tpStars(avg){
+  const pct = Math.max(0, Math.min(100, (avg/5)*100));
+  return `<span class="stars" style="--pct:${pct}%" role="img" aria-label="${avg.toFixed(1)} out of 5 stars">★★★★★</span>`;
+}
+
+async function tpLoadStats(){
+  if(!sb) return;
+  const { data, error } = await sb.from('place_stats').select('*');
+  if(error){ console.error(error); return; }
+  tp.stats = {};
+  (data||[]).forEach(r => { tp.stats[r.sight_id] = { count:r.review_count, avg:Number(r.avg_rating), score:Number(r.score) }; });
+}
+
+function tpSorted(){
+  const rated = [], unrated = [];
+  SIGHTS.forEach((s,i) => {
+    const st = tp.stats[s.id];
+    (st && st.count > 0 ? rated : unrated).push({ s, st, i });
+  });
+  rated.sort((a,b) => (b.st.score - a.st.score) || (b.st.count - a.st.count) || (b.st.avg - a.st.avg) || (a.i - b.i));
+  return rated.concat(unrated);
+}
+
+function tpRenderAuth(){
+  const el = document.getElementById('tp-auth');
+  if(!el) return;
+  if(!sb){ el.innerHTML = '<span class="tp-msg">Reviews are temporarily unavailable.</span>'; return; }
+  if(tp.user){
+    const m = tp.user.user_metadata || {};
+    const name = m.full_name || m.name || tp.user.email || 'Traveler';
+    const av = tpAvatar(m.avatar_url || m.picture);
+    el.innerHTML = `<div class="tp-user">${av ? `<img src="${tpEsc(av)}" alt="" referrerpolicy="no-referrer">` : ''}<span>${tpEsc(name)}</span></div>
+      <button class="tp-btn" onclick="tpSignOut()">Sign out</button>`;
+  }else{
+    el.innerHTML = `<button class="tp-google" onclick="tpSignIn()">
+      <svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.1C.9 16.4 0 20.1 0 24s.9 7.6 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.9 2.3-8.4 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>
+      Sign in with Google to review</button>`;
+  }
+}
+
+function tpRender(){
+  const list = document.getElementById('tp-list');
+  if(!list) return;
+  const rows = tpSorted();
+  let rank = 0;
+  list.innerHTML = rows.map(({s, st}) => {
+    const rated = st && st.count > 0;
+    if(rated) rank++;
+    const open = tp.openId === s.id;
+    return `<div class="tp-row" id="tp-row-${tpEsc(s.id)}">
+      <div class="tp-row-main">
+        <div class="tp-rank">${rated ? rank : '–'}</div>
+        <div class="tp-thumb">${renderSightBadge(s)}</div>
+        <div class="tp-info">
+          <div class="tp-name">${tpEsc(s.name.en)}</div>
+          <div class="tp-meta">${rated
+            ? `${tpStars(st.avg)} <strong>${st.avg.toFixed(1)}</strong> · ${st.count} review${st.count===1?'':'s'}`
+            : 'No reviews yet — be the first'}</div>
+        </div>
+        <button class="tp-btn ${open ? '' : 'primary'}" onclick="tpToggle('${tpEsc(s.id)}')">${open ? 'Close' : 'Rate & review'}</button>
+      </div>
+      ${open ? `<div class="tp-detail" id="tp-detail">${tpDetailHtml(s)}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function tpDetailHtml(s){
+  const revs = tp.reviews[s.id];
+  const mine = tp.user && revs ? revs.find(r => r.user_id === tp.user.id) : null;
+  let form;
+  if(!sb){
+    form = '';
+  }else if(!tp.user){
+    form = `<div class="tp-form"><h4>Want to rate this place?</h4>
+      <div class="tp-msg" style="margin-bottom:10px">Sign in with your Google account to leave stars and a review.</div>
+      <button class="tp-google" onclick="tpSignIn()">Sign in with Google</button></div>`;
+  }else{
+    form = `<div class="tp-form"><h4>${mine ? 'Your review (you can edit it)' : 'Your rating'}</h4>
+      <div class="tp-pick" id="tp-pick">${[1,2,3,4,5].map(n =>
+        `<button type="button" class="${n <= tp.draft.rating ? 'on' : ''}" onclick="tpSetRating(${n})" aria-label="${n} star${n>1?'s':''}">★</button>`).join('')}</div>
+      <textarea id="tp-comment" maxlength="1500" placeholder="What did you think? (optional)" oninput="tp.draft.comment=this.value">${tpEsc(tp.draft.comment)}</textarea>
+      <div class="tp-form-actions">
+        <button class="tp-btn primary" onclick="tpSubmit('${tpEsc(s.id)}')" ${tp.busy?'disabled':''}>${mine ? 'Update review' : 'Post review'}</button>
+        ${mine ? `<button class="tp-btn" onclick="tpDelete('${tpEsc(s.id)}')" ${tp.busy?'disabled':''}>Delete</button>` : ''}
+        <span class="tp-msg ${tp.msgErr?'err':''}" id="tp-msg">${tpEsc(tp.msg)}</span>
+      </div></div>`;
+  }
+  let list;
+  if(!revs) list = '<div class="rv-empty">Loading reviews…</div>';
+  else if(!revs.length) list = '<div class="rv-empty">No written reviews yet.</div>';
+  else list = revs.map(r => {
+    const av = tpAvatar(r.user_avatar);
+    return `<div class="rv">${av ? `<img class="rv-avatar" src="${tpEsc(av)}" alt="" referrerpolicy="no-referrer">` : '<div class="rv-avatar"></div>'}
+      <div class="rv-body"><div class="rv-top"><strong>${tpEsc(r.user_name)}</strong>${tpStars(r.rating)}
+      <span class="rv-date">${tpEsc(new Date(r.created_at).toLocaleDateString())}</span></div>
+      ${r.comment ? `<p class="rv-text">${tpEsc(r.comment)}</p>` : ''}</div></div>`;
+  }).join('');
+  return `<p class="tp-why">${tpEsc(s.why.en)}</p>${form}<div>${list}</div>`;
+}
+
+async function tpLoadReviews(id){
+  if(!sb) return;
+  const { data, error } = await sb.from('reviews').select('*').eq('sight_id', id).order('created_at', { ascending:false }).limit(50);
+  tp.reviews[id] = error ? [] : (data || []);
+  if(tp.openId === id){
+    const mine = tp.user ? tp.reviews[id].find(r => r.user_id === tp.user.id) : null;
+    if(mine && !tp.draft.rating){ tp.draft = { rating: mine.rating, comment: mine.comment || '' }; }
+    const d = document.getElementById('tp-detail');
+    if(d){ const s = SIGHTS.find(x => x.id === id); d.innerHTML = tpDetailHtml(s); }
+  }
+}
+
+function tpToggle(id){
+  tp.msg = ''; tp.msgErr = false;
+  if(tp.openId === id){ tp.openId = null; tpRender(); return; }
+  tp.openId = id; tp.draft = { rating:0, comment:'' };
+  tpRender();
+  tpLoadReviews(id);
+  const row = document.getElementById('tp-row-' + id);
+  if(row) row.scrollIntoView({ block:'nearest', behavior:'smooth' });
+}
+
+function tpSetRating(n){
+  tp.draft.rating = n;
+  document.querySelectorAll('#tp-pick button').forEach((b,i) => b.classList.toggle('on', i < n));
+}
+
+async function tpSubmit(id){
+  const msg = document.getElementById('tp-msg');
+  if(!tp.draft.rating){ tp.msg = 'Please choose 1 to 5 stars first.'; tp.msgErr = true; if(msg){ msg.textContent = tp.msg; msg.className = 'tp-msg err'; } return; }
+  tp.busy = true;
+  const { error } = await sb.from('reviews').upsert(
+    { sight_id: id, rating: tp.draft.rating, comment: (tp.draft.comment || '').trim() || null },
+    { onConflict: 'sight_id,user_id' });
+  tp.busy = false;
+  if(error){ tp.msg = 'Could not save your review. Please try again.'; tp.msgErr = true; console.error(error); tpRender(); tpLoadReviews(id); return; }
+  tp.msg = 'Thanks! Your review is saved.'; tp.msgErr = false;
+  await tpLoadStats();
+  tpRender();
+  tpLoadReviews(id);
+}
+
+async function tpDelete(id){
+  if(!confirm('Delete your review of this place?')) return;
+  tp.busy = true;
+  const { error } = await sb.from('reviews').delete().eq('sight_id', id).eq('user_id', tp.user.id);
+  tp.busy = false;
+  tp.draft = { rating:0, comment:'' };
+  tp.msg = error ? 'Could not delete. Please try again.' : 'Your review was deleted.'; tp.msgErr = !!error;
+  await tpLoadStats();
+  tpRender();
+  tpLoadReviews(id);
+}
+
+async function tpSignIn(){
+  if(!sb) return;
+  await sb.auth.signInWithOAuth({ provider:'google', options:{ redirectTo: location.origin + location.pathname + '?reviews=1' } });
+}
+async function tpSignOut(){
+  if(!sb) return;
+  await sb.auth.signOut();
+}
+
+async function tpInit(){
+  tpRenderAuth();
+  if(!sb){ document.getElementById('tp-list').innerHTML = '<div class="status">Reviews could not load right now. Please refresh the page.</div>'; return; }
+  const cameBack = /[?&]reviews=1/.test(location.search) || /[?&]code=/.test(location.search);
+  sb.auth.onAuthStateChange((event, session) => {
+    tp.user = session ? session.user : null;
+    tpRenderAuth();
+    if(tp.openId){ tpRender(); tpLoadReviews(tp.openId); }
+  });
+  const { data } = await sb.auth.getSession();
+  tp.user = data && data.session ? data.session.user : null;
+  tpRenderAuth();
+  await tpLoadStats();
+  tpRender();
+  if(cameBack){
+    history.replaceState(null, '', location.pathname + location.hash);
+    const sec = document.getElementById('top-places');
+    if(sec) setTimeout(() => sec.scrollIntoView({ behavior:'smooth', block:'start' }), 150);
+  }
+}
+function rateSelectedSight(){
+  if(!selectedSightId) return;
+  const sec = document.getElementById('top-places');
+  if(sec) sec.scrollIntoView({ behavior:'smooth', block:'start' });
+  if(tp.openId !== selectedSightId) tpToggle(selectedSightId);
+}
+tpInit();
+
 </script>
 </body>
 </html>
