@@ -718,6 +718,59 @@ a.brand:focus-visible{ outline:2px solid #fff; outline-offset:6px; }
 .vid-toggle .vt-pause{ display:none; }
 .vid-toggle.is-playing .vt-play{ display:none; } .vid-toggle.is-playing .vt-pause{ display:inline; }
 
+/* ---- the four buttons in the sight card: one size, one style, two equal columns ---- */
+.pl-btn, .sight-panel-body .btn-ghost{ display:inline-flex; align-items:center; justify-content:center; gap:7px; width:100%; height:38px; padding:0 14px; font:600 13px/1 var(--font-body); border-radius:999px; box-sizing:border-box; white-space:nowrap; margin:0; }
+.pl-btn svg{ width:15px; height:15px; flex:none; }
+.sight-panel-body .pl-row{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin-top:8px; }
+.sight-panel{ width:min(570px, calc(100% - 28px)); }
+.sight-panel-body .pl-row:first-of-type{ margin-top:12px; }
+
+/* ---- trip stops: compact cards on a dotted road ---- */
+.st-list{ display:flex; flex-direction:column; margin-top:6px; }
+.st-end{ display:flex; align-items:center; gap:11px; font-size:13px; color:var(--ink); }
+.st-endtile{ flex:none; width:26px; height:26px; border-radius:8px; background:var(--surface-2); border:2px solid var(--ink); display:flex; align-items:center; justify-content:center; box-sizing:border-box; }
+.st-endtile i{ display:block; width:7px; height:7px; border-radius:50%; background:var(--ink); }
+.st-link{ display:flex; gap:11px; align-items:stretch; min-height:32px; }
+.st-line{ flex:none; width:26px; display:flex; justify-content:center; }
+.st-line::before{ content:''; display:block; border-left:2.5px dotted var(--rose); }
+.st-link span{ align-self:center; font-size:12px; color:var(--ink-muted); }
+.st-row{ display:flex; gap:11px; align-items:flex-start; animation: rise .4s ease both; }
+.st-num{ flex:none; width:26px; height:26px; border-radius:50%; background:var(--rose); color:var(--on-accent); font:700 13px/26px var(--font-body); text-align:center; margin-top:2px; }
+.st-card{ position:relative; flex:1; min-width:0; background:var(--surface-2); border:1px solid var(--border); border-radius:14px; }
+.st-card.open{ border-color:var(--rose); }
+.st-main{ display:flex; gap:10px; padding:9px 38px 9px 9px; cursor:pointer; border-radius:14px; }
+.st-main:focus-visible{ outline:2px solid var(--rose); outline-offset:2px; }
+.st-thumb{ flex:none; width:56px; height:56px; }
+.st-thumb svg, .st-thumb img{ display:block; width:100%; height:100%; object-fit:cover; border-radius:10px; border:0; }
+.st-text{ flex:1; min-width:0; }
+.st-name{ font:600 15px var(--font-display); color:var(--ink); }
+.st-why{ margin:2px 0 0; font-size:12.5px; line-height:1.45; color:var(--ink-muted); max-width:none; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.st-card.open .st-why{ -webkit-line-clamp:unset; overflow:visible; display:block; }
+.st-meta{ margin-top:5px; font-size:12px; color:var(--ink-muted); }
+.stop-remove.st-x{ position:absolute; top:8px; right:8px; width:24px; height:24px; padding:0; margin:0; border-radius:50%; font-size:11px; line-height:1; display:flex; align-items:center; justify-content:center; background:transparent; }
+.st-details{ border-top:1px solid var(--border); padding:10px 12px 12px; display:flex; flex-direction:column; gap:10px; }
+.st-details[hidden]{ display:none; }
+.st-facts{ display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12.5px; color:var(--ink-faint); }
+.st-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+.st-actions .btn-ghost{ height:34px; padding:0 14px; font-size:12.5px; }
+
+/* ---- map: photo bubbles for the trip's stops, a start tile for Yerevan ---- */
+.ymk-bub, .ymk-start{ overflow:visible; }
+.bub{ position:relative; width:46px; height:46px; }
+.bub-img{ width:46px; height:46px; border-radius:50%; overflow:hidden; background:#262B63; border:3px solid #fff; box-shadow:0 3px 10px rgba(20,23,58,.45); box-sizing:border-box; }
+.bub-img img, .bub-img svg{ display:block; width:100%; height:100%; object-fit:cover; }
+.bub-img svg rect{ rx:0; }
+.bub.sel .bub-img{ border-color:#17171A; }
+.bub-num{ position:absolute; right:-7px; top:-7px; min-width:22px; height:22px; border-radius:50%; background:#FFA062; color:#2A1020; font:700 12px/18px var(--font-body); text-align:center; border:2px solid #fff; box-sizing:border-box; }
+.bub-label{ position:absolute; white-space:nowrap; background:rgba(20,23,58,.94); color:#fff; font:500 11.5px/1 var(--font-body); padding:6px 11px; border-radius:999px; box-shadow:0 2px 8px rgba(0,0,0,.28); pointer-events:none; max-width:200px; overflow:hidden; text-overflow:ellipsis; }
+.bub-label.l{ right:calc(100% + 8px); top:50%; transform:translateY(-50%); }
+.bub-label.r{ left:calc(100% + 8px); top:50%; transform:translateY(-50%); }
+.bub-label.t{ left:50%; bottom:calc(100% + 8px); transform:translateX(-50%); }
+.bub-label.b{ left:50%; top:calc(100% + 8px); transform:translateX(-50%); }
+.start-tile{ width:26px; height:26px; border-radius:8px; background:#1D2150; border:2.5px solid #fff; box-shadow:0 2px 8px rgba(20,23,58,.4); display:flex; align-items:center; justify-content:center; box-sizing:border-box; }
+.start-tile i{ display:block; width:7px; height:7px; border-radius:50%; background:#fff; }
+.start-label{ position:absolute; left:50%; top:calc(100% + 4px); transform:translateX(-50%); font:600 11px/1 var(--font-body); color:#2B2A33; background:rgba(255,255,255,.85); padding:3px 7px; border-radius:999px; white-space:nowrap; pointer-events:none; }
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -836,8 +889,10 @@ a.brand:focus-visible{ outline:2px solid #fff; outline-offset:6px; }
         <p class="sight-panel-why" id="sight-panel-why"></p>
         <div class="sight-panel-meta" id="sight-panel-meta"></div>
         <div class="pl-row" id="sight-panel-pl"></div>
-        <button class="btn-ghost" onclick="planTripToSelected()">Plan a trip to this sight</button>
-        <button class="btn-ghost" onclick="rateSelectedSight()">Rate &amp; review</button>
+        <div class="pl-row">
+          <button class="btn-ghost" onclick="planTripToSelected()">Plan a trip to this sight</button>
+          <button class="btn-ghost" onclick="rateSelectedSight()">Rate &amp; review</button>
+        </div>
       </div>
     </div>
     </div>
@@ -1446,38 +1501,39 @@ function renderResults(){
     <div class="summary-stat"><div class="num">${fmtHours(r.total)}h</div><div class="lbl">${t('totalTrip')}</div></div>
   </div>`;
 
-  html += `<div class="stops">`;
+  const openStop = (typeof state.openStop === 'number') ? state.openStop : -1;
+  const stLink = txt => `<div class="st-link"><div class="st-line"></div><span>${txt}</span></div>`;
+  const stEnd = `<div class="st-end"><div class="st-endtile"><i></i></div><span>Yerevan</span></div>`;
+  html += `<div class="st-list">` + stEnd;
   r.order.forEach((s,i)=>{
-    html += `<div class="stop">
-      <div class="stop-rail"><div class="stop-dot">${i+1}</div><div class="stop-line"></div></div>
-      <div class="stop-card">
-        <div class="stop-top">
-          <div class="stop-thumb">${renderSightBadge(s)}</div>
-          <div class="stop-top-text">
-            <div class="drive-chip">${driveIcon()} ${fmtMin(r.segs[i])} ${t('driveTime')} ${i===0? 'from Yerevan' : ''}</div>
-            <div class="stop-title-row">
-              <div class="stop-name">${s.name[LANG]}</div>
-              <div class="stop-cat">${s.cat.map(c=>CATEGORIES[c][LANG]).join(' · ')}</div>
-            </div>
+    const open = openStop === i, why = s.why[LANG];
+    html += stLink(`${fmtMin(r.segs[i])} ${t('driveTime')}`);
+    html += `<div class="st-row">
+      <div class="st-num">${i+1}</div>
+      <div class="st-card${open ? ' open' : ''}">
+        <div class="st-main" role="button" tabindex="0" aria-expanded="${open}" onclick="toggleStop(${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleStop(${i});}">
+          <div class="st-thumb">${renderSightBadge(s)}</div>
+          <div class="st-text">
+            <div class="st-name">${s.name[LANG]}</div>
+            <p class="st-why">${why}</p>
+            <div class="st-meta">${s.visitMin} min visit · ${s.cat.map(c=>CATEGORIES[c][LANG]).join(' · ')}</div>
           </div>
         </div>
-        <p class="stop-why">${s.why[LANG]}</p>
-        <div class="stop-meta">
-          <span>${s.visitMin} min suggested</span>
-          <span class="flag" title="Not independently verified">${s.hoursFlagged?'~ ':''}${s.hours.en}</span>
-          <span class="flag" title="Not independently verified">${s.priceFlagged?'~ ':''}${s.price.en}</span>
-          <button class="stop-remove" onclick="removeStop(${i})" title="Remove this sight from the trip" aria-label="Remove ${tpEsc(s.name[LANG])} from the trip">✕ Remove</button>
+        <button class="stop-remove st-x" onclick="removeStop(${i})" title="Remove this sight from the trip" aria-label="Remove ${tpEsc(s.name[LANG])} from the trip">✕</button>
+        <div class="st-details"${open ? '' : ' hidden'}>
+          <div class="st-facts">
+            <span class="flag" title="Not independently verified">${s.hoursFlagged?'~ ':''}${s.hours.en}</span>
+            <span class="flag" title="Not independently verified">${s.priceFlagged?'~ ':''}${s.price.en}</span>
+          </div>
+          <div class="st-actions">
+            <button class="btn-ghost" onclick="selectSight('${s.id}')">Show on the map</button>
+            <button class="btn-ghost" onclick="removeStop(${i})">Remove from trip</button>
+          </div>
         </div>
       </div>
     </div>`;
   });
-  html += `<div class="stop">
-      <div class="stop-rail"><div class="stop-dot">🏁</div></div>
-      <div class="stop-card">
-        <div class="drive-chip">${driveIcon()} ${fmtMin(r.segs[r.segs.length-1])} ${t('driveTime')} — ${t('yerevanReturn')}</div>
-      </div>
-    </div>`;
-  html += `</div>`;
+  html += stLink(`${t('yerevanReturn')}: ${fmtMin(r.segs[r.segs.length-1])} ${t('driveTime')}`) + stEnd + `</div>`;
 
   if(r.original){
     html += `<div class="route-note edited-note">You changed this trip. Drive times were recalculated. <button class="link-btn" onclick="restoreTrip()">Restore the original trip</button></div>`;
@@ -1500,7 +1556,17 @@ function renderResults(){
   refineRoute(r);
 }
 
-function selectRoute(i){ state.activeRoute = i; renderResults(); }
+function selectRoute(i){ state.activeRoute = i; state.openStop = -1; renderResults(); }
+/* Open or close the details of one stop (hours, price, buttons) without redrawing the map. */
+function toggleStop(i){
+  state.openStop = (state.openStop === i) ? -1 : i;
+  document.querySelectorAll('#results .st-card').forEach((c, k)=>{
+    const o = state.openStop === k;
+    c.classList.toggle('open', o);
+    const d = c.querySelector('.st-details'); if(d) d.hidden = !o;
+    const m = c.querySelector('.st-main'); if(m) m.setAttribute('aria-expanded', String(o));
+  });
+}
 
 /* Remove a sight from the trip you are looking at; times and the road are recalculated. */
 function removeStop(i){
@@ -1518,6 +1584,7 @@ function removeStop(i){
     renderResults();
     return;
   }
+  state.openStop = -1;
   const nr = makeRouteFromSights(left);
   nr.original = r.original || r;
   state.routes[state.activeRoute] = nr;
@@ -1576,7 +1643,7 @@ function pinSvg(o){
   let badge = '';
   if(!isRoute && !origin && o.badge === 'visited') badge = '<circle cx="33" cy="8" r="7.5" fill="#2FA866" stroke="#fff" stroke-width="2"/><path d="M29.5 8.2l2.6 2.6 4.4-5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
   if(!isRoute && !origin && o.badge === 'want') badge = '<circle cx="33" cy="8" r="7.5" fill="#E0476B" stroke="#fff" stroke-width="2"/><path d="M33 12.2s-4-2.4-4-5a2.2 2.2 0 0 1 4-1.2 2.2 2.2 0 0 1 4 1.2c0 2.6-4 5-4 5z" fill="#fff"/>';
-  return `<svg viewBox="0 0 40 48" width="100%" height="100%" aria-hidden="true" style="display:block;overflow:visible;filter:drop-shadow(0 2px 2.5px rgba(23,23,26,.38))${sel?';transform:scale(1.18);transform-origin:50% 100%':''}">
+  return `<svg viewBox="0 0 40 48" width="100%" height="100%" aria-hidden="true" style="display:block;overflow:visible;filter:drop-shadow(0 2px 2.5px rgba(23,23,26,.38))${sel?';transform:scale(1.18);transform-origin:50% 100%':''}${o.dim?';opacity:.5':''}">
     <path d="M20 46C20 46 4 30.5 4 18a16 16 0 0 1 32 0C36 30.5 20 46 20 46z" fill="${fill}" stroke="${stroke}" stroke-width="${sel?3:2}" stroke-linejoin="round"/>${inner}${badge}</svg>`;
 }
 
@@ -1609,17 +1676,37 @@ async function createYandexBackend(el){
   }catch(e){ console.warn('Yandex zoom buttons unavailable (scroll / pinch still zoom)', e); }
 
   let routeFeatures = [];
+  const handles = [];
   const paint = (h)=>{
-    const o = h.o, w = o.size, hh = Math.round(w*1.2);
-    h.el.style.width = w+'px'; h.el.style.height = hh+'px';
-    h.el.innerHTML = pinSvg(o);
+    const o = h.o, kind = o.kind || '';
+    if(kind.includes('route')){                       // a stop of the trip: photo bubble + number + name
+      h.el.className = 'hexicon ymk ymk-bub';
+      h.el.style.width = '46px'; h.el.style.height = '46px';
+      h.el.style.transform = 'translate(-50%,-50%)';
+      h.el.innerHTML = bubbleHtml(o);
+    }else if(kind.includes('origin')){                // Yerevan: a small start tile
+      h.el.className = 'hexicon ymk ymk-start';
+      h.el.style.width = '26px'; h.el.style.height = '26px';
+      h.el.style.transform = 'translate(-50%,-50%)';
+      h.el.innerHTML = '<div class="start-tile"><i></i></div><span class="start-label">Yerevan</span>';
+    }else{                                            // every other sight: the small category pin
+      h.el.className = 'hexicon ymk';
+      const w = o.size, hh = Math.round(w*1.2);
+      h.el.style.width = w+'px'; h.el.style.height = hh+'px';
+      h.el.style.transform = 'translate(-50%,-100%)'; // the pin's tip sits on the exact spot
+      h.el.innerHTML = pinSvg(o);
+    }
   };
-  return {
+  let layoutQueued = 0, api = null;
+  try{
+    const { YMapListener } = ymaps3;
+    if(YMapListener) map.addChild(new YMapListener({ layer:'any', onUpdate: ()=>{ if(layoutQueued) return; layoutQueued = requestAnimationFrame(()=>{ layoutQueued = 0; if(api) api.layout(); }); } }));
+  }catch(e){ console.warn('map listener unavailable', e); }
+  api = {
     name:'yandex',
     addMarker(o){
       const node = document.createElement('div');
       node.className = 'hexicon ymk';
-      node.style.transform = 'translate(-50%,-100%)';   // the pin's tip sits on the exact spot
       node.title = o.title;
       if(!o.origin){
         node.setAttribute('role','button'); node.tabIndex = 0;
@@ -1627,6 +1714,7 @@ async function createYandexBackend(el){
         node.addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && o.onClick){ e.preventDefault(); o.onClick(); } });
       }
       const h = { o, el:node, mk:null, on:true };
+      handles.push(h);
       paint(h);
       if(o.onClick) node.addEventListener('click', e=>{ e.stopPropagation(); o.onClick(); });
       h.mk = new YMapMarker({ coordinates:[o.lon, o.lat], zIndex:o.z||0 }, node);
@@ -1642,12 +1730,50 @@ async function createYandexBackend(el){
       paint(h);
       try{ h.mk.update({ zIndex:o.z||0 }); }catch(e){}
     },
+    /* put each stop's name on the side of its bubble where nothing is in the way (runs again when the map moves or zooms) */
+    layout(){
+      try{
+        const stops = handles.filter(h => h.on && (h.o.kind || '').includes('route')).sort((a,b)=> (+a.o.label) - (+b.o.label));
+        if(!stops.length) return;
+        const z = map.zoom, c = map.center; if(!(z > 0) || !c) return;
+        const scale = 256 * Math.pow(2, z);
+        const mx = lon => (lon + 180) / 360, my = lat => { const s = Math.sin(lat*Math.PI/180); return 0.5 - Math.log((1+s)/(1-s)) / (4*Math.PI); };
+        const px = (lat, lon) => [ (mx(lon) - mx(c[0])) * scale, (my(lat) - my(c[1])) * scale ];
+        const R = 26, H = 22;
+        const bubbles = stops.map(h => px(h.o.lat, h.o.lon));
+        const hit = (a, b) => a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
+        const placed = [];
+        const oh = handles.find(h => (h.o.kind || '').includes('origin'));
+        if(oh){ const [ox, oy] = px(oh.o.lat, oh.o.lon); placed.push({ x0:ox-14, x1:ox+14, y0:oy-14, y1:oy+34 }); }
+        bubbles.forEach(([x, y]) => placed.push({ x0:x-R, x1:x+R, y0:y-R, y1:y+R }));
+        stops.forEach((h, i) => {
+          const [x, y] = bubbles[i];
+          const w = Math.min(190, (h.o.sight ? h.o.sight.name.en.length : 10) * 6.6 + 24);
+          const cand = {
+            l: { x0:x-R-8-w, x1:x-R-8, y0:y-H/2, y1:y+H/2 },
+            r: { x0:x+R+8, x1:x+R+8+w, y0:y-H/2, y1:y+H/2 },
+            t: { x0:x-w/2, x1:x+w/2, y0:y-R-8-H, y1:y-R-8 },
+            b: { x0:x-w/2, x1:x+w/2, y0:y+R+8, y1:y+R+8+H }
+          };
+          let best = 'l', bestScore = Infinity;
+          for(const k of ['l','r','t','b']){
+            let score = 0;
+            placed.forEach((p, pi) => { if(pi >= (oh ? 1 : 0) + i && pi < (oh ? 1 : 0) + i + 1) return; if(hit(cand[k], p)) score += 1; });
+            if(score < bestScore){ bestScore = score; best = k; if(score === 0) break; }
+          }
+          placed.push(cand[best]);
+          const lab = h.el.querySelector('.bub-label');
+          if(lab){ lab.className = 'bub-label ' + best; }
+          h.o.side = best;
+        });
+      }catch(e){ /* labels keep their last side */ }
+    },
     drawRoute(pts, live){
       this.clearRoute();
       const geometry = { type:'LineString', coordinates: pts.map(p=>[p[1],p[0]]) };
-      const casing = new YMapFeature({ geometry, style:{ stroke:[{ color:'#FFFFFF', width:9, opacity:.9 }] }, zIndex:1 });
-      const stroke = { color:'#F0692B', width:4 };
-      if(!live) stroke.dash = [2, 9];
+      const casing = new YMapFeature({ geometry, style:{ stroke:[{ color:'#FFFFFF', width:9 }] }, zIndex:1 });
+      const stroke = { color:'#E0662B', width:4.5 };
+      if(!live) stroke.dash = [7, 7];
       const line = new YMapFeature({ geometry, style:{ stroke:[stroke] }, zIndex:2 });
       map.addChild(casing); map.addChild(line);
       routeFeatures = [casing, line];
@@ -1673,6 +1799,7 @@ async function createYandexBackend(el){
     },
     destroy(){ try{ map.destroy(); }catch(e){} el.innerHTML=''; }
   };
+  return api;
 }
 
 /* ---------- Start the map ---------- */
@@ -1720,6 +1847,15 @@ function ensureMarkers(){
   });
 }
 
+function bubbleFallback(img, id){ const s = SIGHTS.find(x=>x.id === id); if(s && img.parentElement) img.parentElement.innerHTML = iconBadge(s); }
+function bubbleHtml(o){
+  const s = o.sight;
+  if(!s) return '<div class="bub"><div class="bub-img"></div><span class="bub-num">' + (o.label || '') + '</span></div>';
+  const p = PHOTOS[s.id];
+  const inner = (p && p.url) ? '<img src="' + p.url + '" alt="" draggable="false" referrerpolicy="no-referrer" onerror="bubbleFallback(this,\'' + s.id + '\')">' : iconBadge(s);
+  const name = s.name.en.length > 28 ? s.name.en.slice(0, 27) + '…' : s.name.en;
+  return '<div class="bub' + ((o.kind || '').includes('sel') ? ' sel' : '') + '"><div class="bub-img">' + inner + '</div><span class="bub-num">' + (o.label || '') + '</span><span class="bub-label ' + (o.side || 'l') + '">' + tpEsc(name) + '</span></div>';
+}
 function sightPassesFilter(s){
   return !state.cats.length || s.cat.some(c => state.cats.includes(c));
 }
@@ -1736,8 +1872,9 @@ function refreshMarkers(orderedStops){
     const visible = sightPassesFilter(s) || idx!==-1 || sel;
     if(mapApi.setVisible) mapApi.setVisible(markers[s.id], visible);
     const pm = (typeof mp !== 'undefined' && mp && mp.rows && mp.rows[s.id]) || null;
-    mapApi.updateMarker(markers[s.id], { kind, label: idx!==-1 ? String(idx+1) : '', size, z: sel ? 900 : (idx!==-1 ? 300 : 0), badge: pm ? (pm.visited ? 'visited' : (pm.want ? 'want' : '')) : '' });
+    mapApi.updateMarker(markers[s.id], { kind, label: idx!==-1 ? String(idx+1) : '', size, sight: s, dim: orderedStops.length > 0 && idx === -1 && !sel, z: sel ? 900 : (idx!==-1 ? 300 : 0), badge: pm ? (pm.visited ? 'visited' : (pm.want ? 'want' : '')) : '' });
   });
+  if(mapApi.layout) mapApi.layout();
 }
 
 /* Called when an "Interested in" button is pressed: the map shows only the matching sights. */
