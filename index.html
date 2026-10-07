@@ -847,14 +847,11 @@ a.brand:focus-visible{ outline:2px solid #fff; outline-offset:6px; }
       <div class="tp-head">
         <div>
           <h2 class="display tp-title" id="top-places-title">Top rated places</h2>
-          <p class="tp-sub">Every sight, ranked by traveler stars and number of reviews. A place with one lucky 5-star review won't beat one that many people love.</p>
         </div>
         <div class="tp-auth" id="tp-auth"></div>
       </div>
       <div id="tp-list" class="tp-list"><div class="status">Loading ratings…</div></div>
     </section>
-
-      <div class="footer-note" id="data-note"></div>
     </div>
   </section>
 </div>
@@ -1015,11 +1012,6 @@ const SIGHTS = [
     cat:['church'], visitMin:30, roadFactor:1.3, speed:50,
     why:{en:"A 13th-century monastery on Aragats' lower slopes, built by the same royal family as Harichavank — a quiet stop with views back down toward Ashtarak on the way up to Byurakan."},
     hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
-
-  { id:'noratus', corridor:'northeast', icon:'khachkarField', name:{en:'Noratus Cemetery'}, lat:40.2394, lon:45.1897,
-    cat:['church'], visitMin:45, roadFactor:1.2, speed:60,
-    why:{en:"The largest surviving field of khachkars — carved cross-stones — anywhere in Armenia, with examples spanning nearly a thousand years standing in open rows by Lake Sevan's southern shore."},
-    hours:{en:"Open access, daylight hours"}, hoursFlagged:false, price:{en:"Small entry fee"}, priceFlagged:true },
 
   { id:'hayravank', corridor:'northeast', icon:'domeChurch', name:{en:'Hayravank Monastery'}, lat:40.3800, lon:45.0100,
     cat:['church'], visitMin:30, roadFactor:1.2, speed:55,
@@ -1858,12 +1850,7 @@ function updateSourceBadge(r){
   const el = document.getElementById('route-source');
   if(el) el.outerHTML = sourceBadgeHtml(r);
 }
-function updateDataNote(){
-  const live = (ORS_API_KEY || YANDEX_MAPS_KEY)
-    ? 'Drive times and the route line come from road routing (Yandex) for the route you are viewing; if it is unreachable they fall back to straight-line estimates.'
-    : 'Drive times are estimates computed from straight-line distance and typical road speeds, and the route line joins stops directly. Add a free OpenRouteService key to use real roads.';
-  document.getElementById('data-note').textContent = live + " Hours, pricing and accessibility carry a dotted underline where they haven't been independently verified; confirm locally before you go. Routes are kept clear of border-adjacent areas by design. Sight photos by Armenia Along the Way. Site build: map-v3.";
-}
+function updateDataNote(){ /* the footer note was removed */ }
 
 /* ======================================================================
    SIGHT INFO PANEL — clicking any pin on the map shows that sight's
