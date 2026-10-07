@@ -696,6 +696,26 @@ a.brand:focus-visible{ outline:2px solid #fff; outline-offset:6px; }
 .sight-panel-meta span, .stop-meta span{ display:inline-flex; align-items:center; gap:6px; }
 .sight-panel-meta svg, .stop-meta svg{ width:14px; height:14px; flex:none; display:inline-block; }
 
+/* ---- Top rated rows: bigger photo, short description ---- */
+.tp-row-main{ align-items:flex-start; gap:16px; padding:14px; }
+.tp-rank{ padding-top:6px; }
+.tp-thumb{ width:112px; height:112px; border-radius:14px; }
+.tp-title-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.tp-cat{ font-size:11px; padding:2px 9px; border-radius:999px; border:1px solid var(--border-strong); color:var(--ink-muted); white-space:nowrap; }
+.tp-meta{ margin:4px 0 6px; }
+.tp-desc{ font-size:13px; line-height:1.5; color:var(--ink-muted); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; max-width:62ch; }
+.tp-row-main > .tp-btn{ align-self:center; }
+@media (max-width: 600px){
+  .tp-row-main{ gap:12px; padding:12px; }
+  .tp-thumb{ width:84px; height:84px; }
+  .tp-row-main > .tp-btn{ margin-left:0; align-self:flex-start; }
+}
+
+/* ---- roads and cars in the side margins of the Top rated section ---- */
+.lower{ position:relative; overflow-x:clip; }
+.dusk-in{ position:relative; z-index:1; }
+#road-art{ position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:none; z-index:0; }
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -2151,11 +2171,11 @@ function tpRender(){
         <div class="tp-rank">${rated ? rank : '–'}</div>
         <div class="tp-thumb">${renderSightBadge(s)}</div>
         <div class="tp-info">
-          <div class="tp-name">${tpEsc(s.name.en)}</div>
+          <div class="tp-title-row"><span class="tp-name">${tpEsc(s.name.en)}</span><span class="tp-cat">${tpEsc(CATEGORIES[s.cat[0]].en)}</span></div>
           <div class="tp-meta">${rated
             ? `${tpStars(st.avg)} <strong>${st.avg.toFixed(1)}</strong> · ${st.count} review${st.count===1?'':'s'}`
             : 'No reviews yet — be the first'}</div>
-          <div class="pl-row" data-pl="${tpEsc(s.id)}">${placeBtns(s.id)}</div>
+          <div class="tp-desc">${tpEsc(s.why.en)}</div>
         </div>
         <button class="tp-btn ${open ? '' : 'primary'}" onclick="tpToggle('${tpEsc(s.id)}')">${open ? 'Close' : 'Rate & review'}</button>
       </div>
@@ -2744,6 +2764,100 @@ function resetApp(e){
   if(location.hash || location.search) location.href = location.pathname;
   else location.reload();
 }
+
+
+/* ======================================================================
+   ROADS AND CARS — two dotted roads in the side margins beside Top rated places.
+   They draw themselves as you scroll, and a cartoon car drives at the tip of each one.
+====================================================================== */
+(function(){
+  const lower = document.querySelector('.lower'), tp = document.getElementById('top-places'), inner = document.querySelector('.dusk-in');
+  if(!lower || !tp || !inner) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.id = 'road-art'; svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('focusable', 'false');
+  lower.insertBefore(svg, lower.firstChild);
+  const reduce = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  let roads = [], geo = null, raf = 0, building = false;
+
+  function car(color){
+    return '<g class="rc-car"><rect x="-8" y="-14" width="18" height="32" rx="8" fill="#05061A" opacity=".28"/>' +
+      '<rect x="-9" y="-16" width="18" height="32" rx="8" fill="' + color + '"/><rect x="-6" y="-5" width="12" height="11" rx="4" fill="#1D2150"/>' +
+      '<rect x="-6.5" y="-15" width="4" height="2.4" rx="1.1" fill="#FF5C7A"/><rect x="2.5" y="-15" width="4" height="2.4" rx="1.1" fill="#FF5C7A"/>' +
+      '<circle cx="-5.2" cy="14" r="1.9" fill="#FFF4C8"/><circle cx="5.2" cy="14" r="1.9" fill="#FFF4C8"/></g>';
+  }
+  function roadPath(cx, amp, top, bottom, phase){
+    const lam = 300; let d = '';
+    for(let y = top; y <= bottom + 8; y += 8){
+      const yy = Math.min(y, bottom), x = cx + amp * Math.sin(((yy - top) / lam) * Math.PI * 2 + phase);
+      d += (d ? 'L' : 'M') + x.toFixed(1) + ' ' + yy.toFixed(1);
+    }
+    return d;
+  }
+  function build(){
+    if(building) return; building = true;
+    try{
+      const lr = lower.getBoundingClientRect(), ir = inner.getBoundingClientRect(), tr = tp.getBoundingClientRect();
+      const W = lr.width, H = lr.height, gL = ir.left - lr.left, gR = lr.right - ir.right, g = Math.min(gL, gR);
+      if(!(g >= 48) || !(tr.height > 80)){ svg.style.display = 'none'; roads = []; geo = null; return; }
+      svg.style.display = '';
+      const scale = g >= 70 ? 1.5 : 1.15, amp = Math.min(22, g * 0.2);
+      const top = tr.top - lr.top + 10, bottom = tr.bottom - lr.top - 10;
+      svg.setAttribute('viewBox', '0 0 ' + W.toFixed(0) + ' ' + H.toFixed(0));
+      const specs = [
+        { cx: gL * 0.5, phase: 0, color: '#FFA062', speed: 1, offset: 0 },
+        { cx: W - gR * 0.5, phase: Math.PI, color: '#FF8A7A', speed: 0.92, offset: 0.06 }
+      ];
+      let defs = '', body = '';
+      specs.forEach((sp, i) => {
+        const d = roadPath(sp.cx, amp, top, bottom, sp.phase);
+        defs += '<mask id="rm' + i + '" maskUnits="userSpaceOnUse" x="0" y="0" width="' + W.toFixed(0) + '" height="' + H.toFixed(0) + '"><path class="rm-p" pathLength="1" d="' + d + '" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round" stroke-dasharray="0 2"/></mask>';
+        body += '<path d="' + d + '" fill="none" stroke="#3A3F86" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="1 7"/>' +
+                '<path class="rb-p" d="' + d + '" fill="none" stroke="#FFB36B" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="1 7" mask="url(#rm' + i + ')"/>' + car(sp.color);
+      });
+      const prev = roads.map(r => r.cur);
+      svg.innerHTML = '<defs>' + defs + '</defs>' + body;
+      const masks = svg.querySelectorAll('.rm-p'), paths = svg.querySelectorAll('.rb-p'), cars = svg.querySelectorAll('.rc-car');
+      roads = specs.map((sp, i) => ({ sp, mask: masks[i], path: paths[i], car: cars[i], len: paths[i].getTotalLength(), cur: prev[i] || 0, target: 0, scale }));
+      geo = { top, bottom };
+      aim(true);
+    }catch(e){ console.warn('road art unavailable', e); svg.style.display = 'none'; roads = []; }
+    finally{ building = false; }
+  }
+  function aim(jump){
+    if(!roads.length || !geo) return;
+    const lr = lower.getBoundingClientRect(), line = window.innerHeight * 0.55 - lr.top;   // the "reading line" on screen
+    const base = Math.max(0, Math.min(1, (line - geo.top) / (geo.bottom - geo.top)));
+    roads.forEach(r => {
+      r.target = reduce ? 0.06 : Math.max(0, Math.min(1, base * r.sp.speed + (base > 0 ? r.sp.offset * Math.min(1, base * 6) : 0)));
+      if(jump || reduce) r.cur = r.target;
+    });
+    draw(); if(!reduce) kick();
+  }
+  function draw(){
+    roads.forEach(r => {
+      const f = r.cur, L = r.len * f, a = r.path.getPointAtLength(Math.max(0, L - 3)), b = r.path.getPointAtLength(Math.min(r.len, L + 3)), p = r.path.getPointAtLength(L);
+      const ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI - 90;
+      r.mask.setAttribute('stroke-dasharray', f.toFixed(4) + ' 2');
+      r.car.setAttribute('transform', 'translate(' + p.x.toFixed(1) + ',' + p.y.toFixed(1) + ') rotate(' + ang.toFixed(1) + ') scale(' + r.scale + ')');
+    });
+  }
+  function kick(){ if(!raf) raf = requestAnimationFrame(step); }
+  function step(){
+    raf = 0; let moving = false;
+    roads.forEach(r => { const dlt = r.target - r.cur; if(Math.abs(dlt) > 0.0004){ r.cur += dlt * 0.16; moving = true; } else r.cur = r.target; });
+    draw(); if(moving) kick();
+  }
+  let ticking = false;
+  function onScroll(){ if(ticking) return; ticking = true; requestAnimationFrame(() => { ticking = false; aim(false); }); }
+  window.addEventListener('scroll', onScroll, { passive:true });
+  let rebuildTimer = 0;
+  function rebuildSoon(){ clearTimeout(rebuildTimer); rebuildTimer = setTimeout(build, 120); }
+  window.addEventListener('resize', rebuildSoon);
+  if('ResizeObserver' in window){ const ro = new ResizeObserver(rebuildSoon); ro.observe(tp); ro.observe(lower); }
+  build();
+  setTimeout(build, 900);   // once photos and ratings have changed the list height
+})();
 
 </script>
 </body>
