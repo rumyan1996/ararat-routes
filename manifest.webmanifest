@@ -1,0 +1,16 @@
+{
+  "name": "Armenia Along the Way",
+  "short_name": "Along the Way",
+  "description": "Day trips from Yerevan along one road, with the stops that are worth the detour.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#14173A",
+  "theme_color": "#14173A",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
