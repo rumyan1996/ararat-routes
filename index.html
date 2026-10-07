@@ -1842,7 +1842,7 @@ function updateDataNote(){
   const live = (ORS_API_KEY || YANDEX_MAPS_KEY)
     ? 'Drive times and the route line come from road routing (Yandex) for the route you are viewing; if it is unreachable they fall back to straight-line estimates.'
     : 'Drive times are estimates computed from straight-line distance and typical road speeds, and the route line joins stops directly. Add a free OpenRouteService key to use real roads.';
-  document.getElementById('data-note').textContent = live + " Hours, pricing and accessibility carry a dotted underline where they haven't been independently verified; confirm locally before you go. Routes are kept clear of border-adjacent areas by design. Sight photos come from Wikipedia and Wikimedia Commons under their free licenses; open a place's Wikipedia article for the photographer credit. Site build: map-v3.";
+  document.getElementById('data-note').textContent = live + " Hours, pricing and accessibility carry a dotted underline where they haven't been independently verified; confirm locally before you go. Routes are kept clear of border-adjacent areas by design. Sight photos by Armenia Along the Way. Site build: map-v3.";
 }
 
 /* ======================================================================
@@ -2315,78 +2315,36 @@ function rateSelectedSight(){
 tpInit();
 
 /* ======================================================================
-   SIGHT PHOTOS — each sight gets a real photo from its Wikipedia article
-   (free-licensed images from Wikimedia Commons). Found automatically when
-   the page opens, remembered in the browser for 30 days, and any sight
-   without a photo keeps its icon.
+   SIGHT PHOTOS — your own pictures from the "photos" folder on GitHub.
+   Name each picture after the sight (for example tatev.jpg). A sight without a picture shows its icon.
 ====================================================================== */
-const WIKI_TITLES = {
-  garni:'Garni Temple', geghard:'Geghard', garnigorge:'Garni Gorge', khorvirap:'Khor Virap',
-  etchmiadzin:'Etchmiadzin Cathedral', zvartnots:'Zvartnots Cathedral',
-  sevanavank:'Sevanavank', dilijan:'Dilijan', amberd:'Amberd', karilake:'Lake Kari', saghmosavank:'Saghmosavank', charentsarch:'Charents Arch',
-  noravank:'Noravank', havutstar:'Havuts Tar', khosrovreserve:'Khosrov Forest State Reserve',
-  areniCave:'Areni-1 cave', gndevank:'Gndevank', tatev:'Tatev Monastery',
-  talin:'Talin Cathedral', harichavank:'Harichavank', karmravor:'Karmravor Church',
-  aruchavank:'Aruchavank', tegher:'Tegher Monastery', noratus:'Noratus cemetery', hayravank:'Hayravank',
-  haghartsin:'Haghartsin Monastery', goshavank:'Goshavank', loriberd:'Lori Berd', odzun:'Odzun Church',
-  sanahin:'Sanahin Monastery', haghpat:'Haghpat Monastery',
-  erebuni:'Erebuni Fortress', bjni:'Bjni Fortress', smbataberd:'Smbataberd',
-  jermuk:'Jermuk Waterfall', shaki:'Shaki Waterfall', trchkan:'Trchkan Waterfall'
-};
-const PHOTO_CACHE_KEY = 'ararat_photos_v1';
-const PHOTO_TTL = 30*24*3600*1000;
-
-function photoCacheRead(){
-  try{
-    const c = JSON.parse(localStorage.getItem(PHOTO_CACHE_KEY) || '{}');
-    return (c && c.t && Date.now() - c.t < PHOTO_TTL && c.p) ? c.p : {};
-  }catch(e){ return {}; }
+try{ localStorage.removeItem('ararat_photos_v1'); }catch(e){}
+var GH_PHOTOS_API = 'https://api.github.com/repos/rumyan1996/ararat-routes/contents/photos';
+async function localPhotoMap(){
+  let files = null;
+  try{ const c = JSON.parse(localStorage.getItem('agLocalPhotos') || 'null'); if(c && Date.now() - c.t < 10*60*1000) files = c.files; }catch(e){}
+  if(!files){
+    try{
+      const r = await fetch(GH_PHOTOS_API, { headers:{ Accept:'application/vnd.github+json' } });
+      if(r.ok){ const d = await r.json(); files = (Array.isArray(d) ? d : []).filter(f => f.type === 'file' && /\.(jpe?g|png|webp)$/i.test(f.name)).map(f => f.name); }
+      else if(r.status === 404) files = [];
+    }catch(e){}
+  }
+  if(!files){
+    // GitHub did not answer: look for plain .jpg files next to the page
+    files = [];
+    await Promise.all(SIGHTS.map(s => new Promise(res => { const im = new Image(); im.onload = ()=>{ files.push(s.id + '.jpg'); res(); }; im.onerror = ()=>res(); im.src = 'photos/' + s.id + '.jpg'; })));
+  }
+  try{ localStorage.setItem('agLocalPhotos', JSON.stringify({ t: Date.now(), files })); }catch(e){}
+  const byName = {}; files.forEach(f => { byName[f.replace(/\.[^.]+$/, '').toLowerCase()] = f; });
+  const map = {}; SIGHTS.forEach(s => { const f = byName[s.id.toLowerCase()]; if(f) map[s.id] = 'photos/' + encodeURIComponent(f); });
+  return map;
 }
-function photoCacheWrite(p){
-  try{ localStorage.setItem(PHOTO_CACHE_KEY, JSON.stringify({ t:Date.now(), p })); }catch(e){}
-}
-function bigger(url){ return String(url).replace(/\/(\d+)px-/, '/640px-'); }
-
-async function wikiPhotoFor(title){
-  // 1) the article's own lead image
-  try{
-    const r = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(title.replace(/ /g,'_')));
-    if(r.ok){
-      const d = await r.json();
-      if(d.thumbnail && d.thumbnail.source){
-        return { url: bigger(d.thumbnail.source), page: (d.content_urls && d.content_urls.desktop && d.content_urls.desktop.page) || '' };
-      }
-    }
-  }catch(e){}
-  // 2) fall back to a search for the best matching article that has a picture
-  try{
-    const q = encodeURIComponent(title + ' Armenia');
-    const r = await fetch('https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=' + q +
-      '&gsrlimit=1&prop=pageimages|info&inprop=url&piprop=thumbnail&pithumbsize=640&format=json&origin=*');
-    if(r.ok){
-      const d = await r.json();
-      const pages = d.query && d.query.pages ? Object.values(d.query.pages) : [];
-      const p = pages[0];
-      if(p && p.thumbnail && p.thumbnail.source) return { url:p.thumbnail.source, page:p.fullurl || '' };
-    }
-  }catch(e){}
-  return null;
-}
-
 async function loadSightPhotos(){
-  const cache = photoCacheRead();
-  let changed = false;
-  await Promise.allSettled(SIGHTS.map(async s => {
-    if(PHOTOS[s.id] && PHOTOS[s.id].url) return;            // a photo set by hand always wins
-    let hit = cache[s.id];
-    if(!hit){
-      hit = await wikiPhotoFor(WIKI_TITLES[s.id] || s.name.en);
-      if(hit){ cache[s.id] = hit; changed = true; }
-    }
-    if(hit) PHOTOS[s.id] = { url: hit.url, credit: 'Photo via Wikipedia / Wikimedia Commons' + (hit.page ? ' — ' + hit.page : '') };
-  }));
-  if(changed) photoCacheWrite(cache);
-  // show the new photos everywhere a sight picture appears
+  let local = {};
+  try{ local = await localPhotoMap(); }catch(e){}
+  SIGHTS.forEach(s => { if(local[s.id]) PHOTOS[s.id] = { url: local[s.id], credit: 'Photo: Armenia Along the Way' }; });
+  // show the pictures everywhere a sight picture appears
   try{ renderSightPanel(); }catch(e){}
   try{ if(state.routes && state.routes.length) renderResults(); }catch(e){}
   try{
