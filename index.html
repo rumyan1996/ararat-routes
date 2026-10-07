@@ -2335,6 +2335,8 @@ async function ghImageList(path){
   const d = await r.json();
   return (Array.isArray(d) ? d : []).filter(f => f.type === 'file' && /\.(jpe?g|png|webp)$/i.test(f.name)).map(f => f.name);
 }
+var STATIC_PHOTOS = {"sevanavank":"sevanavank.jpg", "garni":"garni.jpg", "garnigorge":"garnigorge.jpg", "etchmiadzin":"etchmiadzin.jpg", "khorvirap":"khorvirap.jpg", "karilake":"karilake.jpg", "dilijan":"dilijan.jpg", "geghard":"geghard.jpg", "zvartnots":"zvartnots.jpg", "amberd":"amberd.jpg"};   // pictures already uploaded: shown at once, with no waiting for GitHub
+function withStatic(map){ return Object.assign({}, STATIC_PHOTOS, map); }
 function photoCacheRead(){ try{ return JSON.parse(localStorage.getItem('agLocalPhotos3') || 'null'); }catch(e){ return null; } }
 async function fetchPhotoLists(){
   let found = null;
@@ -2383,14 +2385,16 @@ function repaintPhotos(){
   }catch(e){}
 }
 async function loadSightPhotos(){
-  // 1) show what we remembered from the last visit straight away
+  // 0) the pictures we already know about show up immediately
+  if(applyLocalPhotos(withStatic({}))) repaintPhotos();
+  // 1) then what was remembered from the last visit
   const cached = photoCacheRead();
-  if(cached && cached.found){ if(applyLocalPhotos(photoMapFrom(cached.found))) repaintPhotos(); }
+  if(cached && cached.found){ if(applyLocalPhotos(withStatic(photoMapFrom(cached.found)))) repaintPhotos(); }
   // 2) then ask GitHub for the newest list (at most once a minute), and update if you added or removed pictures
   if(!cached || Date.now() - cached.t > 60*1000){
     try{
       const found = await fetchPhotoLists();
-      if(applyLocalPhotos(photoMapFrom(found))) repaintPhotos();
+      if(applyLocalPhotos(withStatic(photoMapFrom(found)))) repaintPhotos();
     }catch(e){}
   }
 }
