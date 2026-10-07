@@ -443,7 +443,7 @@ select{
 
 .footer-note{ margin-top: 40px; font-size: 12px; color: var(--ink-faint); max-width: 62ch; line-height: 1.6; }
 
-@media (prefers-reduced-motion: no-preference){
+@media all{   /* motion is on for everyone, whatever the device's "reduce motion" setting says */
   .stop{ animation: rise .4s ease both; }
   .stop:nth-child(1){ animation-delay: .02s; }
   .stop:nth-child(2){ animation-delay: .08s; }
@@ -620,10 +620,6 @@ body{ background: var(--bg); }
 @keyframes roadDraw{ to{ stroke-dashoffset:0; } }
 @keyframes dotPop{ from{ opacity:0; transform:scale(.2); } to{ opacity:1; transform:scale(1); } }
 @keyframes fadeUp{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
-@media (prefers-reduced-motion: reduce){
-  .top-copy h1 .w, .top-copy p, .road-dot{ animation:none; opacity:1; transform:none; }
-  .road-mask{ animation:none; stroke-dashoffset:0; }
-}
 
 /* ---- trip tools ---- */
 .trip-tools{ display:grid; gap:12px; margin-top:16px; }
@@ -2413,7 +2409,7 @@ loadSightPhotos();
   const v = document.querySelector('.top-video'), btn = document.getElementById('vid-toggle');
   if(!v) return;
   let userPaused = false, userPlayed = false;
-  const reduce = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const reduce = false;   // motion is always on (the device's "reduce motion" setting is ignored on purpose)
   function paint(){
     if(!btn) return;
     const playing = !v.paused && !v.ended;
@@ -2811,7 +2807,7 @@ function resetApp(e){
   const svg = document.createElementNS(NS, 'svg');
   svg.id = 'road-art'; svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('focusable', 'false');
   lower.insertBefore(svg, lower.firstChild);
-  const reduce = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const reduce = false;   // motion is always on (the device's "reduce motion" setting is ignored on purpose)
   let roads = [], geo = null, raf = 0, building = false;
 
   function car(color){
