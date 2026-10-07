@@ -2335,16 +2335,14 @@ async function ghImageList(path){
   const d = await r.json();
   return (Array.isArray(d) ? d : []).filter(f => f.type === 'file' && /\.(jpe?g|png|webp)$/i.test(f.name)).map(f => f.name);
 }
-async function localPhotoMap(){
-  let found = null;   // { dir: [file names] } for every place pictures may live
-  try{ const c = JSON.parse(localStorage.getItem('agLocalPhotos3') || 'null'); if(c && Date.now() - c.t < 10*60*1000) found = c.found; }catch(e){}
-  if(!found){
-    try{
-      found = {};
-      const lists = await Promise.all(PHOTO_DIRS.map(d => ghImageList(d)));
-      PHOTO_DIRS.forEach((d, i) => { found[d] = lists[i]; });
-    }catch(e){ found = null; }
-  }
+function photoCacheRead(){ try{ return JSON.parse(localStorage.getItem('agLocalPhotos3') || 'null'); }catch(e){ return null; } }
+async function fetchPhotoLists(){
+  let found = null;
+  try{
+    found = {};
+    const lists = await Promise.all(PHOTO_DIRS.map(d => ghImageList(d)));
+    PHOTO_DIRS.forEach((d, i) => { found[d] = lists[i]; });
+  }catch(e){ found = null; }
   if(!found){
     // GitHub did not answer (for example too many requests): look for plain .jpg files directly
     found = {}; PHOTO_DIRS.forEach(d => { found[d] = []; });
@@ -2357,6 +2355,9 @@ async function localPhotoMap(){
     }));
   }
   try{ localStorage.setItem('agLocalPhotos3', JSON.stringify({ t: Date.now(), found })); }catch(e){}
+  return found;
+}
+function photoMapFrom(found){
   const base = f => f.replace(/\.[^.]+$/, '').toLowerCase();
   const byName = {};
   // the folder written first in PHOTO_DIRS wins when the same picture exists in two places
@@ -2364,17 +2365,34 @@ async function localPhotoMap(){
   const map = {}; SIGHTS.forEach(s => { const u = byName[s.id.toLowerCase()]; if(u) map[s.id] = u; });
   return map;
 }
-async function loadSightPhotos(){
-  let local = {};
-  try{ local = await localPhotoMap(); }catch(e){}
-  SIGHTS.forEach(s => { if(local[s.id]) PHOTOS[s.id] = { url: local[s.id], credit: 'Photo: Armenia Along the Way' }; });
-  // show the pictures everywhere a sight picture appears
+function applyLocalPhotos(map){
+  let changed = false;
+  SIGHTS.forEach(s => {
+    const had = PHOTOS[s.id] && PHOTOS[s.id].url;
+    if(map[s.id]){ if(had !== map[s.id]){ PHOTOS[s.id] = { url: map[s.id], credit: 'Photo: Armenia Along the Way' }; changed = true; } }
+    else if(had){ delete PHOTOS[s.id]; changed = true; }
+  });
+  return changed;
+}
+function repaintPhotos(){
   try{ renderSightPanel(); }catch(e){}
   try{ if(state.routes && state.routes.length) renderResults(); }catch(e){}
   try{
     const typing = document.activeElement && document.activeElement.tagName === 'TEXTAREA';
     if(typeof tpRender === 'function' && !typing) tpRender();
   }catch(e){}
+}
+async function loadSightPhotos(){
+  // 1) show what we remembered from the last visit straight away
+  const cached = photoCacheRead();
+  if(cached && cached.found){ if(applyLocalPhotos(photoMapFrom(cached.found))) repaintPhotos(); }
+  // 2) then ask GitHub for the newest list (at most once a minute), and update if you added or removed pictures
+  if(!cached || Date.now() - cached.t > 60*1000){
+    try{
+      const found = await fetchPhotoLists();
+      if(applyLocalPhotos(photoMapFrom(found))) repaintPhotos();
+    }catch(e){}
+  }
 }
 loadSightPhotos();
 
