@@ -2318,26 +2318,43 @@ tpInit();
    SIGHT PHOTOS — your own pictures from the "photos" folder on GitHub.
    Name each picture after the sight (for example tatev.jpg). A sight without a picture shows its icon.
 ====================================================================== */
-try{ localStorage.removeItem('ararat_photos_v1'); }catch(e){}
-var GH_PHOTOS_API = 'https://api.github.com/repos/rumyan1996/ararat-routes/contents/photos';
+try{ localStorage.removeItem('ararat_photos_v1'); localStorage.removeItem('agLocalPhotos'); localStorage.removeItem('agLocalPhotos2'); }catch(e){}
+var GH_REPO_API = 'https://api.github.com/repos/rumyan1996/ararat-routes/contents/';
+var PHOTO_DIRS = ['Photos', 'photos', ''];   // where pictures may be: a "Photos" or "photos" folder, or next to index.html
+async function ghImageList(path){
+  const r = await fetch(GH_REPO_API + path, { headers:{ Accept:'application/vnd.github+json' } });
+  if(r.status === 404) return [];
+  if(!r.ok) throw new Error('github ' + r.status);
+  const d = await r.json();
+  return (Array.isArray(d) ? d : []).filter(f => f.type === 'file' && /\.(jpe?g|png|webp)$/i.test(f.name)).map(f => f.name);
+}
 async function localPhotoMap(){
-  let files = null;
-  try{ const c = JSON.parse(localStorage.getItem('agLocalPhotos') || 'null'); if(c && Date.now() - c.t < 10*60*1000) files = c.files; }catch(e){}
-  if(!files){
+  let found = null;   // { dir: [file names] } for every place pictures may live
+  try{ const c = JSON.parse(localStorage.getItem('agLocalPhotos3') || 'null'); if(c && Date.now() - c.t < 10*60*1000) found = c.found; }catch(e){}
+  if(!found){
     try{
-      const r = await fetch(GH_PHOTOS_API, { headers:{ Accept:'application/vnd.github+json' } });
-      if(r.ok){ const d = await r.json(); files = (Array.isArray(d) ? d : []).filter(f => f.type === 'file' && /\.(jpe?g|png|webp)$/i.test(f.name)).map(f => f.name); }
-      else if(r.status === 404) files = [];
-    }catch(e){}
+      found = {};
+      const lists = await Promise.all(PHOTO_DIRS.map(d => ghImageList(d)));
+      PHOTO_DIRS.forEach((d, i) => { found[d] = lists[i]; });
+    }catch(e){ found = null; }
   }
-  if(!files){
-    // GitHub did not answer: look for plain .jpg files next to the page
-    files = [];
-    await Promise.all(SIGHTS.map(s => new Promise(res => { const im = new Image(); im.onload = ()=>{ files.push(s.id + '.jpg'); res(); }; im.onerror = ()=>res(); im.src = 'photos/' + s.id + '.jpg'; })));
+  if(!found){
+    // GitHub did not answer (for example too many requests): look for plain .jpg files directly
+    found = {}; PHOTO_DIRS.forEach(d => { found[d] = []; });
+    await Promise.all(SIGHTS.map(async s => {
+      for(const d of PHOTO_DIRS){
+        const url = (d ? d + '/' : '') + s.id + '.jpg';
+        const ok = await new Promise(res => { const im = new Image(); im.onload = ()=>res(true); im.onerror = ()=>res(false); im.src = url; });
+        if(ok){ found[d].push(s.id + '.jpg'); break; }
+      }
+    }));
   }
-  try{ localStorage.setItem('agLocalPhotos', JSON.stringify({ t: Date.now(), files })); }catch(e){}
-  const byName = {}; files.forEach(f => { byName[f.replace(/\.[^.]+$/, '').toLowerCase()] = f; });
-  const map = {}; SIGHTS.forEach(s => { const f = byName[s.id.toLowerCase()]; if(f) map[s.id] = 'photos/' + encodeURIComponent(f); });
+  try{ localStorage.setItem('agLocalPhotos3', JSON.stringify({ t: Date.now(), found })); }catch(e){}
+  const base = f => f.replace(/\.[^.]+$/, '').toLowerCase();
+  const byName = {};
+  // the folder written first in PHOTO_DIRS wins when the same picture exists in two places
+  PHOTO_DIRS.slice().reverse().forEach(d => { (found[d] || []).forEach(f => { byName[base(f)] = (d ? d + '/' : '') + encodeURIComponent(f); }); });
+  const map = {}; SIGHTS.forEach(s => { const u = byName[s.id.toLowerCase()]; if(u) map[s.id] = u; });
   return map;
 }
 async function loadSightPhotos(){
