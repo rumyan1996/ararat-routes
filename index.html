@@ -604,7 +604,8 @@ body{ background: var(--bg); }
 @media (max-width: 1100px){ .workspace{ grid-template-columns: 380px minmax(0,1fr); } }
 @media (max-width: 900px){
   .topnav{ display:none; } .top-in{ padding:0 18px; } .top-copy{ padding:14px 0 30px; } .dusk-top, .top-in{ min-height:320px; }
-  .workspace{ display:flex; flex-direction:column; gap:14px; padding:14px 14px 28px; }
+  .workspace{ display:flex; flex-direction:column; align-items:stretch; gap:14px; padding:14px 14px 28px; }
+  .workspace > *{ width:100%; min-width:0; box-sizing:border-box; }
   .side{ display:contents; }
   .plan-card{ order:1; } .map-stage{ order:2; position:relative; top:auto; height:62vh; min-height:360px; } #results{ order:3; } .saved-box{ order:4; }
   .lower{ padding:36px 16px 44px; }
@@ -796,6 +797,52 @@ a.brand:focus-visible{ outline:2px solid #fff; outline-offset:6px; }
 .cta:disabled{ opacity:.4; cursor:not-allowed; filter:grayscale(.5); box-shadow:none; }
 .ms-picked[hidden], .ms-list[hidden], .ms-wrap [hidden]{ display:none !important; }
 .ms-picked button{ background:none; border:0; color:var(--ink); font-size:16px; cursor:pointer; }
+
+/* ===================== PHONE POLISH (QA fixes) ===================== */
+/* the old map frame rules left a 26px bottom margin + padding that showed as a dark band under the map */
+.map-wrap{ margin:0; padding:0; }
+.map-stage{ background:var(--surface-2); }
+@media (max-width: 900px){
+  .map-stage{ height:58vh; height:58svh; min-height:340px; max-height:620px; }
+}
+@media (max-width: 600px){
+  /* inputs at 16px so iPhones do not zoom the whole page when you tap them */
+  input, textarea, select, .ms-input{ font-size:16px; }
+  /* bigger touch targets */
+  .chip{ padding:9px 14px; min-height:38px; }
+  .mode-switch button{ padding:11px 8px; }
+  .ms-row{ padding:11px 12px; }
+  .tp-pg{ min-width:40px; height:40px; }
+  /* hero: keep the pause button off the text */
+  .top-copy{ padding-bottom:62px; }
+  .vid-toggle{ right:14px; bottom:14px; }
+  /* map labels must not run off the edge */
+  .bub-label{ max-width:130px; text-overflow:ellipsis; }
+  .map-hint{ top:10px; left:10px; padding:7px 12px; font-size:12px; }
+  /* sight card on the map: compact, buttons never overlap */
+  .sight-panel{ top:10px; left:10px; width:calc(100% - 20px); max-height:calc(100% - 20px); padding:12px; gap:12px; border-radius:18px; }
+  .sight-panel-thumb{ width:56px; height:56px; }
+  .sight-panel-body{ padding-right:22px; }
+  .sight-panel-name{ font-size:16px; }
+  .sight-panel-why{ font-size:12.5px; margin:6px 0 8px; }
+  .sight-panel-close{ top:6px; right:6px; width:32px; height:32px; font-size:16px; }
+  .sight-panel .pl-row{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  .sight-panel .btn-ghost{ white-space:normal; height:auto; min-height:38px; padding:8px 10px; line-height:1.2; font-size:12.5px; text-align:center; }
+  /* top rated cards: thumbnail + text on top, button underneath, nothing squeezed */
+  .tp-row-main{ display:grid; grid-template-columns:64px minmax(0,1fr); gap:8px 12px; align-items:start; padding:12px; position:relative; }
+  .tp-rank{ position:absolute; top:6px; left:6px; z-index:1; width:22px; height:22px; padding:0; border-radius:50%; background:var(--bg); display:flex; align-items:center; justify-content:center; font-size:11px; }
+  .tp-thumb{ width:64px; height:64px; border-radius:12px; }
+  .tp-info{ min-width:0; }
+  .tp-desc{ -webkit-line-clamp:3; max-width:none; }
+  .tp-row-main > .tp-btn{ grid-column:1 / -1; width:100%; margin:0; align-self:stretch; text-align:center; padding:10px 14px; }
+  .tp-detail{ padding:14px 12px 16px; }
+  .tp-title{ font-size:24px; }
+}
+@media (max-width: 380px){
+  .workspace{ padding:10px 10px 24px; }
+  .plan-card{ padding:14px; }
+  .top-copy h1{ font-size:30px; }
+}
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -2083,6 +2130,10 @@ function withTimeout(promise, ms, msg){
 /* Corners of Armenia ([lat,lon]), used to fit the whole country on screen */
 const ARMENIA_BOUNDS = [[38.86,43.44],[41.30,46.61]]; // [lat,lon] corners, used to fit the whole country on screen
 
+/* phone screens get smaller pins, shorter labels and more breathing room when the map fits a trip */
+(function(){ try{ if(window.matchMedia('(pointer: coarse)').matches){ const t=document.getElementById('map-hint'); if(t) t.textContent='Tap a pin to see that sight.'; } }catch(e){} })();
+const IS_PHONE = !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
+const PIN_SIZE = IS_PHONE ? 24 : 32, LABEL_MAX = IS_PHONE ? 130 : 190, FIT_PAD = IS_PHONE ? 2.1 : 1.5;
 async function createYandexBackend(el){
   await withTimeout(loadYandexScript().then(()=>ymaps3.ready), 12000, 'Yandex Maps took too long to load');
   const { YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapMarker, YMapFeature, YMapControls } = ymaps3;
@@ -2162,6 +2213,7 @@ async function createYandexBackend(el){
         const mx = lon => (lon + 180) / 360, my = lat => { const s = Math.sin(lat*Math.PI/180); return 0.5 - Math.log((1+s)/(1-s)) / (4*Math.PI); };
         const px = (lat, lon) => [ (mx(lon) - mx(c[0])) * scale, (my(lat) - my(c[1])) * scale ];
         const R = 26, H = 22;
+        const vr = el.getBoundingClientRect(), hw = vr.width / 2, hh = vr.height / 2;
         const bubbles = stops.map(h => px(h.o.lat, h.o.lon));
         const hit = (a, b) => a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
         const placed = [];
@@ -2170,7 +2222,7 @@ async function createYandexBackend(el){
         bubbles.forEach(([x, y]) => placed.push({ x0:x-R, x1:x+R, y0:y-R, y1:y+R }));
         stops.forEach((h, i) => {
           const [x, y] = bubbles[i];
-          const w = Math.min(190, (h.o.sight ? h.o.sight.name.en.length : 10) * 6.6 + 24);
+          const w = Math.min(LABEL_MAX, (h.o.sight ? h.o.sight.name.en.length : 10) * 6.6 + 24);
           const cand = {
             l: { x0:x-R-8-w, x1:x-R-8, y0:y-H/2, y1:y+H/2 },
             r: { x0:x+R+8, x1:x+R+8+w, y0:y-H/2, y1:y+H/2 },
@@ -2181,6 +2233,7 @@ async function createYandexBackend(el){
           for(const k of ['l','r','t','b']){
             let score = 0;
             placed.forEach((p, pi) => { if(pi >= (oh ? 1 : 0) + i && pi < (oh ? 1 : 0) + i + 1) return; if(hit(cand[k], p)) score += 1; });
+            { const c = cand[k]; if(c.x0 < -hw + 4 || c.x1 > hw - 4 || c.y0 < -hh + 4 || c.y1 > hh - 4) score += 3; }   // keep the name inside the visible map
             if(score < bestScore){ bestScore = score; best = k; if(score === 0) break; }
           }
           placed.push(cand[best]);
@@ -2204,14 +2257,14 @@ async function createYandexBackend(el){
     flyTo(lat, lon, minZoom){
       map.setLocation({ center:[lon,lat], zoom: Math.max(map.zoom||8, minZoom), duration:600 });
     },
-    fit(pts, maxZoom){
+    fit(pts, maxZoom, pad){
       // Fit the points in view with ~25% breathing room, capped at maxZoom.
       const mx = lon => (lon+180)/360;
       const my = lat => { const s=Math.sin(lat*Math.PI/180); return 0.5 - Math.log((1+s)/(1-s))/(4*Math.PI); };
       const lats = pts.map(p=>p[0]), lons = pts.map(p=>p[1]);
       const minLon=Math.min(...lons), maxLon=Math.max(...lons), minLat=Math.min(...lats), maxLat=Math.max(...lats);
-      const spanX = Math.max((mx(maxLon)-mx(minLon))*1.5, 1e-6);
-      const spanY = Math.max((my(minLat)-my(maxLat))*1.5, 1e-6);
+      const spanX = Math.max((mx(maxLon)-mx(minLon))*(pad || FIT_PAD), 1e-6);
+      const spanY = Math.max((my(minLat)-my(maxLat))*(pad || FIT_PAD), 1e-6);
       const r = el.getBoundingClientRect();
       const zx = Math.log2(Math.max(r.width,1)/(256*spanX)), zy = Math.log2(Math.max(r.height,1)/(256*spanY));
       const zoom = Math.max(3, Math.min(maxZoom, zx, zy));
@@ -2258,7 +2311,7 @@ async function startMap(){
   if(token!==mapInitToken){ api.destroy(); return; }
   mapApi = api;
   renderMap(pendingStops);
-  if(!(pendingStops && pendingStops.length) && !selectedSightId) mapApi.fit(ARMENIA_BOUNDS, 9);
+  if(!(pendingStops && pendingStops.length) && !selectedSightId) mapApi.fit(ARMENIA_BOUNDS, 9, 1.12);
   try{
     if(window.__mapRO) window.__mapRO.disconnect();
     let roTimer = 0, lastW = el.clientWidth, lastH = el.clientHeight;
@@ -2269,7 +2322,7 @@ async function startMap(){
       roTimer = setTimeout(()=>{
         if(!mapApi) return;
         if(pendingStops && pendingStops.length) renderMap(pendingStops);
-        else if(!selectedSightId) mapApi.fit(ARMENIA_BOUNDS, 9);
+        else if(!selectedSightId) mapApi.fit(ARMENIA_BOUNDS, 9, 1.12);
       }, 200);
     });
     window.__mapRO.observe(el);
@@ -2281,7 +2334,7 @@ function ensureMarkers(){
   if(originMarker || !mapApi) return;
   originMarker = mapApi.addMarker({ lat:YEREVAN.lat, lon:YEREVAN.lon, kind:'origin', label:'', size:36, title:'Yerevan', origin:true, z:500 });
   SIGHTS.forEach(s=>{
-    markers[s.id] = mapApi.addMarker({ lat:s.lat, lon:s.lon, kind:'idle', cat:s.cat[0], label:'', size:32, title:s.name.en, z:0, onClick: ()=> selectSight(s.id) });
+    markers[s.id] = mapApi.addMarker({ lat:s.lat, lon:s.lon, kind:'idle', cat:s.cat[0], label:'', size:PIN_SIZE, title:s.name.en, z:0, onClick: ()=> selectSight(s.id) });
   });
 }
 
