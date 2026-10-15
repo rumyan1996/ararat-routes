@@ -1662,12 +1662,11 @@ const I18N = {
   }
 };
 I18N.hy = {
- "brandName": "Հայաստան",
- "brandTag": "արժանի շրջանցումներ",
+ "brandTag": "այցելության արժանի կանգառներ",
  "startLabel": "Մեկնարկային կետ",
  "modeLabel": "Պլանավորել ըստ",
  "modeTime": "Իմ ժամանակի",
- "modeSight": "Ուզած վայրի",
+ "modeSight": "Ցանկացած վայրի",
  "budgetLabel": "Ժամանակի բյուջե",
  "hoursShort": " ժամ, գնալ-գալ",
  "budgetHelp": "Ներառում է ճանապարհը և յուրաքանչյուր կանգառում անցկացրած ժամանակը։",
@@ -1678,8 +1677,8 @@ I18N.hy = {
  "findRoutes": "Գտնել երթուղիներ",
  "savedLabel": "Պահպանված ուղևորություններ",
  "heroTitle": "Ճանապարհը տեսարանի կեսն է",
- "heroSub": "Ընտրեք՝ որքան ժամանակ ունեք, կամ վայր, որտեղ ուզում եք հասնել։ Ստացեք օրվա ուղևորություն Երևանից՝ մեկ ճանապարհով, այն կանգառներով, որոնք արժե շրջանցել։",
- "statusIdle": "Ընտրեք ձեր ժամանակը վերևում և սեղմեք <strong>Գտնել երթուղիներ</strong>՝ կամ փոխարենը ընտրեք ուզած վայրը։",
+ "heroSub": "Ընտրեք՝ որքան ժամանակ ունեք, կամ վայր, որտեղ ուզում եք հասնել։ Ստացեք օրվա ուղևորություն Երևանից՝ մեկ ճանապարհով, այն կանգառներով, որոնք արժե այցելել։",
+ "statusIdle": "Ընտրեք ձեր ժամանակը վերևում և սեղմեք <strong>Գտնել երթուղիներ</strong>՝ կամ փոխարենը ընտրեք ցանկացած վայրը։",
  "noFit": "Ձեր ընթացիկ զտիչներով Երևանից {h} ժամանոց գնալ-գալ ուղևորության մեջ ոչինչ չի տեղավորվում։",
  "noFitHelp": "Մենք չենք կրճատի ձեր ժամանակը՝ կանգառ ավելացնելու համար. փորձեք ավելի երկար ժամանակ, ավելի քիչ զտիչներ կամ ավելի մոտ վայր։",
  "tooFarAlone": "{name}. միայն այս վայրը մոտավորապես {h} ժ գնալ-գալ է, ինչն արդեն գերազանցում է ձեր {b} ժամվա բյուջեն։ Ավելացրեք բյուջեն՝ այն երթուղուն ներառելու համար։",
@@ -1698,7 +1697,7 @@ I18N.hy = {
  "savedOpen": "Բացել",
  "savedDelete": "Հեռացնել",
  "yerevanReturn": "նույն ճանապարհով հետ՝ Երևան",
- "corridorNote": "Գնալ-գալ՝ մեկ ճանապարհով. վերևի կանգառները գտնվում են այս վայր՝ {name} տանող ճանապարհին, և առանձին շրջանցում չեն։",
+ "corridorNote": "Գնալ-գալ՝ մեկ ճանապարհով. վերևի կանգառները գտնվում են այս վայր՝ {name} տանող ճանապարհին, և լրացուցիչ ճանապարհ չեն։",
  "catFilterAll": "Լռելյայն ներառված են բոլոր հետաքրքրությունները. սեղմեք մեկը կամ մի քանիսը՝ ընտրությունը նեղացնելու համար։",
  "entryFee": "Մուտք",
  "hoursWord": "Ժամեր"
@@ -2724,7 +2723,7 @@ function tripShareUrl(){
 function tripShareText(){
   const r = state.routes[state.activeRoute];
   return L('Day trip from Yerevan: ' + r.order.map(x=>x.name[LANG]).join(' → ') + ' · about ' + fmtHours(r.total) + ' h round trip (Armenia Along the Way)',
-    'Օրվա ուղևորություն Երևանից՝ ' + r.order.map(x=>x.name[LANG]).join(' → ') + ' · մոտ ' + fmtHours(r.total) + ' ժ գնալ-գալ (Հայաստան՝ ճանապարհին)');
+    'Օրվա ուղևորություն Երևանից՝ ' + r.order.map(x=>x.name[LANG]).join(' → ') + ' · մոտ ' + fmtHours(r.total) + ' ժ գնալ-գալ (Armenia Along the Way)');
 }
 function copyShareLink(){
   try{
@@ -3638,13 +3637,11 @@ function resetApp(e){
 const UI_HY = {
  "Close": "Փակել",
  "Sign in to continue": "Մուտք գործեք՝ շարունակելու համար",
- "Sign in with Google to continue.": "Շարունակելու համար մուտք գործեք Google-ով։",
- "Continue with Google": "Շարունակել Google-ով",
+ "Sign in with Google to continue.": "Շարունակելու համար մուտք գործեք Google հաշվով։",
+ "Continue with Google": "Շարունակել Google հաշվով",
  "Not now": "Ոչ հիմա",
  "We only use your Google name and photo for your reviews, photos and saved places. We never post anything for you.": "Ձեր Google-ի անունն ու լուսանկարն օգտագործում ենք միայն ձեր կարծիքների, լուսանկարների և պահպանված վայրերի համար։ Ձեր անունից երբեք ոչինչ չենք հրապարակում։",
  "You are offline. Saved trips and place details still work, but the map and forecast need internet.": "Դուք անցանց եք։ Պահպանված ուղևորություններն ու վայրերի տվյալները դեռ աշխատում են, սակայն քարտեզի և եղանակի կանխատեսման համար ինտերնետ է պետք։",
- "Along the Way": "Ճանապարհին",
- "Armenia Along the Way, start again": "Հայաստան՝ ճանապարհին. սկսել նորից",
  "Start again": "Սկսել նորից",
  "Play background video": "Միացնել ֆոնային տեսանյութը",
  "Pause background video": "Դադարեցնել ֆոնային տեսանյութը",
@@ -3699,15 +3696,15 @@ const UI_HY = {
  "Please enter a fuel price up to 2000 and a car use from 2 to 30.": "Մուտքագրեք վառելիքի գին մինչև 2000 և մեքենայի ծախս 2-ից 30։",
  "Rain is likely on most days this week. Check again closer to your trip.": "Այս շաբաթ օրերի մեծ մասին անձրև է սպասվում։ Նորից ստուգեք ուղևորությանը մոտ։",
  "Saving a trip needs an internet connection.": "Ուղևորությունը պահպանելու համար ինտերնետ է պետք։",
- "Sign in with Google to save this trip. Your saved trips will be waiting for you on any device.": "Մուտք գործեք Google-ով՝ այս ուղևորությունը պահպանելու համար։ Պահպանված ուղևորությունները ձեզ կսպասեն ցանկացած սարքում։",
+ "Sign in with Google to save this trip. Your saved trips will be waiting for you on any device.": "Մուտք գործեք Google հաշվով՝ այս ուղևորությունը պահպանելու համար։ Պահպանված ուղևորությունները ձեզ կսպասեն ցանկացած սարքում։",
  "You can keep up to 30 saved trips. Delete one to save another.": "Կարող եք պահել մինչև 30 ուղևորություն։ Ջնջեք մեկը՝ մյուսը պահպանելու համար։",
  "Could not save the trip. Please try again.": "Չհաջողվեց պահպանել ուղևորությունը։ Խնդրում ենք փորձել նորից։",
  "Trip saved to your account.": "Ուղևորությունը պահպանվեց ձեր հաշվում։",
  "Could not delete. Please try again.": "Չհաջողվեց ջնջել։ Խնդրում ենք փորձել նորից։",
  "Offline: your saved trips from your last visit.": "Անցանց. ձեր պահպանված ուղևորությունները նախորդ այցից։",
  "Sign in to save trips and open them on any device.": "Մուտք գործեք՝ ուղևորությունները պահպանելու և ցանկացած սարքում բացելու համար։",
- "Sign in with Google": "Մուտք գործել Google-ով",
- "Sign in with Google to see your saved trips.": "Մուտք գործեք Google-ով՝ ձեր պահպանված ուղևորությունները տեսնելու համար։",
+ "Sign in with Google": "Մուտք գործել Google հաշվով",
+ "Sign in with Google to see your saved trips.": "Մուտք գործեք Google հաշվով՝ ձեր պահպանված ուղևորությունները տեսնելու համար։",
  "Delete this saved trip": "Ջնջել այս պահպանված ուղևորությունը",
  "Copy this link:": "Պատճենեք այս հղումը՝",
  "Signing in needs an internet connection.": "Մուտք գործելու համար ինտերնետ է պետք։",
@@ -3715,15 +3712,15 @@ const UI_HY = {
  "Could not save. Please try again.": "Չհաջողվեց պահպանել։ Խնդրում ենք փորձել նորից։",
  "Reviews are temporarily unavailable.": "Կարծիքները ժամանակավորապես հասանելի չեն։",
  "Sign out": "Դուրս գալ",
- "Sign in with Google to review": "Մուտք գործեք Google-ով՝ կարծիք թողնելու համար",
- "Sign in with Google to rate places and write reviews.": "Մուտք գործեք Google-ով՝ վայրերը գնահատելու և կարծիք գրելու համար։",
+ "Sign in with Google to review": "Մուտք գործեք Google հաշվով՝ կարծիք թողնելու համար",
+ "Sign in with Google to rate places and write reviews.": "Մուտք գործեք Google հաշվով՝ վայրերը գնահատելու և կարծիք գրելու համար։",
  "No reviews yet — be the first": "Դեռ կարծիքներ չկան. եղեք առաջինը",
  "Top rated places pages": "Ամենաբարձր գնահատված վայրերի էջեր",
  "Previous page": "Նախորդ էջ",
  "Next page": "Հաջորդ էջ",
- "Want to rate this place?": "Ուզո՞ւմ եք գնահատել այս վայրը։",
+ "Want to rate this place?": "Ցանկանո՞ւմ եք գնահատել այս վայրը։",
  "Sign in with your Google account to leave stars and a review.": "Մուտք գործեք ձեր Google հաշվով՝ աստղեր և կարծիք թողնելու համար։",
- "Sign in with Google to rate this place and write a review.": "Մուտք գործեք Google-ով՝ այս վայրը գնահատելու և կարծիք գրելու համար։",
+ "Sign in with Google to rate this place and write a review.": "Մուտք գործեք Google հաշվով՝ այս վայրը գնահատելու և կարծիք գրելու համար։",
  "Your review (you can edit it)": "Ձեր կարծիքը (կարող եք խմբագրել)",
  "Your rating": "Ձեր գնահատականը",
  "What did you think? (optional)": "Ի՞նչ կարծիքի եք։ (ըստ ցանկության)",
@@ -3740,26 +3737,26 @@ const UI_HY = {
  "Reviews could not load right now. Please refresh the page.": "Կարծիքները հիմա չեն բեռնվում։ Խնդրում ենք թարմացնել էջը։",
  "Traveler": "Ճանապարհորդ",
  "My places": "Իմ վայրերը",
- "Keep a wishlist and tick off the places you have been. Sign in with Google to start.": "Պահեք ցանկությունների ցուցակ և նշեք այն վայրերը, որտեղ եղել եք։ Սկսելու համար մուտք գործեք Google-ով։",
- "Sign in with Google to keep your wishlist and visited places.": "Մուտք գործեք Google-ով՝ ցանկությունների ցուցակը և այցելած վայրերը պահելու համար։",
- "Use \"Want to go\" and \"Been here\" on any place to add it here.": "Օգտագործեք «Ուզում եմ գնալ» և «Եղել եմ» ցանկացած վայրի վրա՝ այն այստեղ ավելացնելու համար։",
- "Want to go": "Ուզում եմ գնալ",
+ "Keep a wishlist and tick off the places you have been. Sign in with Google to start.": "Պահեք ցանկությունների ցուցակ և նշեք այն վայրերը, որտեղ եղել եք։ Սկսելու համար մուտք գործեք Google հաշվով։",
+ "Sign in with Google to keep your wishlist and visited places.": "Մուտք գործեք Google հաշվով՝ ցանկությունների ցուցակը և այցելած վայրերը պահելու համար։",
+ "Use \"Want to go\" and \"Been here\" on any place to add it here.": "Օգտագործեք «Ցանկանում եմ այցելել» և «Եղել եմ» ցանկացած վայրի վրա՝ այն այստեղ ավելացնելու համար։",
+ "Want to go": "Ցանկանում եմ այցելել",
  "Been here": "Եղել եմ",
  "Add to your wishlist": "Ավելացնել ձեր ցանկությունների ցուցակում",
  "Mark as visited": "Նշել որպես այցելած",
- "Sign in with Google to add this place to your wishlist or your visited list.": "Մուտք գործեք Google-ով՝ այս վայրը ձեր ցանկությունների կամ այցելածների ցուցակում ավելացնելու համար։",
+ "Sign in with Google to add this place to your wishlist or your visited list.": "Մուտք գործեք Google հաշվով՝ այս վայրը ձեր ցանկությունների կամ այցելածների ցուցակում ավելացնելու համար։",
  "Visitor photos": "Այցելուների լուսանկարներ",
  "Loading photos…": "Լուսանկարները բեռնվում են…",
  "No visitor photos yet.": "Այցելուների լուսանկարներ դեռ չկան։",
  "Report": "Բողոքել",
  "Sign in to add photos": "Մուտք գործեք՝ լուսանկար ավելացնելու համար",
- "Sign in with Google to add your photos.": "Մուտք գործեք Google-ով՝ ձեր լուսանկարներն ավելացնելու համար։",
+ "Sign in with Google to add your photos.": "Մուտք գործեք Google հաշվով՝ ձեր լուսանկարներն ավելացնելու համար։",
  "Add photos": "Ավելացնել լուսանկարներ",
  "You already added the maximum.": "Դուք արդեն ավելացրել եք առավելագույն քանակը։",
  "Please choose image files.": "Խնդրում ենք ընտրել պատկերի ֆայլեր։",
  "Photo added. Thank you!": "Լուսանկարն ավելացվեց։ Շնորհակալություն։",
  "Delete your photo?": "Ջնջե՞լ ձեր լուսանկարը։",
- "Sign in with Google to report a photo.": "Մուտք գործեք Google-ով՝ լուսանկարի մասին բողոքելու համար։",
+ "Sign in with Google to report a photo.": "Մուտք գործեք Google հաշվով՝ լուսանկարի մասին բողոքելու համար։",
  "Report this photo as inappropriate?": "Բողոքե՞լ այս լուսանկարի մասին՝ որպես անհամապատասխան։",
  "Could not send the report. Please try again.": "Չհաջողվեց ուղարկել բողոքը։ Խնդրում ենք փորձել նորից։",
  "Thank you. We will review this photo.": "Շնորհակալություն։ Մենք կուսումնասիրենք այս լուսանկարը։",
@@ -3774,7 +3771,7 @@ const UI_HY = {
 const UI_RX = [
   [/^(\d+(?:\.\d+)?)h$/, m => m[1] + ' ժ'],
   [/^(\d+) of (\d+) visited$/, m => m[1] + '՝ ' + m[2] + '-ից այցելած'],
-  [/^Want to go \((\d+)\)$/, m => 'Ուզում եմ գնալ (' + m[1] + ')'],
+  [/^Want to go \((\d+)\)$/, m => 'Ցանկանում եմ այցելել (' + m[1] + ')'],
   [/^Been here \((\d+)\)$/, m => 'Եղել եմ (' + m[1] + ')'],
   [/^· (\d+) reviews?$/, m => '· ' + m[1] + ' կարծիք'],
   [/^Showing (\d+)–(\d+) of (\d+) places$/, m => 'Ցուցադրվում է ' + m[1] + '–' + m[2] + '՝ ' + m[3] + ' վայրից'],
@@ -3878,9 +3875,9 @@ function setLang(l, initial){
   LANG = (l === 'hy') ? 'hy' : 'en';
   if(!initial){ try{ localStorage.setItem('agLang', LANG); }catch(e){} }
   document.documentElement.lang = LANG;
-  document.title = L('Armenia Along the Way — day trips from Yerevan', 'Հայաստան՝ ճանապարհին — օրվա ուղևորություններ Երևանից');
+  document.title = L('Armenia Along the Way — day trips from Yerevan', 'Armenia Along the Way — օրվա ուղևորություններ Երևանից');
   const md = document.querySelector('meta[name="description"]');
-  if(md) md.setAttribute('content', L('Day trips from Yerevan along one road, with the stops that are worth the detour.', 'Օրվա ուղևորություններ Երևանից՝ մեկ ճանապարհով, այն կանգառներով, որոնք արժե շրջանցել։'));
+  if(md) md.setAttribute('content', L('Day trips from Yerevan along one road, with the stops that are worth the detour.', 'Օրվա ուղևորություններ Երևանից՝ մեկ ճանապարհով, այն կանգառներով, որոնք արժե այցելել։'));
   document.querySelectorAll('.lang-btn').forEach(b => { const on = b.dataset.lang === LANG; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); });
   if(initial && LANG === 'en'){ return; }
   applyI18n();
