@@ -16,7 +16,7 @@
 <meta property="og:description" content="Day trips from Yerevan along one road, with the stops that are worth the detour.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;500;600;700&family=Noto+Sans+Armenian:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 
 /* ============ TOKENS — Ararat Dusk ============ */
@@ -46,8 +46,8 @@
   --radius-m: 18px;
   --radius-l: 26px;
   --radius-pill: 999px;
-  --font-display: 'Sora', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  --font-body: 'DM Sans', ui-sans-serif, sans-serif;
+  --font-display: 'Sora', 'Noto Sans Armenian', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-body: 'DM Sans', 'Noto Sans Armenian', ui-sans-serif, sans-serif;
   color-scheme: dark;
 }
 @media (prefers-color-scheme: dark) {
@@ -604,8 +604,7 @@ body{ background: var(--bg); }
 @media (max-width: 1100px){ .workspace{ grid-template-columns: 380px minmax(0,1fr); } }
 @media (max-width: 900px){
   .topnav{ display:none; } .top-in{ padding:0 18px; } .top-copy{ padding:14px 0 30px; } .dusk-top, .top-in{ min-height:320px; }
-  .workspace{ display:flex; flex-direction:column; align-items:stretch; gap:14px; padding:14px 14px 28px; }
-  .workspace > *{ width:100%; min-width:0; box-sizing:border-box; }
+  .workspace{ display:flex; flex-direction:column; gap:14px; padding:14px 14px 28px; }
   .side{ display:contents; }
   .plan-card{ order:1; } .map-stage{ order:2; position:relative; top:auto; height:62vh; min-height:360px; } #results{ order:3; } .saved-box{ order:4; }
   .lower{ padding:36px 16px 44px; }
@@ -794,55 +793,19 @@ a.brand:focus-visible{ outline:2px solid #fff; outline-offset:6px; }
 .ms-night{ color:var(--gold-ink); }
 .ms-empty{ padding:12px; font-size:13px; color:var(--ink-muted); }
 .ms-picked{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 12px; border-radius:var(--radius-m); background:color-mix(in srgb, var(--green) 14%, var(--surface)); border:1px solid var(--green); font-size:13.5px; }
-.cta:disabled{ opacity:.4; cursor:not-allowed; filter:grayscale(.5); box-shadow:none; }
-.ms-picked[hidden], .ms-list[hidden], .ms-wrap [hidden]{ display:none !important; }
 .ms-picked button{ background:none; border:0; color:var(--ink); font-size:16px; cursor:pointer; }
 
-/* ===================== PHONE POLISH (QA fixes) ===================== */
-/* the old map frame rules left a 26px bottom margin + padding that showed as a dark band under the map */
-.map-wrap{ margin:0; padding:0; }
-.map-stage{ background:var(--surface-2); }
-@media (max-width: 900px){
-  .map-stage{ height:58vh; height:58svh; min-height:340px; max-height:620px; }
-}
-@media (max-width: 600px){
-  /* inputs at 16px so iPhones do not zoom the whole page when you tap them */
-  input, textarea, select, .ms-input{ font-size:16px; }
-  /* bigger touch targets */
-  .chip{ padding:9px 14px; min-height:38px; }
-  .mode-switch button{ padding:11px 8px; }
-  .ms-row{ padding:11px 12px; }
-  .tp-pg{ min-width:40px; height:40px; }
-  /* hero: keep the pause button off the text */
-  .top-copy{ padding-bottom:62px; }
-  .vid-toggle{ right:14px; bottom:14px; }
-  /* map labels must not run off the edge */
-  .bub-label{ max-width:130px; text-overflow:ellipsis; }
-  .map-hint{ top:10px; left:10px; padding:7px 12px; font-size:12px; }
-  /* sight card on the map: compact, buttons never overlap */
-  .sight-panel{ top:10px; left:10px; width:calc(100% - 20px); max-height:calc(100% - 20px); padding:12px; gap:12px; border-radius:18px; }
-  .sight-panel-thumb{ width:56px; height:56px; }
-  .sight-panel-body{ padding-right:22px; }
-  .sight-panel-name{ font-size:16px; }
-  .sight-panel-why{ font-size:12.5px; margin:6px 0 8px; }
-  .sight-panel-close{ top:6px; right:6px; width:32px; height:32px; font-size:16px; }
-  .sight-panel .pl-row{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
-  .sight-panel .btn-ghost{ white-space:normal; height:auto; min-height:38px; padding:8px 10px; line-height:1.2; font-size:12.5px; text-align:center; }
-  /* top rated cards: thumbnail + text on top, button underneath, nothing squeezed */
-  .tp-row-main{ display:grid; grid-template-columns:64px minmax(0,1fr); gap:8px 12px; align-items:start; padding:12px; position:relative; }
-  .tp-rank{ position:absolute; top:6px; left:6px; z-index:1; width:22px; height:22px; padding:0; border-radius:50%; background:var(--bg); display:flex; align-items:center; justify-content:center; font-size:11px; }
-  .tp-thumb{ width:64px; height:64px; border-radius:12px; }
-  .tp-info{ min-width:0; }
-  .tp-desc{ -webkit-line-clamp:3; max-width:none; }
-  .tp-row-main > .tp-btn{ grid-column:1 / -1; width:100%; margin:0; align-self:stretch; text-align:center; padding:10px 14px; }
-  .tp-detail{ padding:14px 12px 16px; }
-  .tp-title{ font-size:24px; }
-}
-@media (max-width: 380px){
-  .workspace{ padding:10px 10px 24px; }
-  .plan-card{ padding:14px; }
-  .top-copy h1{ font-size:30px; }
-}
+/* ============ LANGUAGE SWITCH (English / Armenian) ============ */
+.topbar{ position:relative; }
+.lang-switch{ position:absolute; right:0; top:26px; z-index:4; display:inline-flex; padding:3px; border-radius:999px; background:rgba(20,23,58,.55); border:1px solid rgba(255,255,255,.3); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+.lang-btn{ border:0; background:transparent; color:#fff; font:700 12.5px var(--font-body); padding:7px 12px; border-radius:999px; cursor:pointer; letter-spacing:.02em; line-height:1; }
+.lang-btn:hover{ background:rgba(255,255,255,.14); }
+.lang-btn.on{ background:#FFB36B; color:#1A1207; }
+.lang-btn:focus-visible{ outline:2px solid #fff; outline-offset:2px; }
+@media (max-width:640px){ html[lang="hy"] .top-copy{ padding-bottom:66px; } .topbar{ padding-top:54px; } .lang-switch{ top:12px; } .lang-btn{ padding:6px 11px; font-size:12px; } }
+html[lang="hy"] .display, html[lang="hy"] .top-copy h1{ letter-spacing:0; }
+html[lang="hy"] .top-copy h1{ line-height:1.18; }
+html[lang="hy"] .btn-ghost, html[lang="hy"] .pl-btn, html[lang="hy"] .tp-btn{ white-space:normal; line-height:1.25; }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -872,6 +835,10 @@ a.brand:focus-visible{ outline:2px solid #fff; outline-offset:6px; }
     <button class="vid-toggle" id="vid-toggle" type="button" aria-label="Play background video" title="Play or pause the background video"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path class="vt-play" d="M8 5.5v13l11-6.5z" fill="currentColor"/><path class="vt-pause" d="M7 5.5h3.6v13H7zM13.4 5.5H17v13h-3.6z" fill="currentColor"/></svg><span class="vt-text">Play</span></button>
     <div class="top-in">
       <div class="topbar">
+        <div class="lang-switch" role="group" aria-label="Language">
+          <button type="button" class="lang-btn on" data-lang="en" onclick="setLang('en')" aria-pressed="true" lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="hy" onclick="setLang('hy')" aria-pressed="false" lang="hy">ՀԱՅ</button>
+        </div>
         <a class="brand" href="/" aria-label="Armenia Along the Way, start again" title="Start again" onclick="resetApp(event)">
           <svg class="brand-mark" viewBox="0 0 78 78" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="78" height="78" rx="18" fill="#FFB36B"/><g transform="translate(8,8) scale(0.88)"><path d="M29.3 45.9L28.5 44.7L24.7 40.6L21.2 37.4L18.8 36.2L16.3 36.3L12.5 36.9L11.0 36.7L7.8 35.3L5.0 33.6L5.4 33.0L6.0 32.5L5.2 30.4L3.7 27.0L3.9 25.9L3.4 24.5L2.9 23.4L5.0 20.7L6.0 18.6L6.3 16.5L5.6 14.3L4.2 10.4L3.3 9.3L1.7 8.2L0.3 6.5L0.0 5.3L1.1 5.0L4.5 5.0L7.8 4.6L10.3 3.8L14.1 3.1L15.6 2.5L17.4 2.2L22.8 2.9L24.8 2.4L30.9 2.3L31.1 2.0L30.3 1.2L30.3 0.9L34.0 0.3L34.5 -0.0L35.0 1.3L36.3 2.7L37.8 3.3L38.6 4.1L38.6 4.7L36.0 5.5L35.9 5.8L36.0 6.2L36.8 6.4L40.5 8.2L42.6 8.2L43.7 8.8L44.3 9.9L46.0 11.4L47.5 12.8L47.6 13.3L47.2 14.1L43.3 16.9L42.9 17.8L42.8 18.8L44.5 21.9L47.1 25.3L50.7 27.8L55.7 30.5L55.8 32.3L55.0 34.3L54.3 35.7L54.0 36.6L53.4 37.0L48.4 36.9L47.6 37.2L47.3 37.6L47.2 38.0L49.1 38.6L51.9 40.7L53.5 42.8L55.2 43.8L57.1 45.4L58.6 47.0L61.0 49.1L63.7 48.4L67.2 50.2L67.4 51.4L67.1 52.5L64.9 53.7L64.7 54.2L64.7 54.6L64.9 55.2L66.3 56.1L67.8 57.6L69.5 59.8L68.7 60.4L67.1 60.5L65.9 60.3L65.4 60.7L65.5 61.4L67.1 63.0L67.4 64.2L67.3 66.3L67.4 69.0L63.5 68.8L60.3 70.0L59.1 69.8L58.3 67.5L57.6 65.7L55.5 61.1L56.1 59.2L54.9 58.1L52.1 56.1L51.4 55.3L51.8 54.2L52.1 52.1L51.8 50.5L51.1 50.0L49.6 49.9L48.0 50.3L44.5 51.9L42.2 50.9L40.8 49.9L40.1 49.0L38.2 49.7L37.8 49.4L37.8 47.3L37.2 46.1L36.2 44.7L35.2 44.1L31.5 45.4L29.3 45.9ZM46.7 19.5L45.8 20.0L45.0 19.8L45.0 18.5L45.6 18.1L46.3 18.1L46.9 18.5L46.7 19.5Z" fill="#1D2150"/><path d="M23.4 32.1 C24.7 33.8 27.7 41.6 31.2 42.5 C34.6 43.5 40.5 36.7 44.4 37.9 C48.3 39.0 51.4 46.6 54.3 49.5 C57.3 52.4 60.8 54.3 62.1 55.2" fill="none" stroke="#FFB36B" stroke-width="3.4" stroke-linecap="round"/><circle cx="23.4" cy="32.1" r="3.9" fill="#FFF4E8"/><circle cx="62.1" cy="55.2" r="4.5" fill="#FFF4E8"/></g></svg>
           <div class="brand-text">
@@ -940,7 +907,7 @@ a.brand:focus-visible{ outline:2px solid #fff; outline-offset:6px; }
       <div class="chipset" id="interest-chips"></div>
     </div>
 
-    <button class="cta" id="find-btn" onclick="if(this.disabled) return; runSearch(); focusTrip()" data-i18n="findRoutes">Find routes</button>
+    <button class="cta" onclick="runSearch(); focusTrip()" data-i18n="findRoutes">Find routes</button>
       </div>
       <div id="results">
         <div class="status" data-i18n="statusIdle">Choose your time above and press <strong>Find routes</strong> — or switch to a must-see place instead.</div>
@@ -1023,7 +990,7 @@ const PHOTOS = {
    DATA — real, named Armenian sights reachable by road from Yerevan.
    Coordinates are approximate (public-knowledge locations), used only to
    compute straight-line distance for time estimates, never presented as
-   surveyed GPS. Categories: church, fortress, nature, view, lake/waterfall/reservoir, village & culture.
+   surveyed GPS. Categories: church, fortress, nature, view, waterfall, village & culture, lake & water.
 ====================================================================== */
 const YEREVAN = { lat: 40.1792, lon: 44.4991 };
 
@@ -1076,7 +1043,7 @@ const SIGHTS = [
     closedMonths:[10,11,0,1,2,3] /* Nov(10)-Apr(3): mountain road often snow/ice affected */ },
 
   { id:'karilake', region:'Aragatsotn', corridor:'northwest', icon:'lake', name:{en:'Kari Lake, Mt Aragats'}, lat:40.5378, lon:44.1897,
-    cat:['waterfall'], visitMin:60, roadFactor:1.5, speed:40,
+    cat:['nature','lake'], visitMin:60, roadFactor:1.5, speed:40,
     why:{en:"A stark alpine lake at roughly 3,200m below Aragats' four summits — the road up feels like leaving Armenia's climate entirely."},
     hours:{en:"Seasonal — road generally closed by snow"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false,
     closedMonths:[9,10,11,0,1,2,3,4] /* Oct-May: snow closure, real and material to routing */ },
@@ -1240,7 +1207,7 @@ const SIGHTS = [
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
   { id:'lakearpi', region:'Shirak', corridor:'west', icon:'lake', name:{en:"Lake Arpi National Park"}, lat:41.03, lon:43.665,
-    cat:["waterfall"], visitMin:90, roadFactor:1.4, speed:45,
+    cat:["lake", "nature"], visitMin:90, roadFactor:1.4, speed:45,
     why:{en:"A high mountain lake and wetland on the Shirak plateau, protected as a national park and known for its migratory waterbirds."},
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
@@ -1290,7 +1257,7 @@ const SIGHTS = [
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
   { id:'ashtarak', region:'Aragatsotn', corridor:'northwest', icon:'arch', name:{en:"Ashtarak Gorge and Tsiranavor Church"}, lat:40.2972, lon:44.3597,
-    cat:["church"], visitMin:40, roadFactor:1.2, speed:55,
+    cat:["church", "nature"], visitMin:40, roadFactor:1.2, speed:55,
     why:{en:"Old stone bridges over the deep Kasagh gorge in Ashtarak, with the small early-medieval Tsiranavor church beside it."},
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
@@ -1305,7 +1272,7 @@ const SIGHTS = [
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
   { id:'aparanres', region:'Aragatsotn', corridor:'northwest', icon:'lake', name:{en:"Aparan Reservoir"}, lat:40.635, lon:44.355,
-    cat:["waterfall"], visitMin:40, roadFactor:1.3, speed:55,
+    cat:["lake"], visitMin:40, roadFactor:1.3, speed:55,
     why:{en:"A large reservoir on the Kasagh river near Aparan, with open mountain scenery toward Mount Aragats."},
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
@@ -1335,7 +1302,7 @@ const SIGHTS = [
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
   { id:'azat', region:'Ararat', corridor:'east', icon:'lake', name:{en:"Azat Reservoir"}, lat:40.015, lon:44.705,
-    cat:["waterfall"], visitMin:40, roadFactor:1.3, speed:50,
+    cat:["lake"], visitMin:40, roadFactor:1.3, speed:50,
     why:{en:"A reservoir on the Azat river in the foothills south of Garni, with mountain views."},
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
@@ -1350,7 +1317,7 @@ const SIGHTS = [
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
   { id:'shorzha', region:'Gegharkunik', corridor:'northeast', icon:'lake', name:{en:"Shorzha Beach, Lake Sevan"}, lat:40.48, lon:45.02,
-    cat:["waterfall"], visitMin:90, roadFactor:1.2, speed:60,
+    cat:["lake"], visitMin:90, roadFactor:1.2, speed:60,
     why:{en:"A stretch of Lake Sevan's western shore with open beaches and views across the water."},
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
@@ -1360,7 +1327,7 @@ const SIGHTS = [
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true },
 
   { id:'parz', region:'Tavush', corridor:'northeast', icon:'lake', name:{en:"Parz Lake, Dilijan"}, lat:40.782, lon:44.872,
-    cat:["waterfall"], visitMin:60, roadFactor:1.35, speed:45,
+    cat:["lake"], visitMin:60, roadFactor:1.35, speed:45,
     why:{en:"A small forest lake in the Dilijan National Park area, with walking trails around it."},
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
@@ -1390,12 +1357,12 @@ const SIGHTS = [
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
   { id:'lastiver', region:'Tavush', corridor:'northeast', icon:'waterfall', name:{en:"Lastiver Gorge and Waterfall"}, lat:40.9, lon:45.24,
-    cat:["waterfall"], visitMin:120, roadFactor:1.4, speed:40,
+    cat:["nature", "waterfall"], visitMin:120, roadFactor:1.4, speed:40,
     why:{en:"A forested gorge near Ijevan with a waterfall and cave dwellings carved into the rock."},
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
   { id:'goshlake', region:'Tavush', corridor:'northeast', icon:'lake', name:{en:"Gosh Lake"}, lat:40.802, lon:44.926,
-    cat:["waterfall"], visitMin:30, roadFactor:1.35, speed:45,
+    cat:["lake"], visitMin:30, roadFactor:1.35, speed:45,
     why:{en:"A small lake in the forest above Gosh village, a short walk from Goshavank."},
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
@@ -1410,7 +1377,7 @@ const SIGHTS = [
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
   { id:'akhtala', region:'Lori', corridor:'north', icon:'fortress', name:{en:"Akhtala Monastery"}, lat:41.152, lon:44.748,
-    cat:["church"], visitMin:45, roadFactor:1.3, speed:55,
+    cat:["church", "fortress"], visitMin:45, roadFactor:1.3, speed:55,
     why:{en:"A 13th-century fortified monastery whose main church holds unusually well-preserved Byzantine-style frescoes."},
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
@@ -1440,7 +1407,7 @@ const SIGHTS = [
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
   { id:'armash', region:'Ararat', corridor:'south', icon:'lake', name:{en:"Armash Fishponds"}, lat:39.835, lon:44.6,
-    cat:["waterfall"], visitMin:60, roadFactor:1.2, speed:55,
+    cat:["lake", "nature"], visitMin:60, roadFactor:1.2, speed:55,
     why:{en:"A large complex of fishponds on the Ararat plain, popular with birdwatchers and with views of Mount Ararat."},
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
@@ -1460,7 +1427,7 @@ const SIGHTS = [
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
   { id:'kechut', region:'Vayots Dzor', corridor:'south', icon:'lake', name:{en:"Kechut Reservoir"}, lat:39.82, lon:45.55,
-    cat:["waterfall"], visitMin:30, roadFactor:1.3, speed:50,
+    cat:["lake"], visitMin:30, roadFactor:1.3, speed:50,
     why:{en:"A reservoir on the Arpa river in Vayots Dzor, passed on the mountain road toward Jermuk."},
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
@@ -1529,7 +1496,7 @@ const SIGHTS = [
     why:{en:"A 17th-century church in Meghri with painted interior walls."},
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
 
-  { id:'ughtasar', region:'Syunik', corridor:'south', icon:'megalith', name:{en:"Ughtasar Petroglyphs"}, lat:39.7, lon:46.02,
+  { id:'ughtasar', region:'Syunik', corridor:'south', icon:'megalith', name:{en:"Ughtasar Petroglyphs"}, lat:39.7, lon:46.12,
     cat:["village"], visitMin:120, roadFactor:1.5, speed:30,
     why:{en:"A high-mountain site of ancient rock carvings above Sisian. It needs a rough mountain track and is snowed in for much of the year."},
     hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true, closedMonths:[9, 10, 11, 0, 1, 2, 3, 4, 5] },
@@ -1540,9 +1507,20 @@ const CATEGORIES = {
   church:{ en:'Church' },
   nature:{ en:'Nature' },
   view:{ en:'Viewpoint' },
-  waterfall:{ en:'Lake, Waterfall, Reservoir' },
-  village:{ en:'Village & culture' }
+  waterfall:{ en:'Waterfall' },
+  village:{ en:'Village & culture' },
+  lake:{ en:'Lake & water' }
 };
+
+/* ---- Armenian content ---- */
+const SIGHT_HY = {"garni": ["Գառնու տաճար", "Հայաստանի միակ կանգուն հելլենիստական-հռոմեական սյունազարդ տաճարը՝ կիրճի վրա բարձրացած. միջնադարյան քարե եկեղեցիների երկրում միակ ակնհայտորեն դասական շենքը։"], "geghard": ["Գեղարդի վանք", "ՅՈՒՆԵՍԿՕ-ի ցանկում ընդգրկված վանք՝ ժայռի մեջ փորված մատուռներով. որոշ սրահներ բառացիորեն փորված են լեռան մեջ, ոչ թե կառուցված նրա վրա։"], "garnigorge": ["«Քարերի սիմֆոնիա»", "Կարճ իջնում ես Գառնու կիրճ՝ դեպի վեցանկյուն բազալտե սյուների պատը, որ առաջացել է հնագույն լավայի հոսքի սառելուց։"], "khorvirap": ["Խոր Վիրապի վանք", "Հայաստանի հողից Արարատ լեռան ամենամոտ և ամենահստակ տեսարանը՝ այն վիրապի վրայից, որտեղ, ըստ ավանդության, Գրիգոր Լուսավորիչը բանտարկված էր մինչև թագավորության քրիստոնեացումը։"], "etchmiadzin": ["Էջմիածնի Մայր տաճար", "Հայ Առաքելական Եկեղեցու կենտրոնը և, ըստ շատերի, աշխարհի ամենահին տաճարներից մեկը՝ մինչ օրս գործող պաշտամունքի վայր։"], "zvartnots": ["Զվարթնոց տաճար (ավերակներ)", "7-րդ դարի շրջանաձև տաճարի հիմքը, որ կործանվել է դարեր առաջ. նրա մասշտաբն ավերակներից ավելի հեշտ է պատկերացնել, քան մոտակա կանգուն շենքերից շատերի։"], "sevanavank": ["Սևանավանք, Սևանա լիճ", "9-րդ դարի վանք թերակղզու վրա՝ աշխարհի ամենաբարձրադիր խոշոր լճերից մեկի ափին. միայն ջուրն արդեն արժե ճանապարհը։"], "dilijan": ["Դիլիջանի հին թաղամաս և անտառ", "Անտառապատ բլուրներ, փայտե պատշգամբներով տներ և հանքային ջրի աղբյուրներ. հայերն այս քաղաքը կոչում են «փոքրիկ Շվեյցարիա», և հասնելուն պես հեշտ է հասկանալ՝ ինչու։"], "amberd": ["Ամբերդի ամրոց", "7-րդ դարի ամրոց Արագած լեռան լանջին՝ 2300 մ բարձրության վրա, ժայռի եզրին, փոքր եկեղեցով և երկու գետակիրճերի միաժամանակյա տեսարանով։"], "karilake": ["Քարի լիճ, Արագած լեռ", "Խստաշունչ ալպյան լիճ՝ մոտ 3200 մ բարձրության վրա, Արագածի չորս գագաթների տակ. վերև տանող ճանապարհը թվում է՝ Հայաստանի կլիմայից լրիվ դուրս ես գալիս։"], "saghmosavank": ["Սաղմոսավանք, Քասաղի կիրճ", "13-րդ դարի վանք՝ ուղիղ խորը կիրճի շրթունքին. հետևի պատի տակի անդունդը տեսարանի մեծ մասն է։"], "charentsarch": ["Չարենցի կամար (դիտակետ)", "Ճանապարհի եզրին քարե կամար, որի միջով Արարատ լեռը երևում է հովտի վրայով. Գառնի տանող ճանապարհի ամենաշատ լուսանկարվող կանգառը և իսկապես լավ հինգ րոպեանոց ընդմիջում։"], "noravank": ["Նորավանք", "13-րդ դարի վանք՝ Վայոց ձորի կարմիր ժայռերի դիմաց. կիրճով անցնող ճանապարհը նույնքան հիշարժան է, որքան շենքերը։"], "havutstar": ["Հավուց Թառ (ավերակներ)", "Ավերված ժայռային վանք Գառնու կիրճի վերևում, որին հասնում են կարճ արշավով. Գեղարդից ավելի հանգիստ և ավելի քիչ վերականգնված, նույն կիրճային տեսարաններով։"], "khosrovreserve": ["Խոսրովի անտառի արգելոց", "Հայաստանի ամենահին պահպանվող անտառներից մեկը, որը, ասում են, 4-րդ դարի թագավորը տնկել է Արարատյան դաշտն անտառապատելու համար. կիրճային արահետներ և գիհու անտառ, հարևան Գառնիից շատ ավելի քիչ այցելուներով։"], "areniCave": ["Արենի-1 քարանձավ", "Քարանձավ, որտեղ հնագետները գտել են աշխարհի հայտնի ամենահին կաշվե կոշիկն ու գինեգործարանը՝ երկուսն էլ ավելի քան 5500 տարեկան. կարճ կանգառ Նորավանք տանող ճանապարհի եզրին։"], "gndevank": ["Գնդեվանք", "10-րդ դարի վանք Վայոց ձորի նեղ կիրճում, որ կառուցել է մի իշխանուհի՝ ամուսնու հիշատակին. Նորավանքից փոքր և հանգիստ, նույն ճանապարհի վրա։"], "tatev": ["Տաթևի վանք", "9-րդ դարի վանք Որոտանի կիրճի վերևի սարահարթում, որին հասնում են «Տաթևի թևեր» ճոպանուղով՝ աշխարհի ամենաերկար երկկողմանի ճոպանուղիներից մեկով։"], "talin": ["Թալինի տաճար (ավերակներ)", "7-րդ դարի ավերված տաճար Գյումրի տանող ճանապարհին. ժամանակին Հայաստանի ամենամեծ գմբեթավոր եկեղեցիներից մեկը, այսօր առանց տանիքի, բայց դեռ տպավորիչ։"], "harichavank": ["Հառիճավանք", "Վանական համալիր Արտիկի մոտ, որ համատեղում է 7-րդ դարի եկեղեցին և նրա կողքին կառուցված 13-րդ դարի եկեղեցին՝ հայկական եկեղեցական ճարտարապետության երկու շատ տարբեր դարերը կողք կողքի համեմատելու հազվագյուտ հնարավորություն։"], "karmravor": ["Կարմրավոր եկեղեցի", "7-րդ դարի փոքրիկ եկեղեցի Աշտարակում, հազիվ մի քանի հոգու համար բավարար. այդ շրջանի այն սակավ հայկական եկեղեցիներից մեկը, որ երբեք վերակառուցման կարիք չի ունեցել։"], "aruchavank": ["Առուճավանք (Առուճի տաճար)", "7-րդ դարի մեծ գմբեթավոր տաճար Առուճ գյուղում, ներսում դեռ երևացող խունացած որմնանկարներով. սովորաբար Երևանին ավելի մոտ գտնվող հայտնի եկեղեցիներից շատ ավելի հանգիստ է։"], "tegher": ["Տեղերի վանք", "13-րդ դարի վանք Արագածի ստորին լանջերին, որ կառուցել է Հառիճավանքի նույն իշխանական տոհմը. հանգիստ կանգառ՝ դեպի Աշտարակ երևացող տեսարանով, Բյուրական բարձրանալու ճանապարհին։"], "hayravank": ["Հայրավանք", "9-րդ դարի փոքր վանք Սևանա լճի արևմտյան ափի ժայռաբլրի վրա. Սևանավանքից քիչ մարդաշատ, ջրի նման տեսարանով։"], "haghartsin": ["Հաղարծինի վանք", "Վանական համալիր Դիլիջանի մոտ՝ անտառապատ բլուրների մեջ թաքնված, երեք տարբեր դարերում կառուցված երեք եկեղեցիներով. վերջին տարիներին վերականգնվել է Շարժայի կառավարիչ ընտանիքի աջակցությամբ։"], "goshavank": ["Գոշավանք", "12-րդ դարի վանք, որ կոչվում է այն միջնադարյան գիտնական-վանականի անունով, ով հիմնել է այն և այստեղ գրել Հայաստանի առաջին օրենսգրքերից մեկը. հայտնի է երկրի լավագույն փորագրված խաչքարերով։"], "loriberd": ["Լոռի Բերդ ամրոց", "11-րդ դարի ամրոց՝ երեք կողմից գետակիրճերով շրջապատված հրվանդանի վրա. բնական պաշտպանությունն արել է գործի մեծ մասը, ինչի շնորհիվ պատի մեծ մասը դեռ կանգուն է։"], "odzun": ["Օձունի եկեղեցի", "6-րդ դարի մեծ բազիլիկա Դեբեդի կիրճի վերևի սարահարթում՝ արտաքին պատերի շուրջը ձգվող անսովոր երկհարկանի սյունաշարով։"], "sanahin": ["Սանահինի վանք", "ՅՈՒՆԵՍԿՕ-ի համաշխարհային ժառանգության վանական համալիր, որի անունը, ըստ ավանդության, նշանակում է «սա ավելի հին է, քան այն»՝ բարեկամական խայթոց կիրճի մյուս կողմի քույր վանք Հաղպատի հասցեին։"], "haghpat": ["Հաղպատի վանք", "Սանահինի քույր ՅՈՒՆԵՍԿՕ-ի վանքը Դեբեդի կիրճի մյուս կողմում՝ գրատան շենքով, որտեղ ժամանակին պահվում էր միջնադարյան Հայաստանի ամենակարևոր ձեռագրային հավաքածուներից մեկը։"], "erebuni": ["Էրեբունի ամրոց", "Ք.ա. 782 թվականին հիմնադրված ուրարտական բլրային ամրոց՝ Երևան անվան ակունքը. վերակառուցված սրահներ և փոքր թանգարան բլրի ստորոտում՝ հենց քաղաքի ներսում։"], "bjni": ["Բջնիի ամրոց", "9–10-րդ դարերի Պահլավունի իշխանների ամրոց Հրազդան գետի վերևի ժայռաբլրի վրա՝ վերականգնված վերին միջնաբերդով, միջնադարյան ջրամբարով և գաղտնի անցման մասին ավանդությամբ։"], "smbataberd": ["Սմբատաբերդ ամրոց", "Վայոց ձորի խոշորագույն միջնադարյան ամրոցներից մեկը՝ երկու կիրճերի միջև ժայռային գագաթին. Արտաբույնք գյուղից հաշվեք մոտ մեկ ժամվա վերելք, իսկ Ծախաց Քար վանքը մոտ է։"], "jermuk": ["Ջերմուկի ջրվեժ", "Մոտ 70 մ բարձրությամբ ջրվեժ, որ ընկնում է Արփայի կիրճ՝ Ջերմուկ լեռնային առողջարանային քաղաքի ներսում, կոչվում է «Ջրահարսի վարսեր»։ Ավելացրեք զբոսանք քաղաքի հանքային աղբյուրներով։"], "shaki": ["Շակիի ջրվեժ", "18 մ բարձրությամբ ջրվեժ, որ թափվում է բազալտե լավայի եզրից Որոտանի կիրճում՝ Սիսիանի մոտ, փոքր գրոտներով շրջապատված։ Երևանից երկար ճանապարհ է, ուստի հարմար է ամբողջ օրվա ուղևորության համար։"], "trchkan": ["Տրչկանի ջրվեժ", "Հայաստանի ամենաբարձր ջրվեժը՝ մոտ 23 մ, Շիրակի և Լոռու սահմանին, կոչվում է իր վրայով ցատկող իշխանի անունով։ Հասնում են Չիչխանի կիրճով՝ ճանապարհով և արշավով, ամենահոյակապն է մարտից հունիս։"], "kumayri": ["Գյումրիի հին թաղամաս (Կումայրի)", "Գյումրիի հին թաղամասը՝ 19-րդ դարի սև և վարդագույն տուֆե շենքերով։ Այստեղ ռուսական շրջանի քաղաքային տեսքը շատ ավելի է պահպանվել, քան Երևանում, թեև որոշ շենքեր դեռ կրում են 1988 թվականի երկրաշարժի հետքերը։"], "blackfort": ["Սև բերդ, Գյումրի", "19-րդ դարի հսկայական ռուսական ամրոց՝ մուգ բազալտից, Գյումրիի վերևի բլրի վրա, կառուցված կայսրության և օսմանյան սահմանը պահպանելու համար։"], "yotverk": ["Յոթ Վերք եկեղեցի, Գյումրի", "Գյումրիի «Յոթ Վերք» եկեղեցին կենտրոնական հրապարակում՝ 19-րդ դարի տուֆե եկեղեցի, որ ծանր վնասվել էր 1988 թվականի երկրաշարժից և հետո վերակառուցվել է։"], "amenaprkich": ["Ամենափրկիչ եկեղեցի, Գյումրի", "19-րդ դարի մեծ տուֆե եկեղեցի Գյումրիի գլխավոր հրապարակի մոտ, վնասվել է 1988 թվականի երկրաշարժից և հետո վերակառուցվել։"], "marmashen": ["Մարմաշենի վանք", "10–11-րդ դարերի վանք՝ վարդագույն և մուգ տուֆից, Գյումրիի մոտ՝ գետակիրճի վերևում, մեծ գլխավոր եկեղեցով և փոքր մատուռներով։"], "lakearpi": ["Արփի լիճ ազգային պարկ", "Բարձրադիր լեռնային լիճ և ճահճուտ Շիրակի սարահարթում, պահպանվում է որպես ազգային պարկ և հայտնի է չվող ջրային թռչուններով։"], "artikquarry": ["Արտիկի տուֆի քարհանքեր", "Արտիկի տուֆի բաց քարհանքեր՝ վարդագույն և սև հրաբխային քար, որ օգտագործվել է Հայաստանի բազմաթիվ եկեղեցիների և քաղաքային շենքերի համար։"], "hripsime": ["Հռիփսիմե եկեղեցի, Վաղարշապատ", "7-րդ դարի եկեղեցի՝ վաղ հայկական ճարտարապետության անսովոր մաքուր օրինակ, Էջմիածնի՝ ՅՈՒՆԵՍԿՕ-ի ցանկում ընդգրկված եկեղեցիների խմբի մաս։"], "gayane": ["Գայանե եկեղեցի, Վաղարշապատ", "7-րդ դարի եկեղեցի Էջմիածնի ճանապարհին, վերակառուցված 17-րդ դարում, տաճարի հետ նույն ՅՈՒՆԵՍԿՕ-ի ցանկում ընդգրկված խմբի մաս։"], "shoghakat": ["Շողակաթ եկեղեցի, Վաղարշապատ", "1694 թվականի փոքր գմբեթավոր եկեղեցի Էջմիածնի մոտ, կոչվում է լույսի ճառագայթի անունով, որը, ըստ ավանդության, նշել է նահատակների հանգստավայրը։"], "sardarapat": ["Սարդարապատի հուշահամալիր", "1918 թվականի Սարդարապատի ճակատամարտի հուշապարկ, որտեղ հայկական ուժերը կասեցրին օսմանյան առաջխաղացումը. կարմիր տուֆե զանգակատուն և թևավոր ցլերի մեծ արձաններ։"], "metsamor": ["Մեծամորի հնագիտական վայր", "Հայաստանի հնագույն և խոշորագույն բնակավայրերից մեկը՝ բնակեցված բրոնզի դարից և հետագայում ամրացված։"], "hovhannavank": ["Հովհաննավանք", "Միջնադարյան վանք Քասաղի կիրճի եզրին՝ Օհանավանի մոտ, մեծ գմբեթավոր եկեղեցով և ծածկված գավթով։"], "oshakan": ["Օշական, Մեսրոպ Մաշտոցի գերեզման", "Գյուղի եկեղեցին, կառուցված Մեսրոպ Մաշտոցի գերեզմանի վրա՝ այն վանականի, որ մոտ 405 թվականին ստեղծեց հայոց այբուբենը։"], "byurakan": ["Բյուրականի աստղադիտարան", "Բյուրականի աստղաֆիզիկական աստղադիտարանը, հիմնադրվել է 1946 թվականին Արագած լեռան լանջերին՝ խորհրդային շրջանի մեծ աստղադիտակներով և Արարատյան դաշտի լայն տեսարանով։"], "ashtarak": ["Աշտարակի կիրճ և Ծիրանավոր եկեղեցի", "Աշտարակի խորը Քասաղի կիրճի վրայով հին քարե կամուրջներ և կողքին՝ վաղմիջնադարյան փոքր Ծիրանավոր եկեղեցին։"], "mughni": ["Մուղնու վանք", "17-րդ դարի եկեղեցի Մուղնի գյուղում, Աշտարակից մի քանի րոպե հեռավորության վրա։"], "alphabet": ["Հայկական այբուբենի հուշարձան", "Հայկական այբուբենի հսկա քարե տառերի պարկ Արագած լեռան տակ գտնվող լանջին, ստեղծվել է 2005 թվականին՝ այբուբենի 1600-ամյակի առթիվ։"], "aparanres": ["Ապարանի ջրամբար", "Մեծ ջրամբար Քասաղ գետի վրա՝ Ապարանի մոտ, դեպի Արագած լեռ բացվող լեռնային տեսարաններով։"], "yeghvard": ["Եղվարդի Զորավոր եկեղեցի", "Փոքր միջնադարյան եկեղեցի Եղվարդ քաղաքում, արագ կանգառ Երևանից դեպի հյուսիս տանող ճանապարհին։"], "kecharis": ["Կեչառիսի վանք, Ծաղկաձոր", "Մի քանի եկեղեցիներից բաղկացած վանական համալիր, հիմնադրվել է 11-րդ դարում, Ծաղկաձորի վերևի անտառապատ լեռներում։"], "tsaghcable": ["Ծաղկաձորի ճոպանուղի", "Ճոպանուղի Ծաղկաձորից դեպի Թեղենիս լեռ՝ Կոտայքի բլուրների լայն տեսարաններով. ձմռանը նաև դահուկային հանգստավայր։"], "teghenyats": ["Տեղենյաց վանք", "Փոքր միջնադարյան վանք Կոտայքի մարզում, հանգիստ կանգառ հիմնական զբոսաշրջային երթուղիներից հեռու։"], "goght": ["Գողթ գյուղ", "Փոքր գյուղ Գառնիի և Գեղարդի միջև՝ միջնադարյան եկեղեցով և թարմ թխած լավաշ համտեսելու լավ վայր։"], "azat": ["Ազատի ջրամբար", "Ջրամբար Ազատ գետի վրա՝ Գառնիից հարավ գտնվող նախալեռներում, լեռնային տեսարաններով։"], "noratus": ["Նորատուսի խաչքարերի գերեզմանոց", "Հայաստանի ամենամեծ պահպանված միջնադարյան խաչքարերի դաշտը՝ տարածված լանջի գերեզմանոցում՝ Սևանա լճի մոտ։"], "lchashen": ["Լճաշենի ժայռապատկերներ և բրոնզեդարյան վայրեր", "Բրոնզի դարի ժայռապատկերների և թաղումների վայր Սևանա լճի ափին։"], "shorzha": ["Շորժայի լողափ, Սևանա լիճ", "Սևանա լճի արևմտյան ափի հատված՝ բաց լողափերով և ջրի վրայով բացվող տեսարաններով։"], "selim": ["Սելիմի քարավանատուն", "1332 թվականի բազալտե քարավանատուն Սելիմի (Վարդենյաց) լեռնանցքում՝ մոտ 2410 մ բարձրության վրա, Հայաստանի ամենալավ պահպանված քարավանատունը։"], "parz": ["Պարզ լիճ, Դիլիջան", "Փոքր անտառային լիճ Դիլիջանի ազգային պարկի տարածքում՝ շուրջը զբոսանքի արահետներով։"], "jukhtak": ["Ջուխտակ վանք", "11–12-րդ դարերի վանք Դիլիջանի ազգային պարկի անտառային բացատում՝ Դիլիջանից մոտ 3 կմ հյուսիս-արևմուտք։"], "matosavank": ["Մաթոսավանք", "13-րդ դարի փոքր վանք, թաքնված Դիլիջանի ազգային պարկի անտառում՝ Ջուխտակ վանքի մոտ։ Եկեղեցին մասամբ ավերված է, իսկ արահետը կարող է դժվար հետևելի լինել։"], "makaravank": ["Մակարավանք", "Միջնադարյան վանք անտառապատ կիրճում՝ Աչաջուրի մոտ, հայտնի իր զարդարված գլխավոր եկեղեցով։"], "dilijannp": ["Դիլիջանի ազգային պարկ", "Մեծ անտառային ազգային պարկ՝ արշավային արահետներով, հանքային աղբյուրներով և թաքնված վանքերով։"], "berd": ["Բերդի ամրոց", "18-րդ դարի ամրոց Բերդ քաղաքի վերևում՝ Հայաստանի հյուսիս-արևելյան խորքում։"], "lastiver": ["Լաստիվերի կիրճ և ջրվեժ", "Անտառապատ կիրճ Իջևանի մոտ՝ ջրվեժով և ժայռի մեջ փորված քարանձավային բնակարաններով։"], "goshlake": ["Գոշի լիճ", "Փոքր լիճ Գոշ գյուղի վերևի անտառում, Գոշավանքից կարճ զբոսանքի հեռավորության վրա։"], "pushkin": ["Պուշկինի լեռնանցք (դիտակետ)", "Լեռնանցք Դիլիջան–Վանաձոր ճանապարհին՝ անտառային տեսարաններով և բանաստեղծ Պուշկինի հուշարձանով։"], "dendropark": ["Ստեփանավանի դենդրոպարկ", "Շատ երկրներից տնկված ծառերի մեծ այգի Ստեփանավանի անտառապատ լանջին։"], "akhtala": ["Ախթալայի վանք", "13-րդ դարի ամրացված վանք, որի գլխավոր եկեղեցում անսովոր լավ պահպանված բյուզանդական ոճի որմնանկարներ կան։"], "kobayr": ["Կոբայրի վանք", "12–13-րդ դարերի վանք Դեբեդի կիրճի վերևում՝ ներսում հին որմնանկարների մնացորդներով։"], "alaverdicable": ["Ալավերդու ճոպանուղի", "Ճոպանուղի Ալավերդիում, որ քաղաքը կապում է վերևի Սանահին լեռնային գյուղի հետ՝ Դեբեդի կիրճի տեսարաններով։"], "debed": ["Դեբեդի կիրճ (դիտակետ)", "Դիտակետ խորը Դեբեդի կիրճի վրա՝ հին հանքային քաղաքներով և լանջերին գտնվող վանքերով։"], "areni": ["Արենի գինու գյուղ", "Հայաստանի ամենահայտնի գինու շրջանի կենտրոնը՝ գյուղ, որտեղ կարելի է համտեսել տեղական գինի և տեսնել խաղողի այգիներ՝ կարմիր ժայռերի տակ։"], "dvin": ["Դվին հին մայրաքաղաք (ավերակներ)", "Դվինի մնացորդները՝ միջնադարյան Հայաստանի խոշոր մայրաքաղաք և առևտրական քաղաք՝ մի քանի դար շարունակ։"], "armash": ["Արմաշի ձկնաբուծարաններ", "Ձկնաբուծարանների մեծ համալիր Արարատյան դաշտում, սիրված թռչնադիտողների շրջանում և Արարատ լեռան տեսարանով։"], "tsakhatskar": ["Ծախաց Քար վանք", "13-րդ դարի վանք Եղեգիսի հովտում՝ նուրբ փորագրված խաչքարերով։"], "spitakavor": ["Սպիտակավոր վանք", "14-րդ դարի սպիտակ քարե եկեղեցի Եղեգնաձորի մոտ՝ հովտի վերևում, մինչ օրս ուխտավայր։"], "gladzor": ["Գլաձորի համալսարան (ավերակներ)", "Գլաձորի մնացորդները՝ 13–14-րդ դարերի միջնադարյան կրթության խոշոր կենտրոն։"], "kechut": ["Կեչուտի ջրամբար", "Ջրամբար Արփա գետի վրա Վայոց ձորում, որի կողքով անցնում են Ջերմուկ տանող լեռնային ճանապարհին։"], "arates": ["Արատեսի վանք", "Փոքր միջնադարյան վանք Վայոց ձորում։"], "karahunj": ["Քարահունջ (Զորաց Քարեր)", "Հնագույն կանգուն քարերի վայր՝ մոտ 200 քարով, Սիսիանի մոտ, երբեմն կոչվում է Հայաստանի Սթոունհենջ։"], "sisavan": ["Սիսավանի եկեղեցի, Սիսիան", "7-րդ դարի եկեղեցի Սիսիանում՝ Հարավային Հայաստանի ամենահին պահպանված եկեղեցիներից մեկը։"], "vorotnavank": ["Որոտնավանք", "Միջնադարյան վանք՝ եկեղեցով և մատուռներով, Որոտանի հովտում՝ Սիսիանի մոտ։"], "oldgoris": ["Հին Գորիս", "Գորիսի հին թաղամասը՝ քարե տներով և քաղաքի վերևի ժայռերում քարանձավային բնակարաններով։"], "khndzoresk": ["Խնձորեսկի քարանձավային գյուղ", "Փափուկ ժայռի մեջ փորված քարանձավների լանջային գյուղ, որին հասնում են երկար օրորվող ոտնակամրջով։"], "wingstatev": ["«Տաթևի թևեր» ճոպանուղի", "Որոտանի կիրճով Տաթևի վանք տանող երկար օդային ճոպանուղի՝ աշխարհի ամենաերկարներից մեկը։"], "devilsbridge": ["Սատանի կամուրջ", "Բնական քարե կամուրջ Որոտան գետի վրա՝ մոտակա հանքային աղբյուրներով։"], "bghenonoravank": ["Բղենո-Նորավանք", "Փոքր միջնադարյան վանք Գորիսի շրջանում։"], "khot": ["Հին Խոտ քարանձավային գյուղ", "Հին գյուղ Գորիսի մոտ՝ ժայռի մեջ փորված տներով և սենյակներով։"], "khustup": ["Խուստուփ լեռան դիտակետ", "Լեռ Կապանի վերևում՝ Սյունիքի անտառապատ լեռնաշղթաների լայն տեսարաններով։"], "meghrifort": ["Մեղրիի ամրոց", "Միջնադարյան ամրոց Մեղրիի վերևում՝ Հայաստանի ամենահարավային քաղաքում, Իրանի սահմանին մոտ։"], "meghrichurch": ["Մեղրիի Սուրբ Աստվածածին եկեղեցի", "17-րդ դարի եկեղեցի Մեղրիում՝ ներսից նկարազարդ պատերով։"], "ughtasar": ["Ուղտասարի ժայռապատկերներ", "Հնագույն ժայռապատկերների բարձրալեռնային վայր Սիսիանի վերևում։ Պահանջում է դժվարանցանելի լեռնային ճանապարհ, և տարվա մեծ մասում ծածկված է ձյունով։"]};
+const HOURS_HY = {"Hours not verified": "Աշխատանքային ժամերը չեն ստուգվել", "Open dawn–dusk": "Բաց է արշալույսից մինչև մթնշաղ", "Open access, daylight hours": "Ազատ մուտք, ցերեկային ժամերին", "Open access": "Ազատ մուտք", "Grounds open roughly 9:00–19:00": "Տարածքը բաց է մոտավորապես 9:00–19:00", "Typically open dawn–dusk": "Սովորաբար բաց է արշալույսից մինչև մթնշաղ", "Accessible dawn–dusk, no gate": "Հասանելի է արշալույսից մինչև մթնշաղ, առանց դարպասի", "Typically open 9:00–18:00": "Սովորաբար բաց է 9:00–18:00", "Grounds open roughly 8:00–20:00": "Տարածքը բաց է մոտավորապես 8:00–20:00", "Typically open 10:00–17:00": "Սովորաբար բաց է 10:00–17:00", "Grounds open dawn–dusk": "Տարածքը բաց է արշալույսից մինչև մթնշաղ", "Town is open access; trails best in daylight": "Քաղաքը բաց է. արահետներն ավելի լավ է անցնել ցերեկը", "Seasonal — road generally closed by snow": "Սեզոնային՝ ճանապարհը սովորաբար փակ է ձյան պատճառով", "Always accessible": "Միշտ հասանելի է", "No gate, accessible in daylight": "Առանց դարպասի, հասանելի է ցերեկը", "Entry generally needs a permit": "Մուտքի համար սովորաբար թույլտվություն է պետք", "Typically open by day, hours vary": "Սովորաբար բաց է ցերեկը, ժամերը տարբերվում են", "Cable car and grounds keep set hours": "Ճոպանուղին և տարածքն ունեն սահմանված ժամեր", "Museum-reserve hours, check before going": "Թանգարան-արգելոցի ժամեր. ստուգեք մինչ գնալը", "Open access, rough track and hike in": "Ազատ մուտք, դժվար ճանապարհ և արշավ"};
+const PRICE_HY = {"Entry fee not verified": "Մուտքի վճարը չի ստուգվել", "Free": "Անվճար", "Small entry fee": "Փոքր մուտքի վճար", "Free, donations welcome": "Անվճար, նվիրատվությունները ողջունելի են", "Free, small pit-descent fee": "Անվճար, փոքր վճար վիրապ իջնելու համար", "Free to walk the old town": "Հին քաղաքով զբոսնելն անվճար է", "Entry/permit fee": "Մուտքի/թույլտվության վճար", "Cable car ticket + small monastery fee": "Ճոպանուղու տոմս + փոքր վճար վանքի համար", "Separate small fees for museum and fortress": "Առանձին փոքր վճարներ թանգարանի և ամրոցի համար"};
+const REGION_HY = {"Kotayk": "Կոտայք", "Ararat": "Արարատ", "Armavir": "Արմավիր", "Aragatsotn": "Արագածոտն", "Vayots Dzor": "Վայոց ձոր", "Syunik": "Սյունիք", "Gegharkunik": "Գեղարքունիք", "Tavush": "Տավուշ", "Lori": "Լոռի", "Shirak": "Շիրակ", "Yerevan": "Երևան"};
+const CAT_HY = {"fortress": "Ամրոց", "church": "Եկեղեցի", "nature": "Բնություն", "view": "Դիտակետ", "waterfall": "Ջրվեժ", "village": "Գյուղ և մշակույթ", "lake": "Լիճ և ջրեր"};
+SIGHTS.forEach(s=>{ const h = SIGHT_HY[s.id]; s.name.hy = h[0]; s.why.hy = h[1]; s.hours.hy = HOURS_HY[s.hours.en] || s.hours.en; s.price.hy = PRICE_HY[s.price.en] || s.price.en; });
+Object.keys(CATEGORIES).forEach(k=>{ CATEGORIES[k].hy = CAT_HY[k] || CATEGORIES[k].en; });
+function regionName(r){ return LANG === 'hy' ? (REGION_HY[r] || r) : r; }
 
 /* ======================================================================
    SIGHT BADGES — one small original illustration per sight, all drawn to
@@ -1587,7 +1565,7 @@ const ICON_SVGS = {
 
 function iconBadge(sight){
   const inner = ICON_SVGS[sight.icon] || ICON_SVGS.domeChurch;
-  return `<svg viewBox="0 0 100 100" role="img" aria-label="${sight.name.en}">
+  return `<svg viewBox="0 0 100 100" role="img" aria-label="${sight.name[LANG]}">
     <rect x="0" y="0" width="100" height="100" rx="14" fill="var(--surface-2)" stroke="var(--border-strong)" stroke-width="1.5"/>
     ${inner}
   </svg>`;
@@ -1599,7 +1577,7 @@ function photoFailed(img, id){
 function renderSightBadge(sight){
   const p = PHOTOS[sight.id];
   if(p && p.url){
-    return `<img src="${p.url}" alt="${sight.name.en}" title="${(p.credit||'').replace(/"/g,'&quot;')}" loading="lazy" referrerpolicy="no-referrer" onerror="photoFailed(this,'${sight.id}')">`;
+    return `<img src="${p.url}" alt="${sight.name[LANG]}" title="${(p.credit||'').replace(/"/g,'&quot;')}" loading="lazy" referrerpolicy="no-referrer" onerror="photoFailed(this,'${sight.id}')">`;
   }
   return iconBadge(sight);
 }
@@ -1632,9 +1610,54 @@ const I18N = {
     corridorNote:'Out and back on one road — the stops above are on the way to {name}, not a separate detour.',
     catFilterAll:'All interests included by default — tap one or more to narrow it down.',
     entryFee:'Entry', hoursWord:'Hours',
+    budgetLabel:'Time budget', heroTitle:'The road there is half the sight',
   }
 };
+I18N.hy = {
+ "brandName": "Հայաստան",
+ "brandTag": "արժանի շրջանցումներ",
+ "startLabel": "Մեկնարկային կետ",
+ "modeLabel": "Պլանավորել ըստ",
+ "modeTime": "Իմ ժամանակի",
+ "modeSight": "Ուզած վայրի",
+ "budgetLabel": "Ժամանակի բյուջե",
+ "hoursShort": " ժամ, գնալ-գալ",
+ "budgetHelp": "Ներառում է ճանապարհը և յուրաքանչյուր կանգառում անցկացրած ժամանակը։",
+ "sightLabel": "Պարտադիր ներառել",
+ "sightPick": "Ընտրեք վայր…",
+ "sightHelp": "Մենք կպլանավորենք գնալ-գալ ուղևորություն դեպի այդ վայր տանող ճանապարհով՝ ճանապարհին ավելացնելով կանգառներ։",
+ "interestLabel": "Հետաքրքրում է",
+ "findRoutes": "Գտնել երթուղիներ",
+ "savedLabel": "Պահպանված ուղևորություններ",
+ "heroTitle": "Ճանապարհը տեսարանի կեսն է",
+ "heroSub": "Ընտրեք՝ որքան ժամանակ ունեք, կամ վայր, որտեղ ուզում եք հասնել։ Ստացեք օրվա ուղևորություն Երևանից՝ մեկ ճանապարհով, այն կանգառներով, որոնք արժե շրջանցել։",
+ "statusIdle": "Ընտրեք ձեր ժամանակը վերևում և սեղմեք <strong>Գտնել երթուղիներ</strong>՝ կամ փոխարենը ընտրեք ուզած վայրը։",
+ "noFit": "Ձեր ընթացիկ զտիչներով Երևանից {h} ժամանոց գնալ-գալ ուղևորության մեջ ոչինչ չի տեղավորվում։",
+ "noFitHelp": "Մենք չենք կրճատի ձեր ժամանակը՝ կանգառ ավելացնելու համար. փորձեք ավելի երկար ժամանակ, ավելի քիչ զտիչներ կամ ավելի մոտ վայր։",
+ "tooFarAlone": "{name}. միայն այս վայրը մոտավորապես {h} ժ գնալ-գալ է, ինչն արդեն գերազանցում է ձեր {b} ժամվա բյուջեն։ Ավելացրեք բյուջեն՝ այն երթուղուն ներառելու համար։",
+ "routeLabel": "Երթուղի",
+ "copyLink": "Պատճենել հղումը",
+ "linkCopied": "Հղումը պատճենվեց",
+ "saveTrip": "Պահպանել այս ուղևորությունը",
+ "driveTime": "ճանապարհ",
+ "totalDrive": "Ընդհանուր ճանապարհ",
+ "totalVisit": "Կանգառներում",
+ "totalTrip": "Ամբողջ ուղևորությունը",
+ "stops": "Կանգառներ",
+ "seasonNote": "Սեզոնային նշում",
+ "closedNow": "տարվա այս ժամանակ փակ է և դուրս է թողնված ստորև բոլոր երթուղիներից",
+ "savedEmpty": "Դեռ ոչինչ պահպանված չէ։",
+ "savedOpen": "Բացել",
+ "savedDelete": "Հեռացնել",
+ "yerevanReturn": "նույն ճանապարհով հետ՝ Երևան",
+ "corridorNote": "Գնալ-գալ՝ մեկ ճանապարհով. վերևի կանգառները գտնվում են այս վայր՝ {name} տանող ճանապարհին, և առանձին շրջանցում չեն։",
+ "catFilterAll": "Լռելյայն ներառված են բոլոր հետաքրքրությունները. սեղմեք մեկը կամ մի քանիսը՝ ընտրությունը նեղացնելու համար։",
+ "entryFee": "Մուտք",
+ "hoursWord": "Ժամեր"
+};
 let LANG = 'en';
+try{ const sv = localStorage.getItem('agLang'); if(sv === 'hy' || sv === 'en') LANG = sv; }catch(e){}
+function L(en, hy){ return LANG === 'hy' ? hy : en; }
 
 /* ======================================================================
    GEO / TIME ESTIMATES
@@ -1783,7 +1806,7 @@ function dedupeTop(list, n){
 ====================================================================== */
 let state = { mode:'time', budgetHours:4, mustSeeId:'', cats:[], routes:[], activeRoute:0 };
 
-function t(key){ return I18N[LANG][key]; }
+function t(key){ const v = I18N[LANG] && I18N[LANG][key]; return v != null ? v : I18N.en[key]; }
 
 function setMode(m){
   state.mode = m;
@@ -1791,7 +1814,6 @@ function setMode(m){
   document.getElementById('mode-sight').classList.toggle('active', m==='sight');
   document.getElementById('time-field').style.display = m==='time' ? 'flex' : 'none';
   document.getElementById('sight-field').style.display = m==='sight' ? 'flex' : 'none';
-  updateFindBtn();
 }
 
 function onBudgetChange(){
@@ -1819,12 +1841,13 @@ function buildMustSeeOptions(){
 /* ---------- must-include search ---------- */
 const MS_SYN = {
   church:'church monastery chapel cathedral', fortress:'fortress castle fort', nature:'nature park gorge forest',
-  view:'viewpoint view lookout cable car', waterfall:'waterfall falls lake water reservoir pond beach', village:'village culture town heritage ruins'
+  view:'viewpoint view lookout cable car', waterfall:'waterfall falls', village:'village culture town heritage ruins',
+  lake:'lake water reservoir beach'
 };
 function msNorm(x){ return (x||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
 function sightHaystack(s){
-  const cats = s.cat.map(c=> (CATEGORIES[c]?CATEGORIES[c].en:'') + ' ' + (MS_SYN[c]||'')).join(' ');
-  return msNorm([s.name.en, s.region||'', cats, needsOvernight(s)?'overnight':''].join(' '));
+  const cats = s.cat.map(c=> (CATEGORIES[c]?(CATEGORIES[c].en + ' ' + CATEGORIES[c].hy):'') + ' ' + (MS_SYN[c]||'')).join(' ');
+  return msNorm([s.name.en, s.name.hy, s.region||'', REGION_HY[s.region]||'', cats, needsOvernight(s)?'overnight':''].join(' '));
 }
 function tripHoursSolo(s){ const r = buildCorridorRoute([s]); return (r.driveMin + s.visitMin)/60; }
 function needsOvernight(s){ return tripHoursSolo(s) > 10; }
@@ -1833,20 +1856,14 @@ function onMustSeeSearch(){
   const tokens = q ? q.split(/\s+/) : [];
   const list = document.getElementById('mustSeeList');
   const rows = SIGHTS.filter(s=>{ const hay = sightHaystack(s); return tokens.every(tk=>hay.includes(tk)); })
-    .sort((a,b)=> a.name.en.localeCompare(b.name.en));
+    .sort((a,b)=> a.name[LANG].localeCompare(b.name[LANG]));
   if(!rows.length){ list.innerHTML = '<div class="ms-empty">No sight matches that. Try a region (like Syunik) or a type (like lake).</div>'; list.hidden = false; return; }
   list.innerHTML = rows.map(s=>{
-    const meta = [s.region, s.cat.map(c=>CATEGORIES[c].en).join(' · ')].filter(Boolean).join(' · ');
-    const night = needsOvernight(s) ? ' · <span class="ms-night">Overnight</span>' : '';
-    return `<button type="button" class="ms-row" onclick="setMustSee('${s.id}')"><span>${s.name.en}</span><span class="ms-meta">${meta}${night}</span></button>`;
+    const meta = [regionName(s.region), s.cat.map(c=>CATEGORIES[c][LANG]).join(' · ')].filter(Boolean).join(' · ');
+    const night = needsOvernight(s) ? ' · <span class="ms-night">' + L('Overnight','Գիշերակաց') + '</span>' : '';
+    return `<button type="button" class="ms-row" onclick="setMustSee('${s.id}')"><span>${s.name[LANG]}</span><span class="ms-meta">${meta}${night}</span></button>`;
   }).join('');
   list.hidden = false;
-}
-function updateFindBtn(){
-  const b = document.getElementById('find-btn'); if(!b) return;
-  const need = state.mode==='sight' && !document.getElementById('mustSee').value;
-  b.disabled = need;
-  b.title = need ? 'Choose a sight first' : '';
 }
 function setMustSee(id){
   const sel = document.getElementById('mustSee');
@@ -1859,9 +1876,8 @@ function setMustSee(id){
   input.value = '';
   if(s){
     picked.hidden = false;
-    picked.innerHTML = `<span><strong>${s.name.en}</strong>${s.region?' · '+s.region:''}</span><button type="button" onclick="setMustSee('')" aria-label="Clear choice" title="Clear">✕</button>`;
+    picked.innerHTML = `<span><strong>${s.name[LANG]}</strong>${s.region?' · '+regionName(s.region):''}</span><button type="button" onclick="setMustSee('')" aria-label="Clear choice" title="Clear">✕</button>`;
   } else { picked.hidden = true; picked.innerHTML = ''; }
-  updateFindBtn();
 }
 document.addEventListener('click', e=>{
   const w = document.getElementById('ms-wrap');
@@ -1873,7 +1889,8 @@ function overnightNoteHtml(route){
   if(!needsOvernight(far)) return '';
   const solo = buildCorridorRoute([far]);
   const oneWay = Math.round((solo.driveMin/2)/6)/10;
-  return `<div class="route-note"><strong>Needs an overnight stay:</strong> ${far.name.en} is about ${oneWay}h of driving each way from Yerevan, too far for one day. Plan a night near the destination.</div>`;
+  return L(`<div class="route-note"><strong>Needs an overnight stay:</strong> ${far.name[LANG]} is about ${oneWay}h of driving each way from Yerevan, too far for one day. Plan a night near the destination.</div>`,
+    `<div class="route-note"><strong>Պահանջվում է գիշերակաց։</strong> ${far.name[LANG]}. Երևանից յուրաքանչյուր ուղղությամբ մոտ ${oneWay} ժ ճանապարհ՝ մեկ օրվա համար չափազանց հեռու։ Պլանավորեք գիշերակաց նպատակակետի մոտ։</div>`);
 }
 
 function buildInterestChips(){
@@ -1947,7 +1964,7 @@ function renderResults(){
   if(routes.length>1){
     html += `<div class="route-tabs">`;
     routes.forEach((r,i)=>{
-      html += `<button class="route-tab ${i===state.activeRoute?'active':''}" onclick="selectRoute(${i})">${t('routeLabel')} ${String.fromCharCode(65+i)} · ${r.order.length} ${t('stops').toLowerCase()}</button>`;
+      html += `<button class="route-tab ${i===state.activeRoute?'active':''}" onclick="selectRoute(${i})">${t('routeLabel')} ${String.fromCharCode(65+i)} · ${r.order.length} ${L(t('stops').toLowerCase(), 'կանգառ')}</button>`;
     });
     html += `</div>`;
   }
@@ -1981,14 +1998,14 @@ function renderResults(){
           <div class="st-text">
             <div class="st-name">${s.name[LANG]}</div>
             <p class="st-why">${why}</p>
-            <div class="st-meta">${s.visitMin} min visit · ${s.cat.map(c=>CATEGORIES[c][LANG]).join(' · ')}</div>
+            <div class="st-meta">${L(s.visitMin + ' min visit', 'Այց՝ ' + s.visitMin + ' րոպե')} · ${s.cat.map(c=>CATEGORIES[c][LANG]).join(' · ')}</div>
           </div>
         </div>
         <button class="stop-remove st-x" onclick="removeStop(${i})" title="Remove this sight from the trip" aria-label="Remove ${tpEsc(s.name[LANG])} from the trip">✕</button>
         <div class="st-details"${open ? '' : ' hidden'}>
           <div class="st-facts">
-            <span class="flag" title="Not independently verified">${s.hoursFlagged?'~ ':''}${s.hours.en}</span>
-            <span class="flag" title="Not independently verified">${s.priceFlagged?'~ ':''}${s.price.en}</span>
+            <span class="flag" title="Not independently verified">${s.hoursFlagged?'~ ':''}${s.hours[LANG]}</span>
+            <span class="flag" title="Not independently verified">${s.priceFlagged?'~ ':''}${s.price[LANG]}</span>
           </div>
           <div class="st-actions">
             <button class="btn-ghost" onclick="selectSight('${s.id}')">Show on the map</button>
@@ -2041,7 +2058,7 @@ function removeStop(i){
   if(!left.length){
     state.routes.splice(state.activeRoute, 1);
     if(!state.routes.length){
-      document.getElementById('results').innerHTML = `<div class="status"><strong>Your trip has no sights left.</strong><br>Press <strong>Find routes</strong> to plan a new one.</div>`;
+      document.getElementById('results').innerHTML = L(`<div class="status"><strong>Your trip has no sights left.</strong><br>Press <strong>Find routes</strong> to plan a new one.</div>`, `<div class="status"><strong>Ձեր ուղևորության մեջ վայրեր չեն մնացել։</strong><br>Նոր ուղևորություն պլանավորելու համար սեղմեք <strong>Գտնել երթուղիներ</strong>։</div>`);
       renderMap([]);
       return;
     }
@@ -2065,9 +2082,10 @@ function driveIcon(){
 }
 function fmtMin(min){
   min = Math.round(min);
-  if(min<60) return `${min}m`;
+  const hy = LANG === 'hy', uh = hy ? ' ժ' : 'h', um = hy ? ' ր' : 'm', sep = hy ? ' ' : '';
+  if(min<60) return `${min}${um}`;
   const h=Math.floor(min/60), m=min%60;
-  return m? `${h}h${m}m` : `${h}h`;
+  return m? `${h}${uh}${sep}${m}${um}` : `${h}${uh}`;
 }
 /* ======================================================================
    MAP — Yandex Maps JavaScript API v3.
@@ -2086,13 +2104,12 @@ let mapInitToken = 0;       // guards against overlapping (re)initialisations
 const markers = {};
 let originMarker = null;
 
-const CAT_COLOR = { church:'#B5532A', fortress:'#6B4E9B', nature:'#4F8A5B', view:'#3E6FA8', waterfall:'#1D96B4', village:'#C7861A' };
+const CAT_COLOR = { church:'#B5532A', fortress:'#6B4E9B', nature:'#4F8A5B', view:'#3E6FA8', waterfall:'#1D96B4' };
 const CAT_GLYPH = {
   church:    c=>'<path d="M20 5.8v6M17.4 8.6h5.2" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M12 25v-8l8-5.4 8 5.4v8z" fill="#fff"/><path d="M18 25v-4a2 2 0 0 1 4 0v4z" fill="'+c+'"/>',
   fortress:  c=>'<path d="M12 12h4v3.4h2.4V12h3.2v3.4H24V12h4v13H12z" fill="#fff"/><path d="M18 25v-4.2a2 2 0 0 1 4 0V25z" fill="'+c+'"/>',
   nature:    c=>'<path d="M9.5 25.5 16 14l4.2 6.2 3-4.2 7.3 9.5z" fill="#fff"/>',
   view:      c=>'<path d="M9.5 18c3-4.6 6.2-6.8 10.5-6.8S27.5 13.4 30.5 18c-3 4.6-6.2 6.8-10.5 6.8S12.5 22.6 9.5 18z" fill="none" stroke="#fff" stroke-width="2"/><circle cx="20" cy="18" r="3.4" fill="#fff"/>',
-  village:   c=>'<path d="M9.5 25v-7l5.6-4.6 5.6 4.6v7z" fill="#fff"/><path d="M19.5 25v-9.4l5.4-4.4 5.6 4.4V25z" fill="#fff"/><path d="M13.4 25v-3.4a1.7 1.7 0 0 1 3.4 0V25z" fill="'+c+'"/><path d="M23.3 25v-3.6a1.6 1.6 0 0 1 3.2 0V25z" fill="'+c+'"/>',
   waterfall: c=>'<path d="M9 11.5h22v3H9z" fill="#fff"/><path d="M14 15v8.5M20 15v10.5M26 15v8.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M11 27.2q3-2.4 6 0t6 0 6 0" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>'
 };
 /* A pin: round head, pointed tip on the exact spot. Colour + icon = category,
@@ -2127,13 +2144,10 @@ function loadYandexScript(){
 function withTimeout(promise, ms, msg){
   return Promise.race([promise, new Promise((_,rej)=> setTimeout(()=>rej(new Error(msg)), ms))]);
 }
-/* Corners of Armenia ([lat,lon]), used to fit the whole country on screen */
+/* Armenia's outline (Natural Earth 1:10m country boundaries, internationally recognised border). Drawn as a map layer, so it scales with zoom and screen size. */
+const ARMENIA_BORDER = {"type":"MultiPolygon","coordinates":[[[[45.0023,41.2896],[45.0383,41.2305],[45.0311,41.2103],[45.0347,41.1985],[45.0527,41.1917],[45.1175,41.1917],[45.1355,41.1883],[45.1859,41.1563],[45.2003,41.1427],[45.2003,41.1275],[45.1679,41.1073],[45.0671,41.1107],[45.0563,41.0786],[45.0707,41.0617],[45.0923,41.0516],[45.1103,41.0499],[45.1175,41.0617],[45.1211,41.0803],[45.1355,41.0735],[45.1679,41.0465],[45.1895,41.0381],[45.2039,41.0245],[45.2219,41.0144],[45.2687,41.011],[45.3119,40.9958],[45.3371,40.9941],[45.3803,41.011],[45.3911,41.0144],[45.4199,41.0178],[45.4235,40.9941],[45.4163,40.9621],[45.4271,40.9519],[45.4415,40.9486],[45.4523,40.9469],[45.4811,40.93],[45.5207,40.8878],[45.5387,40.8759],[45.5567,40.8709],[45.5819,40.8692],[45.5999,40.8624],[45.5999,40.8405],[45.5819,40.8],[45.5567,40.7763],[45.4775,40.7476],[45.4379,40.7341],[45.3983,40.7088],[45.3731,40.675],[45.3731,40.6514],[45.3731,40.6328],[45.3875,40.6092],[45.4055,40.5956],[45.4271,40.5821],[45.4451,40.5669],[45.4487,40.5568],[45.4523,40.5349],[45.4559,40.523],[45.4631,40.5163],[45.4847,40.5045],[45.4955,40.4943],[45.5279,40.4403],[45.5855,40.3981],[45.8195,40.2985],[45.8195,40.2968],[45.8627,40.2613],[45.8807,40.2596],[45.8879,40.2613],[45.9023,40.2647],[45.9239,40.2664],[45.9383,40.2596],[45.9527,40.2495],[45.9779,40.2242],[45.9815,40.2174],[45.9815,40.2123],[45.9815,40.2056],[45.9635,40.1414],[45.9491,40.1178],[45.9311,40.0975],[45.9095,40.0823],[45.9059,40.0756],[45.8951,40.0283],[45.8879,40.0181],[45.8735,40.0097],[45.8051,40.0046],[45.6395,40.0249],[45.5747,39.9945],[45.5783,39.9844],[45.5783,39.9709],[45.6107,39.959],[45.7151,39.9506],[45.7439,39.9405],[45.7655,39.9219],[45.8087,39.851],[45.8159,39.8392],[45.8627,39.8054],[45.8843,39.7969],[45.9167,39.7834],[45.9779,39.7682],[46.0067,39.748],[46.0463,39.6872],[46.0751,39.6686],[46.1147,39.6602],[46.1327,39.6517],[46.1471,39.6382],[46.1687,39.6044],[46.1831,39.5926],[46.2047,39.5876],[46.2407,39.5943],[46.3091,39.6213],[46.3451,39.618],[46.3595,39.6095],[46.3811,39.5842],[46.3955,39.5774],[46.4171,39.5741],[46.4783,39.5791],[46.4963,39.5757],[46.5107,39.5673],[46.5251,39.5555],[46.5287,39.5386],[46.5179,39.5251],[46.5035,39.5183],[46.4927,39.5099],[46.4927,39.493],[46.4999,39.4829],[46.4999,39.4744],[46.4927,39.466],[46.4783,39.4626],[46.4063,39.4508],[46.3739,39.4356],[46.3595,39.4103],[46.3739,39.3782],[46.4063,39.3596],[46.4783,39.3343],[46.4963,39.3241],[46.5035,39.3089],[46.5071,39.2938],[46.5179,39.2786],[46.5431,39.2583],[46.5863,39.2363],[46.5899,39.2313],[46.5971,39.2245],[46.6007,39.2228],[46.6043,39.2161],[46.5935,39.2127],[46.5719,39.211],[46.5251,39.1857],[46.5143,39.184],[46.4531,39.2076],[46.4171,39.2127],[46.3955,39.1958],[46.3955,39.1637],[46.4207,39.1452],[46.4567,39.13],[46.4783,39.1148],[46.4927,39.0827],[46.4963,39.054],[46.4963,39.0253],[46.4819,38.9932],[46.4819,38.9898],[46.4783,38.9881],[46.4747,38.9763],[46.4747,38.9628],[46.4747,38.951],[46.4783,38.9391],[46.5143,38.8817],[46.4963,38.8868],[46.3919,38.9223],[46.3775,38.924],[46.3667,38.924],[46.3451,38.9172],[46.3055,38.9155],[46.2911,38.9138],[46.2731,38.9071],[46.2191,38.8767],[46.2011,38.8699],[46.1363,38.8632],[46.0787,38.951],[46.0247,39.0641],[46.0067,39.0962],[45.9779,39.1249],[45.9599,39.1519],[45.9491,39.1772],[45.9563,39.2026],[45.9779,39.2279],[45.9851,39.2346],[45.9887,39.2414],[45.9851,39.2498],[45.9779,39.2566],[45.9599,39.2718],[45.9023,39.2938],[45.8879,39.3005],[45.8627,39.314],[45.8447,39.3309],[45.8231,39.3427],[45.7655,39.3545],[45.7655,39.3596],[45.7583,39.3697],[45.7655,39.39],[45.7979,39.4322],[45.8015,39.4474],[45.7943,39.4947],[45.7979,39.52],[45.7979,39.5369],[45.7871,39.5487],[45.7655,39.5622],[45.7367,39.569],[45.7151,39.569],[45.7079,39.569],[45.5855,39.5453],[45.5603,39.5369],[45.4811,39.4964],[45.4703,39.493],[45.4559,39.4896],[45.4451,39.4879],[45.4343,39.4896],[45.4235,39.493],[45.3911,39.5183],[45.3767,39.5251],[45.3263,39.5285],[45.3119,39.5335],[45.3047,39.5453],[45.2903,39.5656],[45.2651,39.5926],[45.2615,39.5994],[45.2327,39.5926],[45.2039,39.5724],[45.1679,39.5656],[45.1499,39.5757],[45.1427,39.5893],[45.1535,39.6264],[45.1571,39.65],[45.1499,39.6669],[45.1427,39.6838],[45.0743,39.7497],[45.0671,39.7564],[45.0347,39.7699],[44.995,39.7598],[44.959,39.7378],[44.9518,39.7362],[44.9266,39.7243],[44.8942,39.7176],[44.851,39.7193],[44.8042,39.7125],[44.7754,39.7024],[44.7574,39.7226],[44.6962,39.7851],[44.6926,39.7936],[44.6854,39.7969],[44.6818,39.7969],[44.671,39.7953],[44.6674,39.7969],[44.6494,39.8054],[44.6098,39.8375],[44.599,39.8307],[44.5954,39.8375],[44.5954,39.8476],[44.5918,39.8577],[44.5774,39.8662],[44.5666,39.8729],[44.563,39.8814],[44.5594,39.8966],[44.5486,39.9118],[44.5234,39.9337],[44.4658,39.9726],[44.3794,40.0097],[44.3254,40.035],[44.2894,40.0435],[44.257,40.0435],[44.1958,40.03],[44.167,40.0283],[44.1454,40.0232],[44.1346,40.0215],[44.1274,40.0249],[44.113,40.0333],[44.1058,40.0367],[44.0842,40.0317],[44.0482,40.0131],[44.0338,40.008],[43.9114,40.0249],[43.8034,40.0705],[43.7098,40.0908],[43.6666,40.1093],[43.6522,40.1397],[43.6666,40.1482],[43.7098,40.1566],[43.7206,40.1701],[43.7134,40.1803],[43.6846,40.2106],[43.6738,40.2275],[43.6918,40.2394],[43.6918,40.241],[43.6774,40.2664],[43.6306,40.3103],[43.6054,40.3305],[43.5946,40.3457],[43.6018,40.3626],[43.609,40.3728],[43.6234,40.4116],[43.627,40.4133],[43.627,40.42],[43.5838,40.447],[43.5622,40.4639],[43.5586,40.4774],[43.5946,40.5095],[43.6162,40.5197],[43.6378,40.523],[43.6378,40.5298],[43.6342,40.5332],[43.6306,40.5365],[43.6378,40.5349],[43.6414,40.5349],[43.645,40.5332],[43.6522,40.5298],[43.6522,40.5534],[43.663,40.5737],[43.7062,40.6125],[43.699,40.6345],[43.7062,40.6412],[43.7278,40.6683],[43.7278,40.6767],[43.7242,40.7459],[43.7206,40.7628],[43.7098,40.7814],[43.6702,40.832],[43.6594,40.8523],[43.6558,40.8743],[43.6522,40.8945],[43.6486,40.9131],[43.6378,40.9334],[43.6054,40.9638],[43.5658,40.9874],[43.5226,41.0043],[43.4794,41.0093],[43.4614,41.0229],[43.4434,41.0516],[43.4362,41.0836],[43.4398,41.1073],[43.4506,41.1039],[43.4614,41.1039],[43.4686,41.1056],[43.5226,41.1225],[43.5658,41.1242],[43.7314,41.1073],[43.753,41.109],[43.7746,41.114],[43.8214,41.1461],[43.8646,41.1596],[43.9546,41.1613],[43.9762,41.1647],[43.9798,41.1647],[44.0014,41.1681],[44.041,41.1833],[44.0626,41.185],[44.1022,41.1748],[44.1238,41.1782],[44.1454,41.1866],[44.1598,41.1985],[44.1634,41.2069],[44.167,41.2154],[44.167,41.2238],[44.1814,41.2305],[44.1922,41.2305],[44.2174,41.2221],[44.2678,41.1968],[44.2858,41.1917],[44.3074,41.1934],[44.3182,41.1985],[44.3254,41.2052],[44.3326,41.2103],[44.3434,41.2137],[44.3578,41.212],[44.4118,41.1883],[44.4334,41.1816],[44.455,41.1799],[44.4802,41.1866],[44.4982,41.2035],[44.5054,41.2069],[44.5162,41.2069],[44.5234,41.1985],[44.527,41.1883],[44.5306,41.1816],[44.5522,41.1765],[44.5666,41.1866],[44.5774,41.2035],[44.5918,41.2154],[44.6134,41.2238],[44.6314,41.2204],[44.6746,41.2086],[44.8222,41.2069],[44.8474,41.2086],[44.8582,41.2187],[44.8546,41.2238],[44.8474,41.2305],[44.8078,41.2441],[44.8006,41.2593],[44.8222,41.2728],[44.9158,41.2609],[44.9554,41.2626],[44.9662,41.2694],[44.9914,41.2846],[45.0023,41.2896]],[[44.9806,41.082],[44.9626,41.0735],[44.959,41.06],[44.9662,41.0448],[44.9806,41.033],[45.0167,41.0229],[45.0311,41.0465],[45.0203,41.0752],[44.9806,41.082]],[[45.2111,40.9688],[45.2219,40.979],[45.1931,40.9975],[45.1895,40.9992],[45.1823,40.9975],[45.1787,40.9958],[45.1787,40.9941],[45.1859,40.9705],[45.2111,40.9688]]],[[[45.5135,40.6024],[45.4811,40.6092],[45.4739,40.6193],[45.4703,40.6294],[45.4739,40.6395],[45.4811,40.6497],[45.4919,40.6564],[45.5063,40.6598],[45.5207,40.6598],[45.5351,40.6581],[45.5603,40.648],[45.5459,40.621],[45.5135,40.6024]]]]};
 const ARMENIA_BOUNDS = [[38.86,43.44],[41.30,46.61]]; // [lat,lon] corners, used to fit the whole country on screen
 
-/* phone screens get smaller pins, shorter labels and more breathing room when the map fits a trip */
-(function(){ try{ if(window.matchMedia('(pointer: coarse)').matches){ const t=document.getElementById('map-hint'); if(t) t.textContent='Tap a pin to see that sight.'; } }catch(e){} })();
-const IS_PHONE = !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
-const PIN_SIZE = IS_PHONE ? 24 : 32, LABEL_MAX = IS_PHONE ? 130 : 190, FIT_PAD = IS_PHONE ? 2.1 : 1.5;
 async function createYandexBackend(el){
   await withTimeout(loadYandexScript().then(()=>ymaps3.ready), 12000, 'Yandex Maps took too long to load');
   const { YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapMarker, YMapFeature, YMapControls } = ymaps3;
@@ -2141,6 +2155,11 @@ async function createYandexBackend(el){
   const map = new YMap(el, { location:{ center:[44.7, 40.3], zoom:8 } });
   map.addChild(new YMapDefaultSchemeLayer({}));
   map.addChild(new YMapDefaultFeaturesLayer({}));
+  try{
+    // soft glow + crisp line + a faint tint inside, all under the route line
+    map.addChild(new YMapFeature({ geometry:ARMENIA_BORDER, style:{ stroke:[{ color:'rgba(255,160,98,0.28)', width:9 }], fill:'rgba(255,160,98,0.05)' }, zIndex:0 }));
+    map.addChild(new YMapFeature({ geometry:ARMENIA_BORDER, style:{ stroke:[{ color:'#FF8A3D', width:2.5 }] }, zIndex:0.5 }));
+  }catch(e){ console.warn('Armenia border could not be drawn', e); }
   try{
     const { YMapZoomControl } = await ymaps3.import('@yandex/ymaps3-controls@0.0.1');
     const controls = new YMapControls({ position:'right' });
@@ -2213,7 +2232,6 @@ async function createYandexBackend(el){
         const mx = lon => (lon + 180) / 360, my = lat => { const s = Math.sin(lat*Math.PI/180); return 0.5 - Math.log((1+s)/(1-s)) / (4*Math.PI); };
         const px = (lat, lon) => [ (mx(lon) - mx(c[0])) * scale, (my(lat) - my(c[1])) * scale ];
         const R = 26, H = 22;
-        const vr = el.getBoundingClientRect(), hw = vr.width / 2, hh = vr.height / 2;
         const bubbles = stops.map(h => px(h.o.lat, h.o.lon));
         const hit = (a, b) => a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
         const placed = [];
@@ -2222,7 +2240,7 @@ async function createYandexBackend(el){
         bubbles.forEach(([x, y]) => placed.push({ x0:x-R, x1:x+R, y0:y-R, y1:y+R }));
         stops.forEach((h, i) => {
           const [x, y] = bubbles[i];
-          const w = Math.min(LABEL_MAX, (h.o.sight ? h.o.sight.name.en.length : 10) * 6.6 + 24);
+          const w = Math.min(190, (h.o.sight ? h.o.sight.name[LANG].length : 10) * 6.6 + 24);
           const cand = {
             l: { x0:x-R-8-w, x1:x-R-8, y0:y-H/2, y1:y+H/2 },
             r: { x0:x+R+8, x1:x+R+8+w, y0:y-H/2, y1:y+H/2 },
@@ -2233,7 +2251,6 @@ async function createYandexBackend(el){
           for(const k of ['l','r','t','b']){
             let score = 0;
             placed.forEach((p, pi) => { if(pi >= (oh ? 1 : 0) + i && pi < (oh ? 1 : 0) + i + 1) return; if(hit(cand[k], p)) score += 1; });
-            { const c = cand[k]; if(c.x0 < -hw + 4 || c.x1 > hw - 4 || c.y0 < -hh + 4 || c.y1 > hh - 4) score += 3; }   // keep the name inside the visible map
             if(score < bestScore){ bestScore = score; best = k; if(score === 0) break; }
           }
           placed.push(cand[best]);
@@ -2257,14 +2274,14 @@ async function createYandexBackend(el){
     flyTo(lat, lon, minZoom){
       map.setLocation({ center:[lon,lat], zoom: Math.max(map.zoom||8, minZoom), duration:600 });
     },
-    fit(pts, maxZoom, pad){
+    fit(pts, maxZoom){
       // Fit the points in view with ~25% breathing room, capped at maxZoom.
       const mx = lon => (lon+180)/360;
       const my = lat => { const s=Math.sin(lat*Math.PI/180); return 0.5 - Math.log((1+s)/(1-s))/(4*Math.PI); };
       const lats = pts.map(p=>p[0]), lons = pts.map(p=>p[1]);
       const minLon=Math.min(...lons), maxLon=Math.max(...lons), minLat=Math.min(...lats), maxLat=Math.max(...lats);
-      const spanX = Math.max((mx(maxLon)-mx(minLon))*(pad || FIT_PAD), 1e-6);
-      const spanY = Math.max((my(minLat)-my(maxLat))*(pad || FIT_PAD), 1e-6);
+      const spanX = Math.max((mx(maxLon)-mx(minLon))*1.5, 1e-6);
+      const spanY = Math.max((my(minLat)-my(maxLat))*1.5, 1e-6);
       const r = el.getBoundingClientRect();
       const zx = Math.log2(Math.max(r.width,1)/(256*spanX)), zy = Math.log2(Math.max(r.height,1)/(256*spanY));
       const zoom = Math.max(3, Math.min(maxZoom, zx, zy));
@@ -2311,7 +2328,7 @@ async function startMap(){
   if(token!==mapInitToken){ api.destroy(); return; }
   mapApi = api;
   renderMap(pendingStops);
-  if(!(pendingStops && pendingStops.length) && !selectedSightId) mapApi.fit(ARMENIA_BOUNDS, 9, 1.12);
+  if(!(pendingStops && pendingStops.length) && !selectedSightId) mapApi.fit(ARMENIA_BOUNDS, 9);
   try{
     if(window.__mapRO) window.__mapRO.disconnect();
     let roTimer = 0, lastW = el.clientWidth, lastH = el.clientHeight;
@@ -2322,7 +2339,7 @@ async function startMap(){
       roTimer = setTimeout(()=>{
         if(!mapApi) return;
         if(pendingStops && pendingStops.length) renderMap(pendingStops);
-        else if(!selectedSightId) mapApi.fit(ARMENIA_BOUNDS, 9, 1.12);
+        else if(!selectedSightId) mapApi.fit(ARMENIA_BOUNDS, 9);
       }, 200);
     });
     window.__mapRO.observe(el);
@@ -2334,7 +2351,7 @@ function ensureMarkers(){
   if(originMarker || !mapApi) return;
   originMarker = mapApi.addMarker({ lat:YEREVAN.lat, lon:YEREVAN.lon, kind:'origin', label:'', size:36, title:'Yerevan', origin:true, z:500 });
   SIGHTS.forEach(s=>{
-    markers[s.id] = mapApi.addMarker({ lat:s.lat, lon:s.lon, kind:'idle', cat:s.cat[0], label:'', size:PIN_SIZE, title:s.name.en, z:0, onClick: ()=> selectSight(s.id) });
+    markers[s.id] = mapApi.addMarker({ lat:s.lat, lon:s.lon, kind:'idle', cat:s.cat[0], label:'', size:32, title:s.name[LANG], z:0, onClick: ()=> selectSight(s.id) });
   });
 }
 
@@ -2344,7 +2361,7 @@ function bubbleHtml(o){
   if(!s) return '<div class="bub"><div class="bub-img"></div><span class="bub-num">' + (o.label || '') + '</span></div>';
   const p = PHOTOS[s.id];
   const inner = (p && p.url) ? '<img src="' + p.url + '" alt="" draggable="false" referrerpolicy="no-referrer" onerror="bubbleFallback(this,\'' + s.id + '\')">' : iconBadge(s);
-  const name = s.name.en.length > 28 ? s.name.en.slice(0, 27) + '…' : s.name.en;
+  const name = s.name[LANG].length > 28 ? s.name[LANG].slice(0, 27) + '…' : s.name[LANG];
   return '<div class="bub' + ((o.kind || '').includes('sel') ? ' sel' : '') + '"><div class="bub-img">' + inner + '</div><span class="bub-num">' + (o.label || '') + '</span><span class="bub-label ' + (o.side || 'l') + '">' + tpEsc(name) + '</span></div>';
 }
 function sightPassesFilter(s){
@@ -2473,7 +2490,7 @@ async function refineRoute(r){
   if(state.routes && state.routes[state.activeRoute]===r) renderResults();
 }
 function sourceBadgeHtml(r){
-  if(r.live) return `<div class="route-source live" id="route-source">Live road routing · ${Math.round(r.km)} km one way</div>`;
+  if(r.live) return `<div class="route-source live" id="route-source">${L('Live road routing · ' + Math.round(r.km) + ' km one way', 'Իրական ճանապարհային երթուղի · ' + Math.round(r.km) + ' կմ մեկ ուղղությամբ')}</div>`;
   if(r.busy) return `<div class="route-source busy" id="route-source">Fetching road route…</div>`;
   return `<div class="route-source" id="route-source">Estimated from straight-line distance</div>`;
 }
@@ -2513,13 +2530,13 @@ function renderSightPanel(){
   panel.hidden = false;
   document.getElementById('map-hint').style.display = 'none';
   document.getElementById('sight-panel-thumb').innerHTML = renderSightBadge(s);
-  document.getElementById('sight-panel-name').textContent = s.name.en;
-  document.getElementById('sight-panel-cat').textContent = s.cat.map(c=>CATEGORIES[c].en).join(' · ') + (s.region ? ' · ' + s.region : '');
-  document.getElementById('sight-panel-why').textContent = s.why.en;
+  document.getElementById('sight-panel-name').textContent = s.name[LANG];
+  document.getElementById('sight-panel-cat').textContent = s.cat.map(c=>CATEGORIES[c][LANG]).join(' · ') + (s.region ? ' · ' + regionName(s.region) : '');
+  document.getElementById('sight-panel-why').textContent = s.why[LANG];
 
-  let metaHtml = `<span>${s.visitMin} min suggested</span>`;
-  metaHtml += `<span class="flag" title="Not independently verified">${s.hoursFlagged?'~ ':''}${s.hours.en}</span>`;
-  metaHtml += `<span class="flag" title="Not independently verified">${s.priceFlagged?'~ ':''}${s.price.en}</span>`;
+  let metaHtml = `<span>${L(s.visitMin + ' min suggested', 'Առաջարկվում է ' + s.visitMin + ' րոպե')}</span>`;
+  metaHtml += `<span class="flag" title="Not independently verified">${s.hoursFlagged?'~ ':''}${s.hours[LANG]}</span>`;
+  metaHtml += `<span class="flag" title="Not independently verified">${s.priceFlagged?'~ ':''}${s.price[LANG]}</span>`;
 
   if(needsOvernight(s)) metaHtml += `<span>Needs an overnight stay</span>`;
   if(s.posApprox) metaHtml += `<span class="flag" title="The map pin for this sight is a best-effort position and may be a few kilometres off">~ Pin position approximate</span>`;
@@ -2527,7 +2544,7 @@ function renderSightPanel(){
   if(activeRoute){
     const idx = activeRoute.order.findIndex(o=>o.id===s.id);
     if(idx !== -1){
-      metaHtml += `<span>${driveIcon()} ${fmtMin(activeRoute.segs[idx])} drive ${idx===0?'from Yerevan':'from previous stop'}</span>`;
+      metaHtml += `<span>${driveIcon()} ${L(fmtMin(activeRoute.segs[idx]) + ' drive ' + (idx===0?'from Yerevan':'from previous stop'), fmtMin(activeRoute.segs[idx]) + ' ճանապարհ ' + (idx===0?'Երևանից':'նախորդ կանգառից'))}</span>`;
     }
   }
   document.getElementById('sight-panel-meta').innerHTML = metaHtml;
@@ -2547,6 +2564,15 @@ function planTripToSelected(){
    the query + chosen route index so recipients regenerate the same trip.
 ====================================================================== */
 /* ===== SAVED TRIPS: kept in the visitor's Google account, so they follow them between devices ===== */
+function savedLabel(item){
+  try{
+    if(Array.isArray(item.ids) && item.ids.length){
+      const names = item.ids.map(i=>{ const s = SIGHTS.find(x=>x.id === i); return s ? s.name[LANG] : null; });
+      if(names.every(Boolean)) return names.join(' → ');
+    }
+  }catch(e){}
+  return item.label;
+}
 function savedList(){ return window.__agSaved || (window.__agSaved = []); }
 function savedCacheRead(){ try{ return JSON.parse(localStorage.getItem('agSavedCache') || 'null'); }catch(e){ return null; } }
 async function saveCurrentRoute(){
@@ -2595,7 +2621,7 @@ function renderSaved(){
   if(!list.length){ wrap.innerHTML = `<div class="empty-note">${t('savedEmpty')}</div>`; return; }
   wrap.innerHTML = note + list.map(item=>`
     <div class="saved-item">
-      <button class="saved-open" onclick="loadSaved('${tpEsc(item.id)}')">${tpEsc(item.label)}</button>
+      <button class="saved-open" onclick="loadSaved('${tpEsc(item.id)}')">${tpEsc(savedLabel(item))}</button>
       <button onclick="deleteSaved('${tpEsc(item.id)}')" title="${t('savedDelete')}" aria-label="Delete this saved trip">✕</button>
     </div>`).join('');
 }
@@ -2641,7 +2667,8 @@ function tripShareUrl(){
 }
 function tripShareText(){
   const r = state.routes[state.activeRoute];
-  return 'Day trip from Yerevan: ' + r.order.map(x=>x.name.en).join(' → ') + ' · about ' + fmtHours(r.total) + ' h round trip (Armenia Along the Way)';
+  return L('Day trip from Yerevan: ' + r.order.map(x=>x.name[LANG]).join(' → ') + ' · about ' + fmtHours(r.total) + ' h round trip (Armenia Along the Way)',
+    'Օրվա ուղևորություն Երևանից՝ ' + r.order.map(x=>x.name[LANG]).join(' → ') + ' · մոտ ' + fmtHours(r.total) + ' ժ գնալ-գալ (Հայաստան՝ ճանապարհին)');
 }
 function copyShareLink(){
   try{
@@ -2654,8 +2681,8 @@ function copyShareLink(){
       btn.classList.add('copied');
       setTimeout(()=>{ btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
     };
-    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, ()=> window.prompt('Copy this link:', url));
-    else window.prompt('Copy this link:', url);
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, ()=> window.prompt(T('Copy this link:'), url));
+    else window.prompt(T('Copy this link:'), url);
   }catch(e){ console.error('copy failed', e); }
 }
 function shareTrip(channel){
@@ -2672,6 +2699,7 @@ function loadFromHash(){
   if(!m) return false;
   try{
     const payload = JSON.parse(decodeURIComponent(atob(m[1])));
+    try{ if((payload.l === 'hy' || payload.l === 'en') && !localStorage.getItem('agLang')) LANG = payload.l; }catch(e){ if(payload.l === 'hy' || payload.l === 'en') LANG = payload.l; }
     const q = payload.q;
     if(q.mustSeeId){
       setMode('sight');
@@ -2704,7 +2732,6 @@ function loadFromHash(){
    INIT
 ====================================================================== */
 buildMustSeeOptions();
-updateFindBtn();
 buildInterestChips();
 updateDataNote();
 startMap();
@@ -2723,7 +2750,7 @@ try{
   if(window.supabase) sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { flowType: 'pkce' } });
 }catch(e){ console.error('reviews unavailable', e); }
 
-const TP_PAGE = 5;   // places on each page (the pager shows at most 10 page numbers at a time)
+const TP_PAGE = 6;   // how many places show on each page
 const tp = { user:null, stats:{}, openId:null, reviews:{}, draft:{ rating:0, comment:'' }, msg:'', busy:false, page:0 };
 
 function tpEsc(s){
@@ -2793,11 +2820,11 @@ function tpRender(){
         <div class="tp-rank">${rated ? rank : '–'}</div>
         <div class="tp-thumb">${renderSightBadge(s)}</div>
         <div class="tp-info">
-          <div class="tp-title-row"><span class="tp-name">${tpEsc(s.name.en)}</span><span class="tp-cat">${tpEsc(CATEGORIES[s.cat[0]].en)}</span></div>
+          <div class="tp-title-row"><span class="tp-name">${tpEsc(s.name[LANG])}</span><span class="tp-cat">${tpEsc(CATEGORIES[s.cat[0]][LANG])}</span></div>
           <div class="tp-meta">${rated
             ? `${tpStars(st.avg)} <strong>${st.avg.toFixed(1)}</strong> · ${st.count} review${st.count===1?'':'s'}`
             : 'No reviews yet — be the first'}</div>
-          <div class="tp-desc">${tpEsc(s.why.en)}</div>
+          <div class="tp-desc">${tpEsc(s.why[LANG])}</div>
         </div>
         <button class="tp-btn ${open ? '' : 'primary'}" onclick="tpToggle('${tpEsc(s.id)}')">${open ? 'Close' : 'Rate & review'}</button>
       </div>
@@ -2807,8 +2834,7 @@ function tpRender(){
   let pager = '';
   if(rows.length > TP_PAGE){
     let nums = '';
-    const winStart = Math.max(0, Math.min(tp.page - 4, pages - 10)), winEnd = Math.min(pages, winStart + 10);
-    for(let n = winStart; n < winEnd; n++){
+    for(let n = 0; n < pages; n++){
       nums += `<button class="tp-pg ${n === tp.page ? 'on' : ''}" onclick="tpGoPage(${n})" aria-label="Page ${n+1}" ${n === tp.page ? 'aria-current="page"' : ''}>${n+1}</button>`;
     }
     pager = `<nav class="tp-pager" aria-label="Top rated places pages">
@@ -2860,7 +2886,7 @@ function tpDetailHtml(s){
       <span class="rv-date">${tpEsc(new Date(r.created_at).toLocaleDateString())}</span></div>
       ${r.comment ? `<p class="rv-text">${tpEsc(r.comment)}</p>` : ''}</div></div>`;
   }).join('');
-  return `<p class="tp-why">${tpEsc(s.why.en)}</p>${form}<div id="ph-section" class="ph-section">${phSectionHtml(s.id)}</div><div>${list}</div>`;
+  return `<p class="tp-why">${tpEsc(s.why[LANG])}</p>${form}<div id="ph-section" class="ph-section">${phSectionHtml(s.id)}</div><div>${list}</div>`;
 }
 
 async function tpLoadReviews(id){
@@ -2909,7 +2935,7 @@ async function tpSubmit(id){
 }
 
 async function tpDelete(id){
-  if(!confirm('Delete your review of this place?')) return;
+  if(!confirm(T('Delete your review of this place?'))) return;
   tp.busy = true;
   const { error } = await sb.from('reviews').delete().eq('sight_id', id).eq('user_id', tp.user.id);
   tp.busy = false;
@@ -3121,8 +3147,9 @@ function tripToolsHtml(r){
       <div class="tool-sub">Opens your maps app with every stop, there and back.</div>
       <div class="tool-btns"><a class="tp-btn primary" href="${u.g}" target="_blank" rel="noopener">Google Maps</a><a class="tp-btn" href="${u.y}" target="_blank" rel="noopener">Yandex Maps</a></div></div>
     <div class="tool-card"><h4>Fuel cost</h4>
-      <div class="tool-big">about ${fmtNum(cost)} AMD</div>
-      <div class="tool-sub">${fmtNum(k.round)} km there and back${k.live ? '' : ' (estimate)'} · ${Math.round(litres)} L at ${d.per100} L per 100 km · ${fmtNum(d.price)} AMD per liter</div>
+      <div class="tool-big">${L('about ' + fmtNum(cost) + ' AMD', 'մոտ ' + fmtNum(cost) + ' դրամ')}</div>
+      <div class="tool-sub">${L(fmtNum(k.round) + ' km there and back' + (k.live ? '' : ' (estimate)') + ' · ' + Math.round(litres) + ' L at ' + d.per100 + ' L per 100 km · ' + fmtNum(d.price) + ' AMD per liter',
+      fmtNum(k.round) + ' կմ գնալ-գալ' + (k.live ? '' : ' (գնահատական)') + ' · ' + Math.round(litres) + ' լ՝ ' + d.per100 + ' լ/100 կմ ծախսով · ' + fmtNum(d.price) + ' դրամ լիտրի համար')}</div>
       <button class="link-btn" onclick="toggleFuelEditor()">Change fuel price or car</button>
       <div class="fuel-editor" id="fuel-editor" hidden>
         <label>Fuel price (AMD per liter)<input type="number" id="fuel-price" min="${FUEL_MIN}" max="2000" value="${d.price}" oninput="fuelCheck(false)" onblur="fuelCheck(true)" aria-describedby="fuel-note"><span class="fuel-note" id="fuel-note">Minimum is ${FUEL_MIN} AMD.</span></label>
@@ -3189,17 +3216,18 @@ async function loadWeather(r){
 }
 function renderWeather(el, f, d){
   const days = d.time.map((t,i)=>({
-    wd: new Date(t + 'T12:00:00').toLocaleDateString('en', { weekday:'short' }), code: d.weather_code[i],
+    wd: LANG === 'hy' ? ['Կիր','Երկ','Երք','Չրք','Հնգ','Ուրբ','Շբթ'][new Date(t + 'T12:00:00').getDay()] : new Date(t + 'T12:00:00').toLocaleDateString('en', { weekday:'short' }), code: d.weather_code[i],
     hi: Math.round(d.temperature_2m_max[i]), lo: Math.round(d.temperature_2m_min[i]),
     rain: d.precipitation_probability_max[i] == null ? 0 : d.precipitation_probability_max[i] }));
   const score = x => x.rain + Math.abs((x.hi + x.lo)/2 - 18) * 2;
   let best = days[0]; days.forEach(x=>{ if(score(x) < score(best)) best = x; });
-  let tip = `Best day this week: ${best.wd} (${best.hi}° / ${best.lo}°, ${best.rain}% chance of rain).`;
-  if(best.rain >= 50) tip = 'Rain is likely on most days this week. Check again closer to your trip.';
-  else if(best.lo <= 1) tip += ' Mornings are near freezing, so bring warm clothes.';
-  el.innerHTML = `<h4>Weather near ${tpEsc(f.name.en)}</h4>
+  let tip = L(`Best day this week: ${best.wd} (${best.hi}° / ${best.lo}°, ${best.rain}% chance of rain).`,
+              `Այս շաբաթվա լավագույն օրը՝ ${best.wd} (${best.hi}° / ${best.lo}°, անձրևի հավանականությունը՝ ${best.rain}%)։`);
+  if(best.rain >= 50) tip = L('Rain is likely on most days this week. Check again closer to your trip.', 'Այս շաբաթ օրերի մեծ մասին անձրև է սպասվում։ Նորից ստուգեք ուղևորությանը մոտ։');
+  else if(best.lo <= 1) tip += L(' Mornings are near freezing, so bring warm clothes.', ' Առավոտները սառցակալման մոտ են, ուստի վերցրեք տաք հագուստ։');
+  el.innerHTML = `<h4>${L('Weather near ', 'Եղանակ՝ ')}${tpEsc(f.name[LANG])}${L('', ' շրջակայքում')}</h4>
     <div class="wx-strip">${days.map(x=>`<div class="wx-day${x === best ? ' best' : ''}"><span class="wx-wd">${tpEsc(x.wd)}</span>${wxIcon(wxKind(x.code))}<b>${x.hi}°</b><span class="wx-lo">${x.lo}°</span><span class="wx-rain">${x.rain}%</span></div>`).join('')}</div>
-    <div class="tool-sub">${tpEsc(tip)} Rain figures are the chance of rain. Forecast by Open-Meteo.</div>`;
+    <div class="tool-sub">${tpEsc(tip)} ${L('Rain figures are the chance of rain. Forecast by Open-Meteo.', 'Անձրևի թվերը անձրևի հավանականությունն են։ Կանխատեսումը՝ Open-Meteo։')}</div>`;
 }
 
 /* ======================================================================
@@ -3302,7 +3330,7 @@ function mpRenderBox(){
   const rows = SIGHTS.map(s=>({ s, m: mp.rows[s.id] || {} }));
   const visited = rows.filter(r=>r.m.visited), want = rows.filter(r=>r.m.want && !r.m.visited);
   const pct = Math.round(visited.length / SIGHTS.length * 100);
-  const chip = (r, cls) => `<button class="mp-chip ${cls}" onclick="selectSight('${r.s.id}')">${tpEsc(r.s.name.en)}</button>`;
+  const chip = (r, cls) => `<button class="mp-chip ${cls}" onclick="selectSight('${r.s.id}')">${tpEsc(r.s.name[LANG])}</button>`;
   el.innerHTML = `<div class="mp-head"><div class="field-label">My places</div><button class="link-btn" onclick="tpSignOut()">Sign out</button></div>
     <div class="mp-progress"><div class="mp-bar"><i style="width:${pct}%"></i></div><span>${visited.length} of ${SIGHTS.length} visited</span></div>
     ${want.length ? `<div class="mp-lbl">Want to go (${want.length})</div><div class="mp-chips">${want.map(r=>chip(r,'want')).join('')}</div>` : ''}
@@ -3327,7 +3355,7 @@ function phSectionHtml(id){
   let grid;
   if(!list) grid = '<div class="rv-empty">Loading photos…</div>';
   else if(!list.length) grid = '<div class="rv-empty">No visitor photos yet.</div>';
-  else grid = `<div class="ph-grid">${list.map((p,i)=>`<div class="ph-item"><button class="ph-open" onclick="phOpen('${id}',${i})" aria-label="Open photo ${i+1}"><img loading="lazy" src="${tpEsc(p.url)}" alt="Visitor photo of ${tpEsc(s.name.en)}"></button>${
+  else grid = `<div class="ph-grid">${list.map((p,i)=>`<div class="ph-item"><button class="ph-open" onclick="phOpen('${id}',${i})" aria-label="Open photo ${i+1}"><img loading="lazy" src="${tpEsc(p.url)}" alt="Visitor photo of ${tpEsc(s.name[LANG])}"></button>${
     tp.user && p.user_id === tp.user.id ? `<button class="ph-act" onclick="phDelete('${id}','${p.id}')">Delete</button>` : `<button class="ph-act" onclick="phReport('${id}','${p.id}')">Report</button>`}</div>`).join('')}</div>`;
   const mine = list && tp.user ? list.filter(p => p.user_id === tp.user.id).length : 0;
   const add = !tp.user ? '<button class="tp-btn" onclick="openSignIn(\'Sign in with Google to add your photos.\')">Sign in to add photos</button>'
@@ -3368,7 +3396,7 @@ async function phUpload(id, input){
   if(done) phSetMsg(done === 1 ? 'Photo added. Thank you!' : done + ' photos added. Thank you!');
 }
 async function phDelete(id, photoId){
-  if(!confirm('Delete your photo?')) return;
+  if(!confirm(T('Delete your photo?'))) return;
   const p = (phs.list[id] || []).find(x => x.id === photoId); if(!p) return;
   const r = await sb.from('review_photos').delete().eq('id', photoId);
   if(r.error){ phSetMsg('Could not delete. Please try again.', true); return; }
@@ -3377,7 +3405,7 @@ async function phDelete(id, photoId){
 }
 async function phReport(id, photoId){
   if(!tp.user){ openSignIn('Sign in with Google to report a photo.'); return; }
-  if(!confirm('Report this photo as inappropriate?')) return;
+  if(!confirm(T('Report this photo as inappropriate?'))) return;
   const r = await sb.from('photo_reports').insert({ photo_id: photoId });
   agToast(r.error && r.error.code !== '23505' ? 'Could not send the report. Please try again.' : 'Thank you. We will review this photo.');
 }
@@ -3543,6 +3571,278 @@ function resetApp(e){
   setTimeout(build, 900);   // once photos and ratings have changed the list height
 })();
 
+
+/* ======================================================================
+   LANGUAGE — English (default) / Armenian.
+   Text that is built by the page itself is translated from the tables above.
+   Anything not in a table simply stays in English, so nothing ever breaks.
+====================================================================== */
+const UI_HY = {
+ "Close": "Փակել",
+ "Sign in to continue": "Մուտք գործեք՝ շարունակելու համար",
+ "Sign in with Google to continue.": "Շարունակելու համար մուտք գործեք Google-ով։",
+ "Continue with Google": "Շարունակել Google-ով",
+ "Not now": "Ոչ հիմա",
+ "We only use your Google name and photo for your reviews, photos and saved places. We never post anything for you.": "Ձեր Google-ի անունն ու լուսանկարն օգտագործում ենք միայն ձեր կարծիքների, լուսանկարների և պահպանված վայրերի համար։ Ձեր անունից երբեք ոչինչ չենք հրապարակում։",
+ "You are offline. Saved trips and place details still work, but the map and forecast need internet.": "Դուք անցանց եք։ Պահպանված ուղևորություններն ու վայրերի տվյալները դեռ աշխատում են, սակայն քարտեզի և եղանակի կանխատեսման համար ինտերնետ է պետք։",
+ "Along the Way": "Ճանապարհին",
+ "Armenia Along the Way, start again": "Հայաստան՝ ճանապարհին. սկսել նորից",
+ "Start again": "Սկսել նորից",
+ "Play background video": "Միացնել ֆոնային տեսանյութը",
+ "Pause background video": "Դադարեցնել ֆոնային տեսանյութը",
+ "Play or pause the background video": "Միացնել կամ դադարեցնել ֆոնային տեսանյութը",
+ "Play": "Միացնել",
+ "Pause": "Դադար",
+ "Plan a day trip": "Պլանավորեք օրվա ուղևորություն",
+ "Yerevan": "Երևան",
+ "Search by name, region or type…": "Որոնեք անունով, մարզով կամ տեսակով…",
+ "Search sights by name, region or type": "Որոնել տեսարժան վայրեր անունով, մարզով կամ տեսակով",
+ "Plan and trip": "Պլան և ուղևորություն",
+ "Map of sights and the active route": "Տեսարժան վայրերի և ընթացիկ երթուղու քարտեզ",
+ "Click a pin to see that sight.": "Սեղմեք քարտեզի նշանին՝ այդ վայրը տեսնելու համար։",
+ "Plan a trip to this sight": "Ուղևորություն դեպի այս վայր",
+ "Rate & review": "Կարծիք թողնել",
+ "Top rated places": "Ամենաբարձր գնահատված վայրերը",
+ "Loading ratings…": "Գնահատականները բեռնվում են…",
+ "Language": "Լեզու",
+ "No sight matches that. Try a region (like Syunik) or a type (like lake).": "Ոչինչ չի համընկնում։ Փորձեք մարզ (օրինակ՝ Սյունիք) կամ տեսակ (օրինակ՝ լիճ)։",
+ "Clear choice": "Չեղարկել ընտրությունը",
+ "Clear": "Մաքրել",
+ "Remove this sight from the trip": "Հեռացնել այս վայրը ուղևորությունից",
+ "Not independently verified": "Անկախ կերպով չի ստուգվել",
+ "Show on the map": "Ցույց տալ քարտեզում",
+ "Remove from trip": "Հեռացնել ուղևորությունից",
+ "Share this trip": "Կիսվել այս ուղևորությամբ",
+ "Share": "Կիսվել",
+ "More…": "Ավելին…",
+ "You changed this trip. Drive times were recalculated.": "Դուք փոխել եք այս ուղևորությունը։ Ճանապարհի ժամանակները նորից հաշվարկվեցին։",
+ "Restore the original trip": "Վերականգնել սկզբնական ուղևորությունը",
+ "Fetching road route…": "Ճանապարհի երթուղին բեռնվում է…",
+ "Estimated from straight-line distance": "Գնահատված է ուղիղ գծով հեռավորությունից",
+ "Needs an overnight stay": "Պահանջվում է գիշերակաց",
+ "~ Pin position approximate": "~ Նշանի դիրքը մոտավոր է",
+ "The map pin for this sight is a best-effort position and may be a few kilometres off": "Այս վայրի քարտեզային նշանի դիրքը մոտավոր է և կարող է մի քանի կիլոմետր շեղված լինել",
+ "Try again": "Փորձել նորից",
+ "The map is not set up yet.": "Քարտեզը դեռ չի կարգավորվել։",
+ "The map could not load right now. Your trip planning below still works.": "Քարտեզը հիմա չի բեռնվում։ Ստորև ուղևորության պլանավորումը շարունակում է աշխատել։",
+ "Navigate": "Նավիգացիա",
+ "Opens your maps app with every stop, there and back.": "Բացում է ձեր քարտեզների հավելվածը՝ բոլոր կանգառներով, գնալ-գալ։",
+ "Fuel cost": "Վառելիքի արժեք",
+ "Change fuel price or car": "Փոխել վառելիքի գինը կամ մեքենան",
+ "Fuel price (AMD per liter)": "Վառելիքի գին (դրամ մեկ լիտրի համար)",
+ "Car use (L per 100 km)": "Մեքենայի ծախս (լ 100 կմ-ի համար)",
+ "Save": "Պահպանել",
+ "Weather": "Եղանակ",
+ "Loading forecast…": "Կանխատեսումը բեռնվում է…",
+ "The forecast needs an internet connection.": "Կանխատեսման համար ինտերնետ է պետք։",
+ "The forecast is unavailable right now.": "Կանխատեսումը հիմա հասանելի չէ։",
+ "Please enter a fuel price up to 2000 and a car use from 2 to 30.": "Մուտքագրեք վառելիքի գին մինչև 2000 և մեքենայի ծախս 2-ից 30։",
+ "Rain is likely on most days this week. Check again closer to your trip.": "Այս շաբաթ օրերի մեծ մասին անձրև է սպասվում։ Նորից ստուգեք ուղևորությանը մոտ։",
+ "Saving a trip needs an internet connection.": "Ուղևորությունը պահպանելու համար ինտերնետ է պետք։",
+ "Sign in with Google to save this trip. Your saved trips will be waiting for you on any device.": "Մուտք գործեք Google-ով՝ այս ուղևորությունը պահպանելու համար։ Պահպանված ուղևորությունները ձեզ կսպասեն ցանկացած սարքում։",
+ "You can keep up to 30 saved trips. Delete one to save another.": "Կարող եք պահել մինչև 30 ուղևորություն։ Ջնջեք մեկը՝ մյուսը պահպանելու համար։",
+ "Could not save the trip. Please try again.": "Չհաջողվեց պահպանել ուղևորությունը։ Խնդրում ենք փորձել նորից։",
+ "Trip saved to your account.": "Ուղևորությունը պահպանվեց ձեր հաշվում։",
+ "Could not delete. Please try again.": "Չհաջողվեց ջնջել։ Խնդրում ենք փորձել նորից։",
+ "Offline: your saved trips from your last visit.": "Անցանց. ձեր պահպանված ուղևորությունները նախորդ այցից։",
+ "Sign in to save trips and open them on any device.": "Մուտք գործեք՝ ուղևորությունները պահպանելու և ցանկացած սարքում բացելու համար։",
+ "Sign in with Google": "Մուտք գործել Google-ով",
+ "Sign in with Google to see your saved trips.": "Մուտք գործեք Google-ով՝ ձեր պահպանված ուղևորությունները տեսնելու համար։",
+ "Delete this saved trip": "Ջնջել այս պահպանված ուղևորությունը",
+ "Copy this link:": "Պատճենեք այս հղումը՝",
+ "Signing in needs an internet connection.": "Մուտք գործելու համար ինտերնետ է պետք։",
+ "Saved to My places.": "Պահպանվեց «Իմ վայրերում»։",
+ "Could not save. Please try again.": "Չհաջողվեց պահպանել։ Խնդրում ենք փորձել նորից։",
+ "Reviews are temporarily unavailable.": "Կարծիքները ժամանակավորապես հասանելի չեն։",
+ "Sign out": "Դուրս գալ",
+ "Sign in with Google to review": "Մուտք գործեք Google-ով՝ կարծիք թողնելու համար",
+ "Sign in with Google to rate places and write reviews.": "Մուտք գործեք Google-ով՝ վայրերը գնահատելու և կարծիք գրելու համար։",
+ "No reviews yet — be the first": "Դեռ կարծիքներ չկան. եղեք առաջինը",
+ "Top rated places pages": "Ամենաբարձր գնահատված վայրերի էջեր",
+ "Previous page": "Նախորդ էջ",
+ "Next page": "Հաջորդ էջ",
+ "Want to rate this place?": "Ուզո՞ւմ եք գնահատել այս վայրը։",
+ "Sign in with your Google account to leave stars and a review.": "Մուտք գործեք ձեր Google հաշվով՝ աստղեր և կարծիք թողնելու համար։",
+ "Sign in with Google to rate this place and write a review.": "Մուտք գործեք Google-ով՝ այս վայրը գնահատելու և կարծիք գրելու համար։",
+ "Your review (you can edit it)": "Ձեր կարծիքը (կարող եք խմբագրել)",
+ "Your rating": "Ձեր գնահատականը",
+ "What did you think? (optional)": "Ի՞նչ կարծիքի եք։ (ըստ ցանկության)",
+ "Update review": "Թարմացնել կարծիքը",
+ "Post review": "Հրապարակել կարծիքը",
+ "Delete": "Ջնջել",
+ "Loading reviews…": "Կարծիքները բեռնվում են…",
+ "No written reviews yet.": "Գրավոր կարծիքներ դեռ չկան։",
+ "Please choose 1 to 5 stars first.": "Նախ ընտրեք 1-ից 5 աստղ։",
+ "Could not save your review. Please try again.": "Չհաջողվեց պահպանել ձեր կարծիքը։ Խնդրում ենք փորձել նորից։",
+ "Thanks! Your review is saved.": "Շնորհակալություն։ Ձեր կարծիքը պահպանվեց։",
+ "Delete your review of this place?": "Ջնջե՞լ այս վայրի մասին ձեր կարծիքը։",
+ "Your review was deleted.": "Ձեր կարծիքը ջնջվեց։",
+ "Reviews could not load right now. Please refresh the page.": "Կարծիքները հիմա չեն բեռնվում։ Խնդրում ենք թարմացնել էջը։",
+ "Traveler": "Ճանապարհորդ",
+ "My places": "Իմ վայրերը",
+ "Keep a wishlist and tick off the places you have been. Sign in with Google to start.": "Պահեք ցանկությունների ցուցակ և նշեք այն վայրերը, որտեղ եղել եք։ Սկսելու համար մուտք գործեք Google-ով։",
+ "Sign in with Google to keep your wishlist and visited places.": "Մուտք գործեք Google-ով՝ ցանկությունների ցուցակը և այցելած վայրերը պահելու համար։",
+ "Use \"Want to go\" and \"Been here\" on any place to add it here.": "Օգտագործեք «Ուզում եմ գնալ» և «Եղել եմ» ցանկացած վայրի վրա՝ այն այստեղ ավելացնելու համար։",
+ "Want to go": "Ուզում եմ գնալ",
+ "Been here": "Եղել եմ",
+ "Add to your wishlist": "Ավելացնել ձեր ցանկությունների ցուցակում",
+ "Mark as visited": "Նշել որպես այցելած",
+ "Sign in with Google to add this place to your wishlist or your visited list.": "Մուտք գործեք Google-ով՝ այս վայրը ձեր ցանկությունների կամ այցելածների ցուցակում ավելացնելու համար։",
+ "Visitor photos": "Այցելուների լուսանկարներ",
+ "Loading photos…": "Լուսանկարները բեռնվում են…",
+ "No visitor photos yet.": "Այցելուների լուսանկարներ դեռ չկան։",
+ "Report": "Բողոքել",
+ "Sign in to add photos": "Մուտք գործեք՝ լուսանկար ավելացնելու համար",
+ "Sign in with Google to add your photos.": "Մուտք գործեք Google-ով՝ ձեր լուսանկարներն ավելացնելու համար։",
+ "Add photos": "Ավելացնել լուսանկարներ",
+ "You already added the maximum.": "Դուք արդեն ավելացրել եք առավելագույն քանակը։",
+ "Please choose image files.": "Խնդրում ենք ընտրել պատկերի ֆայլեր։",
+ "Photo added. Thank you!": "Լուսանկարն ավելացվեց։ Շնորհակալություն։",
+ "Delete your photo?": "Ջնջե՞լ ձեր լուսանկարը։",
+ "Sign in with Google to report a photo.": "Մուտք գործեք Google-ով՝ լուսանկարի մասին բողոքելու համար։",
+ "Report this photo as inappropriate?": "Բողոքե՞լ այս լուսանկարի մասին՝ որպես անհամապատասխան։",
+ "Could not send the report. Please try again.": "Չհաջողվեց ուղարկել բողոքը։ Խնդրում ենք փորձել նորից։",
+ "Thank you. We will review this photo.": "Շնորհակալություն։ Մենք կուսումնասիրենք այս լուսանկարը։",
+ "Photo viewer": "Լուսանկարների դիտարկիչ",
+ "Previous photo": "Նախորդ լուսանկար",
+ "Next photo": "Հաջորդ լուսանկար",
+ "Use it like an app": "Օգտագործեք որպես հավելված",
+ "Install this site on your phone. Saved trips and place details then open even without internet.": "Տեղադրեք այս կայքը ձեր հեռախոսում։ Պահպանված ուղևորություններն ու վայրերի տվյալները կբացվեն նույնիսկ առանց ինտերնետի։",
+ "Install app": "Տեղադրել հավելվածը",
+ "On iPhone: tap the Share button in Safari, then Add to Home Screen. Saved trips and place details then open even without internet.": "iPhone-ում. Safari-ում սեղմեք «Կիսվել» կոճակը, ապա «Ավելացնել Հիմնական էկրանին»։ Պահպանված ուղևորություններն ու վայրերի տվյալները կբացվեն նույնիսկ առանց ինտերնետի։"
+};
+const UI_RX = [
+  [/^(\d+(?:\.\d+)?)h$/, m => m[1] + ' ժ'],
+  [/^(\d+) of (\d+) visited$/, m => m[1] + '՝ ' + m[2] + '-ից այցելած'],
+  [/^Want to go \((\d+)\)$/, m => 'Ուզում եմ գնալ (' + m[1] + ')'],
+  [/^Been here \((\d+)\)$/, m => 'Եղել եմ (' + m[1] + ')'],
+  [/^· (\d+) reviews?$/, m => '· ' + m[1] + ' կարծիք'],
+  [/^Showing (\d+)–(\d+) of (\d+) places$/, m => 'Ցուցադրվում է ' + m[1] + '–' + m[2] + '՝ ' + m[3] + ' վայրից'],
+  [/^Page (\d+)$/, m => 'Էջ ' + m[1]],
+  [/^(\d) stars?$/, m => m[1] + ' աստղ'],
+  [/^(\d(?:\.\d)?) out of 5 stars$/, m => m[1] + ' աստղ 5-ից'],
+  [/^Open photo (\d+)$/, m => 'Բացել լուսանկար ' + m[1]],
+  [/^Uploading (\d+) of (\d+)…$/, m => 'Բեռնվում է ' + m[1] + ' ' + m[2] + '-ից…'],
+  [/^(\d+) photos added\. Thank you!$/, m => m[1] + ' լուսանկար ավելացվեց։ Շնորհակալություն։'],
+  [/^You added the maximum of (\d+) photos here\.$/, m => 'Այստեղ դուք ավելացրել եք առավելագույնը՝ ' + m[1] + ' լուսանկար։'],
+  [/^(\d+) saved trips? moved to your account\.$/, m => m[1] + ' պահպանված ուղևորություն տեղափոխվեց ձեր հաշիվ։'],
+  [/^Could not upload one photo\.\s*(.*)$/, m => 'Չհաջողվեց բեռնել մեկ լուսանկար։ ' + m[1]],
+  [/^Remove (.+) from the trip$/, m => 'Հեռացնել «' + m[1] + '»-ը ուղևորությունից'],
+  [/^Visitor photo of (.+)$/, m => 'Այցելուի լուսանկար՝ ' + m[1]],
+  [/^Fuel price was below (\d+) AMD, so (\d+) AMD is used\.$/, m => 'Վառելիքի գինը ' + m[1] + ' դրամից ցածր էր, ուստի օգտագործվում է ' + m[2] + ' դրամ։'],
+  [/^Fuel price was below (\d+) AMD, so (\d+) AMD is being used\.$/, m => 'Վառելիքի գինը ' + m[1] + ' դրամից ցածր էր, ուստի օգտագործվում է ' + m[2] + ' դրամ։'],
+  [/^Minimum is (\d+) AMD\.$/, m => 'Նվազագույնը ' + m[1] + ' դրամ է։'],
+  [/^Price was below (\d+) AMD, so (\d+) AMD is being used\.$/, m => 'Գինը ' + m[1] + ' դրամից ցածր էր, ուստի օգտագործվում է ' + m[2] + ' դրամ։']
+];
+function trStr(s){
+  if(Object.prototype.hasOwnProperty.call(UI_HY, s)) return UI_HY[s];
+  for(let i = 0; i < UI_RX.length; i++){ const m = UI_RX[i][0].exec(s); if(m) return UI_RX[i][1](m); }
+  return null;
+}
+function trWithSpace(raw){
+  const m = /^(\s*)([\s\S]*?)(\s*)$/.exec(raw);
+  if(!m || !m[2]) return null;
+  const t = trStr(m[2]);
+  return t == null ? null : m[1] + t + m[3];
+}
+function T(s){ if(LANG !== 'hy') return s; const t = trStr(s); return t == null ? s : t; }
+
+const TR_ATTRS = ['title', 'aria-label', 'placeholder', 'alt'];
+const TR_NODES = new WeakMap();   // text node -> { o: english, t: armenian }
+const TR_ELS = new WeakMap();     // element -> { attr: { o, t } }
+function trSkip(el){
+  const n = el.nodeName;
+  if(n === 'SCRIPT' || n === 'STYLE' || n === 'TEXTAREA' || n === 'NOSCRIPT') return true;
+  return !!(el.closest && el.closest('[data-no-tr], .rv-text, .tp-user, .rv-top, .top-copy h1'));
+}
+function trTextNode(n){
+  const cur = n.nodeValue, rec = TR_NODES.get(n);
+  if(rec && cur === rec.t){ if(LANG !== 'hy'){ n.nodeValue = rec.o; TR_NODES.delete(n); } return; }
+  if(rec) TR_NODES.delete(n);
+  if(LANG !== 'hy') return;
+  const t = trWithSpace(cur);
+  if(t != null && t !== cur){ TR_NODES.set(n, { o: cur, t }); n.nodeValue = t; }
+}
+function trAttrs(el){
+  let rec = TR_ELS.get(el);
+  for(let i = 0; i < TR_ATTRS.length; i++){
+    const a = TR_ATTRS[i];
+    if(!el.hasAttribute || !el.hasAttribute(a)) { if(rec && rec[a]) delete rec[a]; continue; }
+    const cur = el.getAttribute(a), r = rec && rec[a];
+    if(r && cur === r.t){ if(LANG !== 'hy'){ el.setAttribute(a, r.o); delete rec[a]; } continue; }
+    if(r) delete rec[a];
+    if(LANG !== 'hy') continue;
+    const t = trWithSpace(cur);
+    if(t != null && t !== cur){ if(!rec){ rec = {}; TR_ELS.set(el, rec); } rec[a] = { o: cur, t }; el.setAttribute(a, t); }
+  }
+}
+function trWalk(root){
+  if(!root) return;
+  if(root.nodeType === 3){ if(root.parentElement && !trSkip(root.parentElement)) trTextNode(root); return; }
+  if(root.nodeType !== 1 || trSkip(root)) return;
+  trAttrs(root);
+  const tw = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, {
+    acceptNode: n => (n.nodeType === 1 && trSkip(n)) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  let n;
+  while((n = tw.nextNode())){ if(n.nodeType === 3) trTextNode(n); else trAttrs(n); }
+}
+const trObserver = new MutationObserver(muts => {
+  if(LANG !== 'hy') return;
+  trObserver.disconnect();
+  try{
+    muts.forEach(m => {
+      if(m.type === 'childList') m.addedNodes.forEach(trWalk);
+      else if(m.type === 'characterData') trWalk(m.target);
+      else if(m.type === 'attributes') trAttrs(m.target);
+    });
+  }catch(e){ console.warn('translation pass failed', e); }
+  trObserve();
+});
+function trObserve(){ trObserver.observe(document.body, { childList:true, subtree:true, characterData:true, attributes:true, attributeFilter:TR_ATTRS }); }
+
+function applyI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if(el.__i18nOrig === undefined) el.__i18nOrig = el.innerHTML;
+    if(LANG === 'hy' && I18N.hy[key] != null) el.innerHTML = I18N.hy[key];
+    else el.innerHTML = el.__i18nOrig;
+  });
+}
+function setHeadline(){
+  const h = document.querySelector('.top-copy h1'); if(!h) return;
+  const text = (I18N[LANG] && I18N[LANG].heroTitle) || I18N.en.heroTitle;
+  h.setAttribute('aria-label', text);
+  h.innerHTML = text.split(/\s+/).map((w,i)=>'<span class="w" aria-hidden="true" style="--i:'+i+'">'+w+'</span>').join(' ');
+}
+function setLang(l, initial){
+  LANG = (l === 'hy') ? 'hy' : 'en';
+  if(!initial){ try{ localStorage.setItem('agLang', LANG); }catch(e){} }
+  document.documentElement.lang = LANG;
+  document.title = L('Armenia Along the Way — day trips from Yerevan', 'Հայաստան՝ ճանապարհին — օրվա ուղևորություններ Երևանից');
+  const md = document.querySelector('meta[name="description"]');
+  if(md) md.setAttribute('content', L('Day trips from Yerevan along one road, with the stops that are worth the detour.', 'Օրվա ուղևորություններ Երևանից՝ մեկ ճանապարհով, այն կանգառներով, որոնք արժե շրջանցել։'));
+  document.querySelectorAll('.lang-btn').forEach(b => { const on = b.dataset.lang === LANG; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); });
+  if(initial && LANG === 'en'){ return; }
+  applyI18n();
+  setHeadline();
+  const run = f => { try{ f(); }catch(e){ console.warn('language refresh', e); } };
+  run(buildMustSeeOptions);
+  run(buildInterestChips);
+  run(() => { const v = document.getElementById('mustSee').value; if(v) setMustSee(v); });
+  run(() => {
+    if(state.routes && state.routes.length) renderResults();
+    else if(state.lastQuery) runSearch();
+  });
+  run(renderSightPanel);
+  run(renderSaved);
+  run(mpRenderBox);
+  run(tpRenderAuth);
+  run(tpRender);
+  run(() => { const r = state.routes && state.routes[state.activeRoute]; refreshMarkers(r ? r.order : []); });
+  trWalk(document.body);
+}
+trObserve();
+setLang(LANG, true);
 </script>
 </body>
 </html>
