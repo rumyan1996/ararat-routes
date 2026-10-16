@@ -1,0 +1,983 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Backoffice — Armenia Along the Way</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=DM+Sans:opsz,wght@9..40,400;500;600;700&family=Noto+Sans+Armenian:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F3EF; --card:#FFFFFF; --ink:#1B1D3A; --muted:#5E6180; --faint:#8D90A8; --line:#E4E1DA;
+  --navy:#1F2250; --accent:#FFB36B; --accent-ink:#8A3F00; --ok:#1F8A4C; --bad:#B3341A; --blue:#3E6FA8;
+  --rose:#E0764A; --surface-2:#F1EEE8; --border-strong:#D5D1C8;
+  --font-display:'Sora','Noto Sans Armenian',system-ui,sans-serif;
+  --font-body:'DM Sans','Noto Sans Armenian',system-ui,sans-serif;
+}
+*{ box-sizing:border-box; }
+html,body{ margin:0; background:var(--bg); color:var(--ink); font:400 15px/1.5 var(--font-body); }
+button,input,textarea,select{ font:inherit; color:inherit; }
+a{ color:var(--accent-ink); }
+.top{ background:var(--navy); color:#fff; padding:14px 22px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+.top h1{ margin:0; font:700 18px var(--font-display); letter-spacing:.01em; }
+.top .sp{ flex:1; }
+.top .who{ font-size:13px; color:#CFD0E8; }
+.top a,.top button{ color:#fff; }
+.wrap{ max-width:1080px; margin:0 auto; padding:22px 18px 80px; }
+.tabs{ display:flex; gap:6px; margin-bottom:18px; flex-wrap:wrap; }
+.tab{ border:1px solid var(--line); background:var(--card); padding:10px 18px; border-radius:999px; cursor:pointer; font-weight:600; }
+.tab.on{ background:var(--navy); color:#fff; border-color:var(--navy); }
+.card{ background:var(--card); border:1px solid var(--line); border-radius:18px; padding:20px; }
+.center{ max-width:420px; margin:9vh auto 0; text-align:center; display:flex; flex-direction:column; gap:12px; }
+.center h2{ margin:0; font:700 22px var(--font-display); }
+.center p{ margin:0; color:var(--muted); }
+.btn{ border:1px solid var(--border-strong); background:#fff; padding:10px 16px; border-radius:12px; cursor:pointer; font-weight:600; }
+.btn:hover{ background:var(--surface-2); }
+.btn.primary{ background:var(--navy); border-color:var(--navy); color:#fff; }
+.btn.primary:hover{ background:#2b2f6b; }
+.btn.danger{ color:var(--bad); border-color:#E7C1B8; }
+.btn.small{ padding:6px 12px; font-size:13px; border-radius:10px; }
+.btn:disabled{ opacity:.5; cursor:default; }
+.input{ width:100%; padding:11px 13px; border:1px solid var(--border-strong); border-radius:12px; background:#fff; }
+textarea.input{ min-height:96px; resize:vertical; line-height:1.45; }
+.row2{ display:flex; gap:8px; }
+.msg{ font-size:13px; color:var(--muted); min-height:18px; }
+.msg.err{ color:var(--bad); }
+.or{ display:flex; align-items:center; gap:10px; color:var(--faint); font-size:12px; }
+.or::before,.or::after{ content:''; flex:1; height:1px; background:var(--line); }
+.tools{ display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; align-items:center; }
+.tools .input{ max-width:340px; }
+.seg{ display:inline-flex; border:1px solid var(--line); border-radius:999px; overflow:hidden; background:#fff; }
+.seg button{ border:0; background:transparent; padding:8px 14px; cursor:pointer; font-weight:600; color:var(--muted); }
+.seg button.on{ background:var(--navy); color:#fff; }
+.count{ color:var(--muted); font-size:13px; margin-left:auto; }
+
+.plist{ display:flex; flex-direction:column; gap:10px; }
+.place{ background:var(--card); border:1px solid var(--line); border-radius:16px; overflow:hidden; }
+.place.hid{ opacity:.65; }
+.prow{ display:flex; align-items:center; gap:14px; padding:12px 14px; cursor:pointer; }
+.prow:hover{ background:#FBFAF7; }
+.ico{ flex:none; width:52px; height:52px; }
+.ico svg{ width:100%; height:100%; display:block; }
+.pmain{ flex:1; min-width:0; }
+.pname{ font-weight:700; }
+.pmeta{ font-size:13px; color:var(--muted); }
+.chips{ display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; }
+.chip{ font-size:12px; padding:2px 9px; border-radius:999px; background:var(--surface-2); color:var(--muted); }
+.badge{ font-size:11.5px; font-weight:700; padding:3px 9px; border-radius:999px; }
+.badge.ed{ background:#FFF0DC; color:var(--accent-ink); }
+.badge.hd{ background:#F9DDD7; color:var(--bad); }
+.editor{ border-top:1px solid var(--line); padding:18px; background:#FBFAF7; display:grid; gap:16px; }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media (max-width:720px){ .grid2{ grid-template-columns:1fr; } .prow{ flex-wrap:wrap; } }
+.lbl{ display:block; font-weight:700; font-size:13px; margin-bottom:5px; }
+.hint{ font-size:12.5px; color:var(--faint); margin-top:4px; }
+.icons{ display:grid; grid-template-columns:repeat(auto-fill,minmax(64px,1fr)); gap:8px; }
+.icons label{ cursor:pointer; position:relative; }
+.icons input{ position:absolute; opacity:0; }
+.icons .ib{ display:block; border:2px solid transparent; border-radius:14px; padding:3px; background:#fff; }
+.icons input:checked + .ib{ border-color:var(--navy); box-shadow:0 0 0 3px rgba(31,34,80,.15); }
+.icons input:focus-visible + .ib{ outline:2px solid var(--navy); }
+.icons .ib svg{ width:100%; display:block; }
+.icons .nm{ display:block; text-align:center; font-size:10.5px; color:var(--faint); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.cats{ display:flex; gap:8px 16px; flex-wrap:wrap; }
+.cats label{ display:flex; gap:6px; align-items:center; cursor:pointer; }
+.acts{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.acts .sp{ flex:1; }
+
+table{ width:100%; border-collapse:collapse; }
+th,td{ text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); font-size:14px; vertical-align:top; }
+th{ font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--faint); }
+.tablewrap{ overflow-x:auto; background:var(--card); border:1px solid var(--line); border-radius:16px; }
+.stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin-bottom:16px; }
+.stat{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:14px 16px; }
+.stat b{ display:block; font:700 26px var(--font-display); }
+.stat span{ color:var(--muted); font-size:13px; }
+.catrow{ display:grid; grid-template-columns:1.1fr 1fr 1fr auto; gap:10px; align-items:end; padding:14px 0; border-bottom:1px solid var(--line); }
+.catrow:last-child{ border-bottom:0; }
+@media (max-width:720px){ .catrow{ grid-template-columns:1fr; } }
+#toast{ position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--navy); color:#fff; padding:11px 18px; border-radius:999px; font-weight:600; font-size:14px; opacity:0; pointer-events:none; transition:opacity .2s; z-index:50; max-width:90vw; }
+#toast.on{ opacity:1; }
+#toast.err{ background:var(--bad); }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast" role="status"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const SIGHTS = [
+  { id:'garni', region:'Kotayk', corridor:'east', icon:'temple', name:{en:'Garni Temple'}, lat:40.1064, lon:44.7300,
+    cat:['fortress'], visitMin:60, roadFactor:1.25, speed:55,
+    why:{en:"Armenia's only standing Greco-Roman colonnaded temple, perched over a gorge — the one clearly classical building in a country of medieval stone churches."},
+    hours:{en:"Grounds open roughly 9:00–19:00"}, hoursFlagged:true, price:{en:"Small entry fee"}, priceFlagged:true },
+
+  { id:'geghard', region:'Kotayk', corridor:'east', icon:'cliffMonastery', name:{en:'Geghard Monastery'}, lat:40.1439, lon:44.8151,
+    cat:['church'], visitMin:60, roadFactor:1.25, speed:55,
+    why:{en:"A UNESCO monastery with chapels carved directly into the cliff face — some rooms are literally hewn from the mountain, not built on it."},
+    hours:{en:"Typically open dawn–dusk"}, hoursFlagged:true, price:{en:"Free, donations welcome"}, priceFlagged:false },
+
+  { id:'garnigorge', region:'Kotayk', corridor:'east', icon:'gorge', name:{en:'Symphony of the Stones'}, lat:40.0975, lon:44.7167,
+    cat:['nature'], visitMin:30, roadFactor:1.3, speed:45,
+    why:{en:"A short walk down into Garni Gorge to a wall of hexagonal basalt columns, cooled into place by an ancient lava flow."},
+    hours:{en:"Accessible dawn–dusk, no gate"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'khorvirap', region:'Ararat', corridor:'south', icon:'domeChurch', name:{en:'Khor Virap Monastery'}, lat:39.8791, lon:44.5701,
+    cat:['church'], visitMin:45, roadFactor:1.2, speed:60,
+    why:{en:"The closest, clearest view of Mount Ararat from Armenian soil, over the pit where Gregory the Illuminator was reportedly imprisoned before converting the kingdom."},
+    hours:{en:"Typically open 9:00–18:00"}, hoursFlagged:true, price:{en:"Free, small pit-descent fee"}, priceFlagged:true },
+
+  { id:'etchmiadzin', region:'Armavir', corridor:'west', icon:'domeChurch', name:{en:'Etchmiadzin Cathedral'}, lat:40.1608, lon:44.2925,
+    cat:['church'], visitMin:60, roadFactor:1.15, speed:55,
+    why:{en:"The seat of the Armenian Apostolic Church and, by most accounts, among the oldest cathedrals in the world — still an active place of worship."},
+    hours:{en:"Grounds open roughly 8:00–20:00"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'zvartnots', region:'Armavir', corridor:'west', icon:'ruins', name:{en:'Zvartnots Cathedral (ruins)'}, lat:40.1594, lon:44.3536,
+    cat:['church'], visitMin:30, roadFactor:1.15, speed:55,
+    why:{en:"The circular footprint of a 7th-century cathedral that collapsed centuries ago — its scale is easier to read from the ruins than most standing buildings nearby."},
+    hours:{en:"Typically open 10:00–17:00"}, hoursFlagged:true, price:{en:"Small entry fee"}, priceFlagged:true },
+
+
+  { id:'sevanavank', region:'Gegharkunik', corridor:'northeast', icon:'domeChurch', name:{en:'Sevanavank, Lake Sevan'}, lat:40.5691, lon:44.9391,
+    cat:['church'], visitMin:75, roadFactor:1.15, speed:65,
+    why:{en:"A 9th-century monastery on a peninsula overlooking one of the highest large lakes in the world — the water alone justifies the drive."},
+    hours:{en:"Grounds open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'dilijan', region:'Tavush', corridor:'northeast', icon:'town', name:{en:'Dilijan old town & forest'}, lat:40.7431, lon:44.8654,
+    cat:['nature'], visitMin:120, roadFactor:1.35, speed:50,
+    why:{en:"Forested hills, timber-balcony houses and mineral-water springs — the town Armenians nickname \"little Switzerland,\" and it's easy to see why on arrival."},
+    hours:{en:"Town is open access; trails best in daylight"}, hoursFlagged:false, price:{en:"Free to walk the old town"}, priceFlagged:false },
+
+  { id:'amberd', region:'Aragatsotn', corridor:'northwest', icon:'fortress', name:{en:'Amberd Fortress'}, lat:40.4067, lon:44.2306,
+    cat:['fortress'], visitMin:60, roadFactor:1.4, speed:45,
+    why:{en:"A 7th-century fortress wedged onto a cliff at 2,300m on Mount Aragats' slopes, with a small church and views down two river gorges at once."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Small entry fee"}, priceFlagged:true,
+    closedMonths:[10,11,0,1,2,3] /* Nov(10)-Apr(3): mountain road often snow/ice affected */ },
+
+  { id:'karilake', region:'Aragatsotn', corridor:'northwest', icon:'lake', name:{en:'Kari Lake, Mt Aragats'}, lat:40.5378, lon:44.1897,
+    cat:['nature','lake'], visitMin:60, roadFactor:1.5, speed:40,
+    why:{en:"A stark alpine lake at roughly 3,200m below Aragats' four summits — the road up feels like leaving Armenia's climate entirely."},
+    hours:{en:"Seasonal — road generally closed by snow"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false,
+    closedMonths:[9,10,11,0,1,2,3,4] /* Oct-May: snow closure, real and material to routing */ },
+
+
+  { id:'saghmosavank', region:'Aragatsotn', corridor:'northwest', icon:'domeChurch', name:{en:'Saghmosavank, Kasagh Gorge'}, lat:40.3242, lon:44.3346,
+    cat:['church'], visitMin:45, roadFactor:1.25, speed:50,
+    why:{en:"A 13th-century monastery balanced right at the lip of a sheer gorge — the drop below the back wall is most of the view."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'charentsarch', region:'Kotayk', corridor:'east', icon:'arch', name:{en:"Charents Arch viewpoint"}, lat:40.1467, lon:44.6467,
+    cat:['view'], visitMin:15, roadFactor:1.2, speed:55,
+    why:{en:"A roadside stone arch framing Mount Ararat across the valley — the single most-photographed pull-off on the road to Garni, and a genuinely good five-minute stop."},
+    hours:{en:"Always accessible"}, hoursFlagged:false, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'noravank', region:'Vayots Dzor', corridor:'south', icon:'cliffMonastery', name:{en:'Noravank Monastery'}, lat:39.6852, lon:45.2306,
+    cat:['church'], visitMin:60, roadFactor:1.3, speed:55,
+    why:{en:"A 13th-century monastery set against sheer red-rock cliffs in Vayots Dzor — the drive in through the canyon is as memorable as the buildings."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Small entry fee"}, priceFlagged:true },
+  { id:'havutstar', region:'Kotayk', corridor:'east', icon:'cliffMonastery', name:{en:'Havuts Tar (ruins)'}, lat:40.1213, lon:44.7364,
+    cat:['church'], visitMin:40, roadFactor:1.35, speed:45,
+    why:{en:"A ruined cliffside monastery above Garni Gorge, reached by a short hike — quieter and less restored than Geghard, with the same gorge views."},
+    hours:{en:"No gate, accessible in daylight"}, hoursFlagged:false, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'khosrovreserve', region:'Ararat', corridor:'east', icon:'gorge', name:{en:'Khosrov Forest Reserve'}, lat:40.0550, lon:44.7850,
+    cat:['nature'], visitMin:90, roadFactor:1.3, speed:45,
+    why:{en:"One of Armenia's oldest protected forests, said to have been planted by a 4th-century king to reforest the Ararat plain — gorge trails and juniper woodland, far fewer visitors than Garni next door."},
+    hours:{en:"Entry generally needs a permit"}, hoursFlagged:true, price:{en:"Entry/permit fee"}, priceFlagged:true },
+
+  { id:'areniCave', region:'Vayots Dzor', corridor:'south', icon:'cave', name:{en:'Areni-1 Cave'}, lat:39.7167, lon:45.1937,
+    cat:['nature'], visitMin:45, roadFactor:1.2, speed:60,
+    why:{en:"The cave where archaeologists found the world's oldest known leather shoe and winery, both over 5,500 years old — a short stop right off the road to Noravank."},
+    hours:{en:"Typically open by day, hours vary"}, hoursFlagged:true, price:{en:"Small entry fee"}, priceFlagged:true },
+
+  { id:'gndevank', region:'Vayots Dzor', corridor:'south', icon:'domeChurch', name:{en:'Gndevank Monastery'}, lat:39.7667, lon:45.3670,
+    cat:['church'], visitMin:40, roadFactor:1.25, speed:55,
+    why:{en:"A 10th-century monastery in a narrow Vayots Dzor gorge, built by a princess in memory of her husband — smaller and quieter than Noravank, on the same road."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+
+  { id:'tatev', region:'Syunik', corridor:'south', icon:'cliffMonastery', name:{en:'Tatev Monastery'}, lat:39.3800, lon:46.2483,
+    cat:['church'], visitMin:90, roadFactor:1.3, speed:55,
+    why:{en:"A 9th-century monastery on a plateau above the Vorotan gorge, reached by the Wings of Tatev cable car — one of the longest reversible aerial tramways in the world."},
+    hours:{en:"Cable car and grounds keep set hours"}, hoursFlagged:true, price:{en:"Cable car ticket + small monastery fee"}, priceFlagged:true },
+
+  { id:'talin', region:'Aragatsotn', corridor:'west', icon:'ruins', name:{en:'Talin Cathedral (ruins)'}, lat:40.3833, lon:43.8667,
+    cat:['church'], visitMin:30, roadFactor:1.2, speed:60,
+    why:{en:"A ruined 7th-century cathedral on the way to Gyumri — once one of the largest domed churches in Armenia, now roofless but still imposing."},
+    hours:{en:"Open access, daylight hours"}, hoursFlagged:false, price:{en:"Free"}, priceFlagged:false },
+
+
+  { id:'harichavank', region:'Aragatsotn', corridor:'west', icon:'domeChurch', name:{en:'Harichavank Monastery'}, lat:40.6167, lon:43.9667,
+    cat:['church'], visitMin:45, roadFactor:1.25, speed:55,
+    why:{en:"A monastery complex near Artik combining a 7th-century church with a 13th-century one built beside it — a rare chance to compare two very different centuries of Armenian church architecture side by side."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'karmravor', region:'Aragatsotn', corridor:'northwest', icon:'domeChurch', name:{en:'Karmravor Church'}, lat:40.2986, lon:44.3592,
+    cat:['church'], visitMin:20, roadFactor:1.1, speed:55,
+    why:{en:"A tiny 7th-century church in Ashtarak, barely large enough for a handful of people — one of the few Armenian churches from this period that has never needed rebuilding."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'aruchavank', region:'Aragatsotn', corridor:'northwest', icon:'ruins', name:{en:'Aruchavank Cathedral'}, lat:40.3350, lon:44.2350,
+    cat:['church'], visitMin:30, roadFactor:1.2, speed:55,
+    why:{en:"A large 7th-century domed cathedral in Aruch village, with faded frescoes still visible inside — usually far quieter than the better-known churches nearer Yerevan."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'tegher', region:'Aragatsotn', corridor:'northwest', icon:'domeChurch', name:{en:'Tegher Monastery'}, lat:40.3944, lon:44.2167,
+    cat:['church'], visitMin:30, roadFactor:1.3, speed:50,
+    why:{en:"A 13th-century monastery on Aragats' lower slopes, built by the same royal family as Harichavank — a quiet stop with views back down toward Ashtarak on the way up to Byurakan."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'hayravank', region:'Gegharkunik', corridor:'northeast', icon:'domeChurch', name:{en:'Hayravank Monastery'}, lat:40.3800, lon:45.0100,
+    cat:['church'], visitMin:30, roadFactor:1.2, speed:55,
+    why:{en:"A small 9th-century monastery on a rocky outcrop over Lake Sevan's western shore — fewer crowds than Sevanavank, with a similar view of the water."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'haghartsin', region:'Tavush', corridor:'northeast', icon:'domeChurch', name:{en:'Haghartsin Monastery'}, lat:40.7647, lon:44.9508,
+    cat:['church'], visitMin:50, roadFactor:1.35, speed:50,
+    why:{en:"A monastery complex tucked into forested hills near Dilijan, with three churches built across three different centuries — restored in recent years with support from the ruling family of Sharjah."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'goshavank', region:'Tavush', corridor:'northeast', icon:'domeChurch', name:{en:'Goshavank Monastery'}, lat:40.7961, lon:44.9297,
+    cat:['church'], visitMin:40, roadFactor:1.35, speed:50,
+    why:{en:"A 12th-century monastery named for the medieval scholar-monk who founded it and wrote one of Armenia's earliest law codes here — known for some of the finest carved khachkars in the country."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'loriberd', region:'Lori', corridor:'north', icon:'fortress', name:{en:'Lori Berd Fortress'}, lat:41.0167, lon:44.3667,
+    cat:['fortress'], visitMin:40, roadFactor:1.25, speed:60,
+    why:{en:"An 11th-century fortress on a promontory surrounded on three sides by river gorges — the natural defenses did most of the work, which is why so much of the wall still stands."},
+    hours:{en:"Open access, daylight hours"}, hoursFlagged:false, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'odzun', region:'Lori', corridor:'north', icon:'domeChurch', name:{en:'Odzun Church'}, lat:41.0500, lon:44.6000,
+    cat:['church'], visitMin:30, roadFactor:1.3, speed:55,
+    why:{en:"A large 6th-century basilica on a plateau above the Debed Canyon, with an unusual two-tier arcaded gallery running around its exterior."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'sanahin', region:'Lori', corridor:'north', icon:'domeChurch', name:{en:'Sanahin Monastery'}, lat:41.1206, lon:44.6394,
+    cat:['church'], visitMin:50, roadFactor:1.3, speed:55,
+    why:{en:"A UNESCO World Heritage monastery complex whose name reportedly means \"this one is older than that one\" — a friendly dig at its sister monastery Haghpat, just across the gorge."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'haghpat', region:'Lori', corridor:'north', icon:'domeChurch', name:{en:'Haghpat Monastery'}, lat:41.0964, lon:44.7169,
+    cat:['church'], visitMin:50, roadFactor:1.3, speed:55,
+    why:{en:"Sanahin's sister UNESCO monastery on the other side of the Debed Canyon, with a book-repository building that once held one of medieval Armenia's most important manuscript collections."},
+    hours:{en:"Open dawn–dusk"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'erebuni', region:'Yerevan', corridor:'south', icon:'fortress', name:{en:'Erebuni Fortress'}, lat:40.1406, lon:44.5381,
+    cat:['fortress'], visitMin:60, roadFactor:1.2, speed:35,
+    why:{en:"The Urartian hilltop fortress founded in 782 BC, the origin of Yerevan's name — reconstructed halls and a small museum at the foot of the hill, inside the city itself."},
+    hours:{en:"Museum-reserve hours, check before going"}, hoursFlagged:true, price:{en:"Separate small fees for museum and fortress"}, priceFlagged:true },
+
+  { id:'bjni', region:'Kotayk', corridor:'northeast', icon:'fortress', name:{en:'Bjni Fortress'}, lat:40.4607, lon:44.6544,
+    cat:['fortress'], visitMin:45, roadFactor:1.25, speed:60,
+    why:{en:"A 9th–10th century fortress of the Pahlavuni princes on a rocky promontory above the Hrazdan river, with a restored upper citadel, a medieval reservoir and the legend of a secret passage."},
+    hours:{en:"Open access, daylight hours"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'smbataberd', region:'Vayots Dzor', corridor:'south', icon:'fortress', name:{en:'Smbataberd Fortress'}, lat:39.8717, lon:45.3381,
+    cat:['fortress'], visitMin:150, roadFactor:1.35, speed:50,
+    why:{en:"One of the largest medieval fortresses in Vayots Dzor, sitting on a cliff crest between two gorges. Allow about an hour's climb from Artabuynk village, and the Tsaghats Kar monastery is close by."},
+    hours:{en:"Open access, daylight hours"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'jermuk', region:'Vayots Dzor', corridor:'south', icon:'waterfall', name:{en:'Jermuk Waterfall'}, lat:39.8417, lon:45.6722,
+    cat:['waterfall'], visitMin:60, roadFactor:1.3, speed:50,
+    why:{en:"A waterfall of roughly 70 m dropping into the Arpa gorge inside the mountain spa town of Jermuk, nicknamed \"Mermaid's Hair\". Add a walk through the town's mineral springs."},
+    hours:{en:"Open access"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'shaki', region:'Syunik', corridor:'south', icon:'waterfall', name:{en:'Shaki Waterfall'}, lat:39.5523, lon:45.9938,
+    cat:['waterfall'], visitMin:45, roadFactor:1.3, speed:55,
+    why:{en:"An 18 m waterfall pouring over a basalt lava ledge in the Vorotan gorge near Sisian, with small grottoes around it. A long drive from Yerevan, so it suits a full-day trip."},
+    hours:{en:"Open access"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  { id:'trchkan', region:'Lori', corridor:'north', icon:'waterfall', name:{en:'Trchkan Waterfall'}, lat:40.9164, lon:44.1160,
+    cat:['waterfall'], visitMin:180, roadFactor:1.4, speed:45,
+    why:{en:"Armenia's tallest waterfall at about 23 m, on the Shirak–Lori border and named for the trout that leap up it. Reached through the Chichkhan gorge by track and a hike, strongest from March to June."},
+    hours:{en:"Open access, rough track and hike in"}, hoursFlagged:true, price:{en:"Free"}, priceFlagged:false },
+
+  /* ---- 64 added sights: hours/prices unverified; pins marked posApprox are best-effort ---- */
+  { id:'kumayri', region:'Shirak', corridor:'west', icon:'town', name:{en:"Gyumri Old Town (Kumayri)"}, lat:40.7894, lon:43.8453,
+    cat:["village"], visitMin:120, roadFactor:1.2, speed:55,
+    why:{en:"Gyumri's old quarter of 19th-century black and pink tuff buildings. It kept much more of its Russian-era townscape than Yerevan did, though some buildings still show damage from the 1988 earthquake."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'blackfort', region:'Shirak', corridor:'west', icon:'fortress', name:{en:"Sev Berd (Black Fortress), Gyumri"}, lat:40.7935, lon:43.842,
+    cat:["fortress"], visitMin:40, roadFactor:1.2, speed:55,
+    why:{en:"A huge 19th-century Russian fortress of dark basalt on a hill above Gyumri, built to guard the empire's border with the Ottomans."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'yotverk', region:'Shirak', corridor:'west', icon:'domeChurch', name:{en:"Yot Verk Church, Gyumri"}, lat:40.7893, lon:43.8456,
+    cat:["church"], visitMin:20, roadFactor:1.2, speed:55,
+    why:{en:"Gyumri's 'Seven Wounds' church on the central square, a 19th-century tuff church that was badly damaged in the 1988 earthquake and has since been rebuilt."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'amenaprkich', region:'Shirak', corridor:'west', icon:'domeChurch', name:{en:"Holy Saviour Church, Gyumri"}, lat:40.7878, lon:43.8474,
+    cat:["church"], visitMin:20, roadFactor:1.2, speed:55,
+    why:{en:"A large 19th-century tuff church near Gyumri's main square, damaged in the 1988 earthquake and since reconstructed."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'marmashen', region:'Shirak', corridor:'west', icon:'domeChurch', name:{en:"Marmashen Monastery"}, lat:40.801, lon:43.925,
+    cat:["church"], visitMin:45, roadFactor:1.3, speed:50,
+    why:{en:"A 10th–11th-century monastery of rose and dark tuff above a river gorge near Gyumri, with a large main church and smaller chapels."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'lakearpi', region:'Shirak', corridor:'west', icon:'lake', name:{en:"Lake Arpi National Park"}, lat:41.03, lon:43.665,
+    cat:["lake", "nature"], visitMin:90, roadFactor:1.4, speed:45,
+    why:{en:"A high mountain lake and wetland on the Shirak plateau, protected as a national park and known for its migratory waterbirds."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'artikquarry', region:'Shirak', corridor:'west', icon:'cityBlock', name:{en:"Artik Tuff Quarries"}, lat:40.5842, lon:43.9417,
+    cat:["village"], visitMin:40, roadFactor:1.2, speed:55,
+    why:{en:"Open quarries of Artik tuff, the pink and black volcanic stone used in many of Armenia's churches and city buildings."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'hripsime', region:'Armavir', corridor:'west', icon:'domeChurch', name:{en:"Hripsime Church, Vagharshapat"}, lat:40.1665, lon:44.31,
+    cat:["church"], visitMin:30, roadFactor:1.15, speed:55,
+    why:{en:"A 7th-century church of unusually pure early-Armenian design and part of the UNESCO-listed Etchmiadzin group of churches."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'gayane', region:'Armavir', corridor:'west', icon:'domeChurch', name:{en:"Gayane Church, Vagharshapat"}, lat:40.165, lon:44.303,
+    cat:["church"], visitMin:30, roadFactor:1.15, speed:55,
+    why:{en:"A 7th-century church on the Etchmiadzin road, rebuilt in the 17th century, and part of the same UNESCO-listed group as the cathedral."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'shoghakat', region:'Armavir', corridor:'west', icon:'domeChurch', name:{en:"Shoghakat Church, Vagharshapat"}, lat:40.163, lon:44.298,
+    cat:["church"], visitMin:20, roadFactor:1.15, speed:55,
+    why:{en:"A small domed church from 1694 near Etchmiadzin, named after a ray of light that tradition says marked the martyrs' resting place."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'sardarapat', region:'Armavir', corridor:'west', icon:'memorial', name:{en:"Sardarapat Memorial"}, lat:40.0895, lon:43.9413,
+    cat:["village"], visitMin:60, roadFactor:1.2, speed:60,
+    why:{en:"A memorial park for the 1918 Battle of Sardarapat, where Armenian forces stopped an Ottoman advance, with a red-tuff bell tower and large winged-bull statues."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true },
+
+  { id:'metsamor', region:'Armavir', corridor:'west', icon:'ruins', name:{en:"Metsamor Archaeological Site"}, lat:40.147, lon:44.156,
+    cat:["village"], visitMin:45, roadFactor:1.2, speed:55,
+    why:{en:"One of the oldest and largest ancient settlement sites in Armenia, occupied from the Bronze Age and later fortified."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'hovhannavank', region:'Aragatsotn', corridor:'northwest', icon:'domeChurch', name:{en:"Hovhannavank Monastery"}, lat:40.341, lon:44.329,
+    cat:["church"], visitMin:45, roadFactor:1.25, speed:50,
+    why:{en:"A medieval monastery at the edge of the Kasagh gorge near Ohanavan, with a big domed church and a covered entrance hall."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'oshakan', region:'Aragatsotn', corridor:'northwest', icon:'domeChurch', name:{en:"Oshakan, tomb of Mesrop Mashtots"}, lat:40.2835, lon:44.342,
+    cat:["church"], visitMin:30, roadFactor:1.2, speed:55,
+    why:{en:"The village church built over the grave of Mesrop Mashtots, the monk who created the Armenian alphabet around 405 AD."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'byurakan', region:'Aragatsotn', corridor:'northwest', icon:'observatory', name:{en:"Byurakan Observatory"}, lat:40.3358, lon:44.2742,
+    cat:["view"], visitMin:45, roadFactor:1.3, speed:50,
+    why:{en:"The Byurakan Astrophysical Observatory, founded in 1946 on the slopes of Mount Aragats, with big Soviet-era telescopes and wide views over the Ararat plain."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'ashtarak', region:'Aragatsotn', corridor:'northwest', icon:'arch', name:{en:"Ashtarak Gorge and Tsiranavor Church"}, lat:40.2972, lon:44.3597,
+    cat:["church", "nature"], visitMin:40, roadFactor:1.2, speed:55,
+    why:{en:"Old stone bridges over the deep Kasagh gorge in Ashtarak, with the small early-medieval Tsiranavor church beside it."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'mughni', region:'Aragatsotn', corridor:'northwest', icon:'domeChurch', name:{en:"Mughni Monastery"}, lat:40.333, lon:44.36,
+    cat:["church"], visitMin:30, roadFactor:1.25, speed:55,
+    why:{en:"A 17th-century church in Mughni village, a few minutes from Ashtarak."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'alphabet', region:'Aragatsotn', corridor:'northwest', icon:'khachkarField', name:{en:"Armenian Alphabet Monument"}, lat:40.319, lon:44.26,
+    cat:["village"], visitMin:30, roadFactor:1.25, speed:55,
+    why:{en:"A park of giant stone letters of the Armenian alphabet on a slope below Mount Aragats, created in 2005 for the alphabet's 1,600th anniversary."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'aparanres', region:'Aragatsotn', corridor:'northwest', icon:'lake', name:{en:"Aparan Reservoir"}, lat:40.635, lon:44.355,
+    cat:["lake"], visitMin:40, roadFactor:1.3, speed:55,
+    why:{en:"A large reservoir on the Kasagh river near Aparan, with open mountain scenery toward Mount Aragats."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'yeghvard', region:'Kotayk', corridor:'northwest', icon:'domeChurch', name:{en:"Yeghvard Zoravor Church"}, lat:40.3178, lon:44.4775,
+    cat:["church"], visitMin:20, roadFactor:1.15, speed:60,
+    why:{en:"A small medieval church in the town of Yeghvard, a quick stop on the northern road out of Yerevan."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'kecharis', region:'Kotayk', corridor:'northeast', icon:'domeChurch', name:{en:"Kecharis Monastery, Tsaghkadzor"}, lat:40.533, lon:44.722,
+    cat:["church"], visitMin:45, roadFactor:1.25, speed:55,
+    why:{en:"A monastery complex of several churches founded in the 11th century, set in the forested mountains above Tsaghkadzor."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'tsaghcable', region:'Kotayk', corridor:'northeast', icon:'observatory', name:{en:"Tsaghkadzor Cable Car"}, lat:40.539, lon:44.717,
+    cat:["view"], visitMin:90, roadFactor:1.25, speed:55,
+    why:{en:"A cable car from Tsaghkadzor up Mount Teghenis with wide views over the Kotayk hills; also a ski resort in winter."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'teghenyats', region:'Kotayk', corridor:'northeast', icon:'domeChurch', name:{en:"Teghenyats Monastery"}, lat:40.29, lon:44.51,
+    cat:["church"], visitMin:30, roadFactor:1.3, speed:50,
+    why:{en:"A small medieval monastery in Kotayk Province, a quiet stop away from the main tourist routes."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'goght', region:'Kotayk', corridor:'east', icon:'town', name:{en:"Goght village"}, lat:40.1167, lon:44.7667,
+    cat:["village"], visitMin:45, roadFactor:1.3, speed:45,
+    why:{en:"A small village between Garni and Geghard with a medieval church and a good place to try freshly baked lavash."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'azat', region:'Ararat', corridor:'east', icon:'lake', name:{en:"Azat Reservoir"}, lat:40.015, lon:44.705,
+    cat:["lake"], visitMin:40, roadFactor:1.3, speed:50,
+    why:{en:"A reservoir on the Azat river in the foothills south of Garni, with mountain views."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'noratus', region:'Gegharkunik', corridor:'northeast', icon:'khachkarField', name:{en:"Noratus Khachkar Cemetery"}, lat:40.3688, lon:45.1792,
+    cat:["village"], visitMin:45, roadFactor:1.2, speed:60,
+    why:{en:"Armenia's largest surviving field of medieval khachkars (carved cross-stones), spread across a hillside cemetery near Lake Sevan."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'lchashen', region:'Gegharkunik', corridor:'northeast', icon:'megalith', name:{en:"Lchashen rock art and Bronze Age sites"}, lat:40.51, lon:44.92,
+    cat:["village"], visitMin:30, roadFactor:1.2, speed:60,
+    why:{en:"An area of Bronze Age rock art and burial sites on the shore of Lake Sevan."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'shorzha', region:'Gegharkunik', corridor:'northeast', icon:'lake', name:{en:"Shorzha Beach, Lake Sevan"}, lat:40.48, lon:45.02,
+    cat:["lake"], visitMin:90, roadFactor:1.2, speed:60,
+    why:{en:"A stretch of Lake Sevan's western shore with open beaches and views across the water."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'selim', region:'Vayots Dzor', corridor:'south', icon:'arch', name:{en:"Selim Caravanserai"}, lat:39.9495, lon:45.2367,
+    cat:["village"], visitMin:40, roadFactor:1.4, speed:40,
+    why:{en:"A basalt caravanserai from 1332 on the Selim (Vardenyats) pass at about 2,410 m, the best-preserved caravanserai in Armenia."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true },
+
+  { id:'parz', region:'Tavush', corridor:'northeast', icon:'lake', name:{en:"Parz Lake, Dilijan"}, lat:40.782, lon:44.872,
+    cat:["lake"], visitMin:60, roadFactor:1.35, speed:45,
+    why:{en:"A small forest lake in the Dilijan National Park area, with walking trails around it."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'jukhtak', region:'Tavush', corridor:'northeast', icon:'domeChurch', name:{en:"Jukhtak Vank"}, lat:40.7583, lon:44.8183,
+    cat:["church"], visitMin:45, roadFactor:1.4, speed:40,
+    why:{en:"An 11th–12th-century monastery in a forest clearing in Dilijan National Park, about 3 km northwest of Dilijan."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true },
+
+  { id:'matosavank', region:'Tavush', corridor:'northeast', icon:'ruins', name:{en:"Matosavank"}, lat:40.7553, lon:44.8081,
+    cat:["church"], visitMin:45, roadFactor:1.4, speed:40,
+    why:{en:"A small 13th-century monastery hidden in the forest of Dilijan National Park, near Jukhtak Vank. The church is partly ruined and the trail can be hard to follow."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true },
+
+  { id:'makaravank', region:'Tavush', corridor:'northeast', icon:'domeChurch', name:{en:"Makaravank Monastery"}, lat:40.82, lon:45.0,
+    cat:["church"], visitMin:40, roadFactor:1.35, speed:45,
+    why:{en:"A medieval monastery in a forested gorge near Achajur, known for its decorated main church."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'dilijannp', region:'Tavush', corridor:'northeast', icon:'gorge', name:{en:"Dilijan National Park"}, lat:40.76, lon:44.87,
+    cat:["nature"], visitMin:120, roadFactor:1.35, speed:45,
+    why:{en:"A large forest national park with hiking trails, mineral springs and hidden monasteries."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'berd', region:'Tavush', corridor:'northeast', icon:'fortress', name:{en:"Berd Fortress"}, lat:40.88, lon:45.39,
+    cat:["fortress"], visitMin:45, roadFactor:1.35, speed:50,
+    why:{en:"An 18th-century fortress above the town of Berd in far northeastern Armenia."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'lastiver', region:'Tavush', corridor:'northeast', icon:'waterfall', name:{en:"Lastiver Gorge and Waterfall"}, lat:40.9, lon:45.24,
+    cat:["nature", "waterfall"], visitMin:120, roadFactor:1.4, speed:40,
+    why:{en:"A forested gorge near Ijevan with a waterfall and cave dwellings carved into the rock."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'goshlake', region:'Tavush', corridor:'northeast', icon:'lake', name:{en:"Gosh Lake"}, lat:40.802, lon:44.926,
+    cat:["lake"], visitMin:30, roadFactor:1.35, speed:45,
+    why:{en:"A small lake in the forest above Gosh village, a short walk from Goshavank."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'pushkin', region:'Lori', corridor:'northeast', icon:'gorge', name:{en:"Pushkin Pass viewpoint"}, lat:40.77, lon:44.69,
+    cat:["view"], visitMin:20, roadFactor:1.3, speed:45,
+    why:{en:"A mountain pass on the Dilijan–Vanadzor road with forest scenery and a monument to the poet Pushkin."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'dendropark', region:'Lori', corridor:'north', icon:'gorge', name:{en:"Stepanavan Dendropark"}, lat:41.01, lon:44.38,
+    cat:["nature"], visitMin:60, roadFactor:1.3, speed:55,
+    why:{en:"A large park of planted trees from many countries on a forested hillside at Stepanavan."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'akhtala', region:'Lori', corridor:'north', icon:'fortress', name:{en:"Akhtala Monastery"}, lat:41.152, lon:44.748,
+    cat:["church", "fortress"], visitMin:45, roadFactor:1.3, speed:55,
+    why:{en:"A 13th-century fortified monastery whose main church holds unusually well-preserved Byzantine-style frescoes."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'kobayr', region:'Lori', corridor:'north', icon:'cliffMonastery', name:{en:"Kobayr Monastery"}, lat:41.099, lon:44.76,
+    cat:["church"], visitMin:40, roadFactor:1.3, speed:55,
+    why:{en:"A 12th–13th-century monastery above the Debed canyon, with remains of old wall paintings inside."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'alaverdicable', region:'Lori', corridor:'north', icon:'observatory', name:{en:"Alaverdi Cable Car"}, lat:41.096, lon:44.662,
+    cat:["view"], visitMin:45, roadFactor:1.3, speed:55,
+    why:{en:"An aerial cable car in Alaverdi that connects the town to the mountain village of Sanahin above it, with views of the Debed canyon."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'debed', region:'Lori', corridor:'north', icon:'gorge', name:{en:"Debed Canyon viewpoint"}, lat:41.075, lon:44.66,
+    cat:["view"], visitMin:20, roadFactor:1.3, speed:55,
+    why:{en:"A viewpoint over the deep Debed canyon, with old mining towns and monasteries along its sides."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'areni', region:'Vayots Dzor', corridor:'south', icon:'town', name:{en:"Areni wine village"}, lat:39.73, lon:45.19,
+    cat:["village"], visitMin:60, roadFactor:1.2, speed:60,
+    why:{en:"The centre of Armenia's best-known wine region, a village where you can taste local wine and see vineyards under red cliffs."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'dvin', region:'Ararat', corridor:'south', icon:'ruins', name:{en:"Dvin ancient capital (ruins)"}, lat:40.03, lon:44.57,
+    cat:["village"], visitMin:45, roadFactor:1.2, speed:55,
+    why:{en:"The remains of Dvin, a major capital and trading city of medieval Armenia for several centuries."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'armash', region:'Ararat', corridor:'south', icon:'lake', name:{en:"Armash Fishponds"}, lat:39.835, lon:44.6,
+    cat:["lake", "nature"], visitMin:60, roadFactor:1.2, speed:55,
+    why:{en:"A large complex of fishponds on the Ararat plain, popular with birdwatchers and with views of Mount Ararat."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'tsakhatskar', region:'Vayots Dzor', corridor:'south', icon:'domeChurch', name:{en:"Tsakhats Kar Monastery"}, lat:39.81, lon:45.44,
+    cat:["church"], visitMin:45, roadFactor:1.4, speed:45,
+    why:{en:"A 13th-century monastery in the Yeghegis valley with finely carved khachkars."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'spitakavor', region:'Vayots Dzor', corridor:'south', icon:'domeChurch', name:{en:"Spitakavor Monastery"}, lat:39.79, lon:45.41,
+    cat:["church"], visitMin:40, roadFactor:1.4, speed:45,
+    why:{en:"A 14th-century white-stone church above a valley near Yeghegnadzor, still a pilgrimage site."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'gladzor', region:'Vayots Dzor', corridor:'south', icon:'ruins', name:{en:"Gladzor University (ruins)"}, lat:39.78, lon:45.37,
+    cat:["village"], visitMin:30, roadFactor:1.3, speed:50,
+    why:{en:"The remains of Gladzor, a major medieval centre of learning in the 13th–14th centuries."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'kechut', region:'Vayots Dzor', corridor:'south', icon:'lake', name:{en:"Kechut Reservoir"}, lat:39.82, lon:45.55,
+    cat:["lake"], visitMin:30, roadFactor:1.3, speed:50,
+    why:{en:"A reservoir on the Arpa river in Vayots Dzor, passed on the mountain road toward Jermuk."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'arates', region:'Vayots Dzor', corridor:'south', icon:'domeChurch', name:{en:"Arates Monastery"}, lat:39.8, lon:45.48,
+    cat:["church"], visitMin:30, roadFactor:1.4, speed:45,
+    why:{en:"A small medieval monastery in Vayots Dzor."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'karahunj', region:'Syunik', corridor:'south', icon:'megalith', name:{en:"Karahunj (Zorats Karer)"}, lat:39.55, lon:46.021,
+    cat:["village"], visitMin:60, roadFactor:1.3, speed:55,
+    why:{en:"An ancient standing-stone site of about 200 stones near Sisian, sometimes called Armenia's Stonehenge."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'sisavan', region:'Syunik', corridor:'south', icon:'domeChurch', name:{en:"Sisavan Church, Sisian"}, lat:39.519, lon:46.03,
+    cat:["church"], visitMin:30, roadFactor:1.3, speed:55,
+    why:{en:"A 7th-century church in Sisian, one of the older surviving churches in southern Armenia."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'vorotnavank', region:'Syunik', corridor:'south', icon:'domeChurch', name:{en:"Vorotnavank"}, lat:39.54, lon:46.08,
+    cat:["church"], visitMin:40, roadFactor:1.3, speed:50,
+    why:{en:"A medieval monastery with a church and chapels in the Vorotan valley near Sisian."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'oldgoris', region:'Syunik', corridor:'south', icon:'town', name:{en:"Old Goris"}, lat:39.51, lon:46.34,
+    cat:["village"], visitMin:60, roadFactor:1.3, speed:55,
+    why:{en:"Goris's old quarter of stone houses, with cave dwellings in the cliffs above the town."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'khndzoresk', region:'Syunik', corridor:'south', icon:'cave', name:{en:"Khndzoresk Cave Village"}, lat:39.5245, lon:46.4045,
+    cat:["village"], visitMin:90, roadFactor:1.3, speed:50,
+    why:{en:"A hillside village of caves carved into soft rock, reached across a long swinging footbridge."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'wingstatev', region:'Syunik', corridor:'south', icon:'observatory', name:{en:"Wings of Tatev Cable Car"}, lat:39.395, lon:46.335,
+    cat:["view"], visitMin:60, roadFactor:1.3, speed:55,
+    why:{en:"A long aerial tramway across the Vorotan gorge to Tatev Monastery, among the longest in the world."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'devilsbridge', region:'Syunik', corridor:'south', icon:'arch', name:{en:"Devil's Bridge"}, lat:39.38, lon:46.23,
+    cat:["nature"], visitMin:45, roadFactor:1.3, speed:50,
+    why:{en:"A natural stone bridge over the Vorotan river, with mineral springs nearby."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'bghenonoravank', region:'Syunik', corridor:'south', icon:'domeChurch', name:{en:"Bgheno-Noravank"}, lat:39.55, lon:46.35,
+    cat:["church"], visitMin:30, roadFactor:1.3, speed:50,
+    why:{en:"A small medieval monastery in the Goris area."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'khot', region:'Syunik', corridor:'south', icon:'cave', name:{en:"Old Khot cave village"}, lat:39.565, lon:46.39,
+    cat:["village"], visitMin:45, roadFactor:1.3, speed:45,
+    why:{en:"An old village near Goris with houses and rooms cut into the rock."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'khustup', region:'Syunik', corridor:'south', icon:'gorge', name:{en:"Mount Khustup viewpoint"}, lat:39.22, lon:46.36,
+    cat:["view"], visitMin:90, roadFactor:1.4, speed:40,
+    why:{en:"A mountain above Kapan with wide views over Syunik's forested ridges."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'meghrifort', region:'Syunik', corridor:'south', icon:'fortress', name:{en:"Meghri Fortress"}, lat:38.9019, lon:46.2455,
+    cat:["fortress"], visitMin:60, roadFactor:1.3, speed:55,
+    why:{en:"A medieval fortress above Meghri, Armenia's southernmost town, close to the Iranian border."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'meghrichurch', region:'Syunik', corridor:'south', icon:'domeChurch', name:{en:"Meghri Church of the Holy Mother of God"}, lat:38.905, lon:46.248,
+    cat:["church"], visitMin:30, roadFactor:1.3, speed:55,
+    why:{en:"A 17th-century church in Meghri with painted interior walls."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true },
+
+  { id:'ughtasar', region:'Syunik', corridor:'south', icon:'megalith', name:{en:"Ughtasar Petroglyphs"}, lat:39.7, lon:46.12,
+    cat:["village"], visitMin:120, roadFactor:1.5, speed:30,
+    why:{en:"A high-mountain site of ancient rock carvings above Sisian. It needs a rough mountain track and is snowed in for much of the year."},
+    hours:{en:"Hours not verified"}, hoursFlagged:true, price:{en:"Entry fee not verified"}, priceFlagged:true, posApprox:true, closedMonths:[9, 10, 11, 0, 1, 2, 3, 4, 5] },
+];
+
+const CATEGORIES = {
+  fortress:{ en:'Fortress' },
+  church:{ en:'Church' },
+  nature:{ en:'Nature' },
+  view:{ en:'Viewpoint' },
+  waterfall:{ en:'Waterfall' },
+  village:{ en:'Village & culture' },
+  lake:{ en:'Lake & water' }
+};
+
+/* ---- Armenian content ---- */
+const SIGHT_HY = {"garni": ["Գառնու տաճար", "Հայաստանի միակ կանգուն հելլենիստական-հռոմեական սյունազարդ տաճարը՝ կիրճի վրա բարձրացած. միջնադարյան քարե եկեղեցիների երկրում միակ ակնհայտորեն դասական շենքը։"], "geghard": ["Գեղարդի վանք", "ՅՈՒՆԵՍԿՕ-ի ցանկում ընդգրկված վանք՝ ժայռի մեջ փորված մատուռներով. որոշ սրահներ բառացիորեն փորված են լեռան մեջ, ոչ թե կառուցված նրա վրա։"], "garnigorge": ["«Քարերի սիմֆոնիա»", "Կարճ իջնում ես Գառնու կիրճ՝ դեպի վեցանկյուն բազալտե սյուների պատը, որ առաջացել է հնագույն լավայի հոսքի սառելուց։"], "khorvirap": ["Խոր Վիրապի վանք", "Հայաստանի հողից Արարատ լեռան ամենամոտ և ամենահստակ տեսարանը՝ այն վիրապի վրայից, որտեղ, ըստ ավանդության, Գրիգոր Լուսավորիչը բանտարկված էր մինչև թագավորության քրիստոնեացումը։"], "etchmiadzin": ["Էջմիածնի Մայր տաճար", "Հայ Առաքելական Եկեղեցու կենտրոնը և, ըստ շատերի, աշխարհի ամենահին տաճարներից մեկը՝ մինչ օրս գործող պաշտամունքի վայր։"], "zvartnots": ["Զվարթնոց տաճար (ավերակներ)", "7-րդ դարի շրջանաձև տաճարի հիմքը, որ կործանվել է դարեր առաջ. նրա մասշտաբն ավերակներից ավելի հեշտ է պատկերացնել, քան մոտակա կանգուն շենքերից շատերի։"], "sevanavank": ["Սևանավանք, Սևանա լիճ", "9-րդ դարի վանք թերակղզու վրա՝ աշխարհի ամենաբարձրադիր խոշոր լճերից մեկի ափին. միայն ջուրն արդեն արժե ճանապարհը։"], "dilijan": ["Դիլիջանի հին թաղամաս և անտառ", "Անտառապատ բլուրներ, փայտե պատշգամբներով տներ և հանքային ջրի աղբյուրներ. հայերն այս քաղաքը կոչում են «փոքրիկ Շվեյցարիա», և հասնելուն պես հեշտ է հասկանալ՝ ինչու։"], "amberd": ["Ամբերդի ամրոց", "7-րդ դարի ամրոց Արագած լեռան լանջին՝ 2300 մ բարձրության վրա, ժայռի եզրին, փոքր եկեղեցով և երկու գետակիրճերի միաժամանակյա տեսարանով։"], "karilake": ["Քարի լիճ, Արագած լեռ", "Խստաշունչ ալպյան լիճ՝ մոտ 3200 մ բարձրության վրա, Արագածի չորս գագաթների տակ. վերև տանող ճանապարհը թվում է՝ Հայաստանի կլիմայից լրիվ դուրս ես գալիս։"], "saghmosavank": ["Սաղմոսավանք, Քասաղի կիրճ", "13-րդ դարի վանք՝ ուղիղ խորը կիրճի շրթունքին. հետևի պատի տակի անդունդը տեսարանի մեծ մասն է։"], "charentsarch": ["Չարենցի կամար (դիտակետ)", "Ճանապարհի եզրին քարե կամար, որի միջով Արարատ լեռը երևում է հովտի վրայով. Գառնի տանող ճանապարհի ամենաշատ լուսանկարվող կանգառը և իսկապես լավ հինգ րոպեանոց ընդմիջում։"], "noravank": ["Նորավանք", "13-րդ դարի վանք՝ Վայոց ձորի կարմիր ժայռերի դիմաց. կիրճով անցնող ճանապարհը նույնքան հիշարժան է, որքան շենքերը։"], "havutstar": ["Հավուց Թառ (ավերակներ)", "Ավերված ժայռային վանք Գառնու կիրճի վերևում, որին հասնում են կարճ արշավով. Գեղարդից ավելի հանգիստ և ավելի քիչ վերականգնված, նույն կիրճային տեսարաններով։"], "khosrovreserve": ["Խոսրովի անտառի արգելոց", "Հայաստանի ամենահին պահպանվող անտառներից մեկը, որը, ասում են, 4-րդ դարի թագավորը տնկել է Արարատյան դաշտն անտառապատելու համար. կիրճային արահետներ և գիհու անտառ, հարևան Գառնիից շատ ավելի քիչ այցելուներով։"], "areniCave": ["Արենի-1 քարանձավ", "Քարանձավ, որտեղ հնագետները գտել են աշխարհի հայտնի ամենահին կաշվե կոշիկն ու գինեգործարանը՝ երկուսն էլ ավելի քան 5500 տարեկան. կարճ կանգառ Նորավանք տանող ճանապարհի եզրին։"], "gndevank": ["Գնդեվանք", "10-րդ դարի վանք Վայոց ձորի նեղ կիրճում, որ կառուցել է մի իշխանուհի՝ ամուսնու հիշատակին. Նորավանքից փոքր և հանգիստ, նույն ճանապարհի վրա։"], "tatev": ["Տաթևի վանք", "9-րդ դարի վանք Որոտանի կիրճի վերևի սարահարթում, որին հասնում են «Տաթևի թևեր» ճոպանուղով՝ աշխարհի ամենաերկար երկկողմանի ճոպանուղիներից մեկով։"], "talin": ["Թալինի տաճար (ավերակներ)", "7-րդ դարի ավերված տաճար Գյումրի տանող ճանապարհին. ժամանակին Հայաստանի ամենամեծ գմբեթավոր եկեղեցիներից մեկը, այսօր առանց տանիքի, բայց դեռ տպավորիչ։"], "harichavank": ["Հառիճավանք", "Վանական համալիր Արտիկի մոտ, որ համատեղում է 7-րդ դարի եկեղեցին և նրա կողքին կառուցված 13-րդ դարի եկեղեցին՝ հայկական եկեղեցական ճարտարապետության երկու շատ տարբեր դարերը կողք կողքի համեմատելու հազվագյուտ հնարավորություն։"], "karmravor": ["Կարմրավոր եկեղեցի", "7-րդ դարի փոքրիկ եկեղեցի Աշտարակում, հազիվ մի քանի հոգու համար բավարար. այդ շրջանի այն սակավ հայկական եկեղեցիներից մեկը, որ երբեք վերակառուցման կարիք չի ունեցել։"], "aruchavank": ["Առուճավանք (Առուճի տաճար)", "7-րդ դարի մեծ գմբեթավոր տաճար Առուճ գյուղում, ներսում դեռ երևացող խունացած որմնանկարներով. սովորաբար Երևանին ավելի մոտ գտնվող հայտնի եկեղեցիներից շատ ավելի հանգիստ է։"], "tegher": ["Տեղերի վանք", "13-րդ դարի վանք Արագածի ստորին լանջերին, որ կառուցել է Հառիճավանքի նույն իշխանական տոհմը. հանգիստ կանգառ՝ դեպի Աշտարակ երևացող տեսարանով, Բյուրական բարձրանալու ճանապարհին։"], "hayravank": ["Հայրավանք", "9-րդ դարի փոքր վանք Սևանա լճի արևմտյան ափի ժայռաբլրի վրա. Սևանավանքից քիչ մարդաշատ, ջրի նման տեսարանով։"], "haghartsin": ["Հաղարծինի վանք", "Վանական համալիր Դիլիջանի մոտ՝ անտառապատ բլուրների մեջ թաքնված, երեք տարբեր դարերում կառուցված երեք եկեղեցիներով. վերջին տարիներին վերականգնվել է Շարժայի կառավարիչ ընտանիքի աջակցությամբ։"], "goshavank": ["Գոշավանք", "12-րդ դարի վանք, որ կոչվում է այն միջնադարյան գիտնական-վանականի անունով, ով հիմնել է այն և այստեղ գրել Հայաստանի առաջին օրենսգրքերից մեկը. հայտնի է երկրի լավագույն փորագրված խաչքարերով։"], "loriberd": ["Լոռի Բերդ ամրոց", "11-րդ դարի ամրոց՝ երեք կողմից գետակիրճերով շրջապատված հրվանդանի վրա. բնական պաշտպանությունն արել է գործի մեծ մասը, ինչի շնորհիվ պատի մեծ մասը դեռ կանգուն է։"], "odzun": ["Օձունի եկեղեցի", "6-րդ դարի մեծ բազիլիկա Դեբեդի կիրճի վերևի սարահարթում՝ արտաքին պատերի շուրջը ձգվող անսովոր երկհարկանի սյունաշարով։"], "sanahin": ["Սանահինի վանք", "ՅՈՒՆԵՍԿՕ-ի համաշխարհային ժառանգության վանական համալիր, որի անունը, ըստ ավանդության, նշանակում է «սա ավելի հին է, քան այն»՝ բարեկամական խայթոց կիրճի մյուս կողմի քույր վանք Հաղպատի հասցեին։"], "haghpat": ["Հաղպատի վանք", "Սանահինի քույր ՅՈՒՆԵՍԿՕ-ի վանքը Դեբեդի կիրճի մյուս կողմում՝ գրատան շենքով, որտեղ ժամանակին պահվում էր միջնադարյան Հայաստանի ամենակարևոր ձեռագրային հավաքածուներից մեկը։"], "erebuni": ["Էրեբունի ամրոց", "Ք.ա. 782 թվականին հիմնադրված ուրարտական բլրային ամրոց՝ Երևան անվան ակունքը. վերակառուցված սրահներ և փոքր թանգարան բլրի ստորոտում՝ հենց քաղաքի ներսում։"], "bjni": ["Բջնիի ամրոց", "9–10-րդ դարերի Պահլավունի իշխանների ամրոց Հրազդան գետի վերևի ժայռաբլրի վրա՝ վերականգնված վերին միջնաբերդով, միջնադարյան ջրամբարով և գաղտնի անցման մասին ավանդությամբ։"], "smbataberd": ["Սմբատաբերդ ամրոց", "Վայոց ձորի խոշորագույն միջնադարյան ամրոցներից մեկը՝ երկու կիրճերի միջև ժայռային գագաթին. Արտաբույնք գյուղից հաշվեք մոտ մեկ ժամվա վերելք, իսկ Ծախաց Քար վանքը մոտ է։"], "jermuk": ["Ջերմուկի ջրվեժ", "Մոտ 70 մ բարձրությամբ ջրվեժ, որ ընկնում է Արփայի կիրճ՝ Ջերմուկ լեռնային առողջարանային քաղաքի ներսում, կոչվում է «Ջրահարսի վարսեր»։ Ավելացրեք զբոսանք քաղաքի հանքային աղբյուրներով։"], "shaki": ["Շակիի ջրվեժ", "18 մ բարձրությամբ ջրվեժ, որ թափվում է բազալտե լավայի եզրից Որոտանի կիրճում՝ Սիսիանի մոտ, փոքր գրոտներով շրջապատված։ Երևանից երկար ճանապարհ է, ուստի հարմար է ամբողջ օրվա ուղևորության համար։"], "trchkan": ["Տրչկանի ջրվեժ", "Հայաստանի ամենաբարձր ջրվեժը՝ մոտ 23 մ, Շիրակի և Լոռու սահմանին, կոչվում է իր վրայով ցատկող իշխանի անունով։ Հասնում են Չիչխանի կիրճով՝ ճանապարհով և արշավով, ամենահոյակապն է մարտից հունիս։"], "kumayri": ["Գյումրիի հին թաղամաս (Կումայրի)", "Գյումրիի հին թաղամասը՝ 19-րդ դարի սև և վարդագույն տուֆե շենքերով։ Այստեղ ռուսական շրջանի քաղաքային տեսքը շատ ավելի է պահպանվել, քան Երևանում, թեև որոշ շենքեր դեռ կրում են 1988 թվականի երկրաշարժի հետքերը։"], "blackfort": ["Սև բերդ, Գյումրի", "19-րդ դարի հսկայական ռուսական ամրոց՝ մուգ բազալտից, Գյումրիի վերևի բլրի վրա, կառուցված կայսրության և օսմանյան սահմանը պահպանելու համար։"], "yotverk": ["Յոթ Վերք եկեղեցի, Գյումրի", "Գյումրիի «Յոթ Վերք» եկեղեցին կենտրոնական հրապարակում՝ 19-րդ դարի տուֆե եկեղեցի, որ ծանր վնասվել էր 1988 թվականի երկրաշարժից և հետո վերակառուցվել է։"], "amenaprkich": ["Ամենափրկիչ եկեղեցի, Գյումրի", "19-րդ դարի մեծ տուֆե եկեղեցի Գյումրիի գլխավոր հրապարակի մոտ, վնասվել է 1988 թվականի երկրաշարժից և հետո վերակառուցվել։"], "marmashen": ["Մարմաշենի վանք", "10–11-րդ դարերի վանք՝ վարդագույն և մուգ տուֆից, Գյումրիի մոտ՝ գետակիրճի վերևում, մեծ գլխավոր եկեղեցով և փոքր մատուռներով։"], "lakearpi": ["Արփի լիճ ազգային պարկ", "Բարձրադիր լեռնային լիճ և ճահճուտ Շիրակի սարահարթում, պահպանվում է որպես ազգային պարկ և հայտնի է չվող ջրային թռչուններով։"], "artikquarry": ["Արտիկի տուֆի քարհանքեր", "Արտիկի տուֆի բաց քարհանքեր՝ վարդագույն և սև հրաբխային քար, որ օգտագործվել է Հայաստանի բազմաթիվ եկեղեցիների և քաղաքային շենքերի համար։"], "hripsime": ["Հռիփսիմե եկեղեցի, Վաղարշապատ", "7-րդ դարի եկեղեցի՝ վաղ հայկական ճարտարապետության անսովոր մաքուր օրինակ, Էջմիածնի՝ ՅՈՒՆԵՍԿՕ-ի ցանկում ընդգրկված եկեղեցիների խմբի մաս։"], "gayane": ["Գայանե եկեղեցի, Վաղարշապատ", "7-րդ դարի եկեղեցի Էջմիածնի ճանապարհին, վերակառուցված 17-րդ դարում, տաճարի հետ նույն ՅՈՒՆԵՍԿՕ-ի ցանկում ընդգրկված խմբի մաս։"], "shoghakat": ["Շողակաթ եկեղեցի, Վաղարշապատ", "1694 թվականի փոքր գմբեթավոր եկեղեցի Էջմիածնի մոտ, կոչվում է լույսի ճառագայթի անունով, որը, ըստ ավանդության, նշել է նահատակների հանգստավայրը։"], "sardarapat": ["Սարդարապատի հուշահամալիր", "1918 թվականի Սարդարապատի ճակատամարտի հուշապարկ, որտեղ հայկական ուժերը կասեցրին օսմանյան առաջխաղացումը. կարմիր տուֆե զանգակատուն և թևավոր ցլերի մեծ արձաններ։"], "metsamor": ["Մեծամորի հնագիտական վայր", "Հայաստանի հնագույն և խոշորագույն բնակավայրերից մեկը՝ բնակեցված բրոնզի դարից և հետագայում ամրացված։"], "hovhannavank": ["Հովհաննավանք", "Միջնադարյան վանք Քասաղի կիրճի եզրին՝ Օհանավանի մոտ, մեծ գմբեթավոր եկեղեցով և ծածկված գավթով։"], "oshakan": ["Օշական, Մեսրոպ Մաշտոցի գերեզման", "Գյուղի եկեղեցին, կառուցված Մեսրոպ Մաշտոցի գերեզմանի վրա՝ այն վանականի, որ մոտ 405 թվականին ստեղծեց հայոց այբուբենը։"], "byurakan": ["Բյուրականի աստղադիտարան", "Բյուրականի աստղաֆիզիկական աստղադիտարանը, հիմնադրվել է 1946 թվականին Արագած լեռան լանջերին՝ խորհրդային շրջանի մեծ աստղադիտակներով և Արարատյան դաշտի լայն տեսարանով։"], "ashtarak": ["Աշտարակի կիրճ և Ծիրանավոր եկեղեցի", "Աշտարակի խորը Քասաղի կիրճի վրայով հին քարե կամուրջներ և կողքին՝ վաղմիջնադարյան փոքր Ծիրանավոր եկեղեցին։"], "mughni": ["Մուղնու վանք", "17-րդ դարի եկեղեցի Մուղնի գյուղում, Աշտարակից մի քանի րոպե հեռավորության վրա։"], "alphabet": ["Հայկական այբուբենի հուշարձան", "Հայկական այբուբենի հսկա քարե տառերի պարկ Արագած լեռան տակ գտնվող լանջին, ստեղծվել է 2005 թվականին՝ այբուբենի 1600-ամյակի առթիվ։"], "aparanres": ["Ապարանի ջրամբար", "Մեծ ջրամբար Քասաղ գետի վրա՝ Ապարանի մոտ, դեպի Արագած լեռ բացվող լեռնային տեսարաններով։"], "yeghvard": ["Եղվարդի Զորավոր եկեղեցի", "Փոքր միջնադարյան եկեղեցի Եղվարդ քաղաքում, արագ կանգառ Երևանից դեպի հյուսիս տանող ճանապարհին։"], "kecharis": ["Կեչառիսի վանք, Ծաղկաձոր", "Մի քանի եկեղեցիներից բաղկացած վանական համալիր, հիմնադրվել է 11-րդ դարում, Ծաղկաձորի վերևի անտառապատ լեռներում։"], "tsaghcable": ["Ծաղկաձորի ճոպանուղի", "Ճոպանուղի Ծաղկաձորից դեպի Թեղենիս լեռ՝ Կոտայքի բլուրների լայն տեսարաններով. ձմռանը նաև դահուկային հանգստավայր։"], "teghenyats": ["Տեղենյաց վանք", "Փոքր միջնադարյան վանք Կոտայքի մարզում, հանգիստ կանգառ հիմնական զբոսաշրջային երթուղիներից հեռու։"], "goght": ["Գողթ գյուղ", "Փոքր գյուղ Գառնիի և Գեղարդի միջև՝ միջնադարյան եկեղեցով և թարմ թխած լավաշ համտեսելու լավ վայր։"], "azat": ["Ազատի ջրամբար", "Ջրամբար Ազատ գետի վրա՝ Գառնիից հարավ գտնվող նախալեռներում, լեռնային տեսարաններով։"], "noratus": ["Նորատուսի խաչքարերի գերեզմանոց", "Հայաստանի ամենամեծ պահպանված միջնադարյան խաչքարերի դաշտը՝ տարածված լանջի գերեզմանոցում՝ Սևանա լճի մոտ։"], "lchashen": ["Լճաշենի ժայռապատկերներ և բրոնզեդարյան վայրեր", "Բրոնզի դարի ժայռապատկերների և թաղումների վայր Սևանա լճի ափին։"], "shorzha": ["Շորժայի լողափ, Սևանա լիճ", "Սևանա լճի արևմտյան ափի հատված՝ բաց լողափերով և ջրի վրայով բացվող տեսարաններով։"], "selim": ["Սելիմի քարավանատուն", "1332 թվականի բազալտե քարավանատուն Սելիմի (Վարդենյաց) լեռնանցքում՝ մոտ 2410 մ բարձրության վրա, Հայաստանի ամենալավ պահպանված քարավանատունը։"], "parz": ["Պարզ լիճ, Դիլիջան", "Փոքր անտառային լիճ Դիլիջանի ազգային պարկի տարածքում՝ շուրջը զբոսանքի արահետներով։"], "jukhtak": ["Ջուխտակ վանք", "11–12-րդ դարերի վանք Դիլիջանի ազգային պարկի անտառային բացատում՝ Դիլիջանից մոտ 3 կմ հյուսիս-արևմուտք։"], "matosavank": ["Մաթոսավանք", "13-րդ դարի փոքր վանք, թաքնված Դիլիջանի ազգային պարկի անտառում՝ Ջուխտակ վանքի մոտ։ Եկեղեցին մասամբ ավերված է, իսկ արահետը կարող է դժվար հետևելի լինել։"], "makaravank": ["Մակարավանք", "Միջնադարյան վանք անտառապատ կիրճում՝ Աչաջուրի մոտ, հայտնի իր զարդարված գլխավոր եկեղեցով։"], "dilijannp": ["Դիլիջանի ազգային պարկ", "Մեծ անտառային ազգային պարկ՝ արշավային արահետներով, հանքային աղբյուրներով և թաքնված վանքերով։"], "berd": ["Բերդի ամրոց", "18-րդ դարի ամրոց Բերդ քաղաքի վերևում՝ Հայաստանի հյուսիս-արևելյան խորքում։"], "lastiver": ["Լաստիվերի կիրճ և ջրվեժ", "Անտառապատ կիրճ Իջևանի մոտ՝ ջրվեժով և ժայռի մեջ փորված քարանձավային բնակարաններով։"], "goshlake": ["Գոշի լիճ", "Փոքր լիճ Գոշ գյուղի վերևի անտառում, Գոշավանքից կարճ զբոսանքի հեռավորության վրա։"], "pushkin": ["Պուշկինի լեռնանցք (դիտակետ)", "Լեռնանցք Դիլիջան–Վանաձոր ճանապարհին՝ անտառային տեսարաններով և բանաստեղծ Պուշկինի հուշարձանով։"], "dendropark": ["Ստեփանավանի դենդրոպարկ", "Շատ երկրներից տնկված ծառերի մեծ այգի Ստեփանավանի անտառապատ լանջին։"], "akhtala": ["Ախթալայի վանք", "13-րդ դարի ամրացված վանք, որի գլխավոր եկեղեցում անսովոր լավ պահպանված բյուզանդական ոճի որմնանկարներ կան։"], "kobayr": ["Կոբայրի վանք", "12–13-րդ դարերի վանք Դեբեդի կիրճի վերևում՝ ներսում հին որմնանկարների մնացորդներով։"], "alaverdicable": ["Ալավերդու ճոպանուղի", "Ճոպանուղի Ալավերդիում, որ քաղաքը կապում է վերևի Սանահին լեռնային գյուղի հետ՝ Դեբեդի կիրճի տեսարաններով։"], "debed": ["Դեբեդի կիրճ (դիտակետ)", "Դիտակետ խորը Դեբեդի կիրճի վրա՝ հին հանքային քաղաքներով և լանջերին գտնվող վանքերով։"], "areni": ["Արենի գինու գյուղ", "Հայաստանի ամենահայտնի գինու շրջանի կենտրոնը՝ գյուղ, որտեղ կարելի է համտեսել տեղական գինի և տեսնել խաղողի այգիներ՝ կարմիր ժայռերի տակ։"], "dvin": ["Դվին հին մայրաքաղաք (ավերակներ)", "Դվինի մնացորդները՝ միջնադարյան Հայաստանի խոշոր մայրաքաղաք և առևտրական քաղաք՝ մի քանի դար շարունակ։"], "armash": ["Արմաշի ձկնաբուծարաններ", "Ձկնաբուծարանների մեծ համալիր Արարատյան դաշտում, սիրված թռչնադիտողների շրջանում և Արարատ լեռան տեսարանով։"], "tsakhatskar": ["Ծախաց Քար վանք", "13-րդ դարի վանք Եղեգիսի հովտում՝ նուրբ փորագրված խաչքարերով։"], "spitakavor": ["Սպիտակավոր վանք", "14-րդ դարի սպիտակ քարե եկեղեցի Եղեգնաձորի մոտ՝ հովտի վերևում, մինչ օրս ուխտավայր։"], "gladzor": ["Գլաձորի համալսարան (ավերակներ)", "Գլաձորի մնացորդները՝ 13–14-րդ դարերի միջնադարյան կրթության խոշոր կենտրոն։"], "kechut": ["Կեչուտի ջրամբար", "Ջրամբար Արփա գետի վրա Վայոց ձորում, որի կողքով անցնում են Ջերմուկ տանող լեռնային ճանապարհին։"], "arates": ["Արատեսի վանք", "Փոքր միջնադարյան վանք Վայոց ձորում։"], "karahunj": ["Քարահունջ (Զորաց Քարեր)", "Հնագույն կանգուն քարերի վայր՝ մոտ 200 քարով, Սիսիանի մոտ, երբեմն կոչվում է Հայաստանի Սթոունհենջ։"], "sisavan": ["Սիսավանի եկեղեցի, Սիսիան", "7-րդ դարի եկեղեցի Սիսիանում՝ Հարավային Հայաստանի ամենահին պահպանված եկեղեցիներից մեկը։"], "vorotnavank": ["Որոտնավանք", "Միջնադարյան վանք՝ եկեղեցով և մատուռներով, Որոտանի հովտում՝ Սիսիանի մոտ։"], "oldgoris": ["Հին Գորիս", "Գորիսի հին թաղամասը՝ քարե տներով և քաղաքի վերևի ժայռերում քարանձավային բնակարաններով։"], "khndzoresk": ["Խնձորեսկի քարանձավային գյուղ", "Փափուկ ժայռի մեջ փորված քարանձավների լանջային գյուղ, որին հասնում են երկար օրորվող ոտնակամրջով։"], "wingstatev": ["«Տաթևի թևեր» ճոպանուղի", "Որոտանի կիրճով Տաթևի վանք տանող երկար օդային ճոպանուղի՝ աշխարհի ամենաերկարներից մեկը։"], "devilsbridge": ["Սատանի կամուրջ", "Բնական քարե կամուրջ Որոտան գետի վրա՝ մոտակա հանքային աղբյուրներով։"], "bghenonoravank": ["Բղենո-Նորավանք", "Փոքր միջնադարյան վանք Գորիսի շրջանում։"], "khot": ["Հին Խոտ քարանձավային գյուղ", "Հին գյուղ Գորիսի մոտ՝ ժայռի մեջ փորված տներով և սենյակներով։"], "khustup": ["Խուստուփ լեռան դիտակետ", "Լեռ Կապանի վերևում՝ Սյունիքի անտառապատ լեռնաշղթաների լայն տեսարաններով։"], "meghrifort": ["Մեղրիի ամրոց", "Միջնադարյան ամրոց Մեղրիի վերևում՝ Հայաստանի ամենահարավային քաղաքում, Իրանի սահմանին մոտ։"], "meghrichurch": ["Մեղրիի Սուրբ Աստվածածին եկեղեցի", "17-րդ դարի եկեղեցի Մեղրիում՝ ներսից նկարազարդ պատերով։"], "ughtasar": ["Ուղտասարի ժայռապատկերներ", "Հնագույն ժայռապատկերների բարձրալեռնային վայր Սիսիանի վերևում։ Պահանջում է դժվարանցանելի լեռնային ճանապարհ, և տարվա մեծ մասում ծածկված է ձյունով։"]};
+const HOURS_HY = {"Hours not verified": "Աշխատանքային ժամերը չեն ստուգվել", "Open dawn–dusk": "Բաց է արշալույսից մինչև մթնշաղ", "Open access, daylight hours": "Ազատ մուտք, ցերեկային ժամերին", "Open access": "Ազատ մուտք", "Grounds open roughly 9:00–19:00": "Տարածքը բաց է մոտավորապես 9:00–19:00", "Typically open dawn–dusk": "Սովորաբար բաց է արշալույսից մինչև մթնշաղ", "Accessible dawn–dusk, no gate": "Հասանելի է արշալույսից մինչև մթնշաղ, առանց դարպասի", "Typically open 9:00–18:00": "Սովորաբար բաց է 9:00–18:00", "Grounds open roughly 8:00–20:00": "Տարածքը բաց է մոտավորապես 8:00–20:00", "Typically open 10:00–17:00": "Սովորաբար բաց է 10:00–17:00", "Grounds open dawn–dusk": "Տարածքը բաց է արշալույսից մինչև մթնշաղ", "Town is open access; trails best in daylight": "Քաղաքը բաց է. արահետներն ավելի լավ է անցնել ցերեկը", "Seasonal — road generally closed by snow": "Սեզոնային՝ ճանապարհը սովորաբար փակ է ձյան պատճառով", "Always accessible": "Միշտ հասանելի է", "No gate, accessible in daylight": "Առանց դարպասի, հասանելի է ցերեկը", "Entry generally needs a permit": "Մուտքի համար սովորաբար թույլտվություն է պետք", "Typically open by day, hours vary": "Սովորաբար բաց է ցերեկը, ժամերը տարբերվում են", "Cable car and grounds keep set hours": "Ճոպանուղին և տարածքն ունեն սահմանված ժամեր", "Museum-reserve hours, check before going": "Թանգարան-արգելոցի ժամեր. ստուգեք մինչ գնալը", "Open access, rough track and hike in": "Ազատ մուտք, դժվար ճանապարհ և արշավ"};
+const PRICE_HY = {"Entry fee not verified": "Մուտքի վճարը չի ստուգվել", "Free": "Անվճար", "Small entry fee": "Փոքր մուտքի վճար", "Free, donations welcome": "Անվճար, նվիրատվությունները ողջունելի են", "Free, small pit-descent fee": "Անվճար, փոքր վճար վիրապ իջնելու համար", "Free to walk the old town": "Հին քաղաքով զբոսնելն անվճար է", "Entry/permit fee": "Մուտքի/թույլտվության վճար", "Cable car ticket + small monastery fee": "Ճոպանուղու տոմս + փոքր վճար վանքի համար", "Separate small fees for museum and fortress": "Առանձին փոքր վճարներ թանգարանի և ամրոցի համար"};
+const REGION_HY = {"Kotayk": "Կոտայք", "Ararat": "Արարատ", "Armavir": "Արմավիր", "Aragatsotn": "Արագածոտն", "Vayots Dzor": "Վայոց ձոր", "Syunik": "Սյունիք", "Gegharkunik": "Գեղարքունիք", "Tavush": "Տավուշ", "Lori": "Լոռի", "Shirak": "Շիրակ", "Yerevan": "Երևան"};
+const CAT_HY = {"fortress": "Ամրոց", "church": "Եկեղեցի", "nature": "Բնություն", "view": "Դիտակետ", "waterfall": "Ջրվեժ", "village": "Գյուղ և մշակույթ", "lake": "Լիճ և ջրեր"};
+SIGHTS.forEach(s=>{ const h = SIGHT_HY[s.id]; s.name.hy = h[0]; s.why.hy = h[1]; s.hours.hy = HOURS_HY[s.hours.en] || s.hours.en; s.price.hy = PRICE_HY[s.price.en] || s.price.en; });
+Object.keys(CATEGORIES).forEach(k=>{ CATEGORIES[k].hy = CAT_HY[k] || CATEGORIES[k].en; });
+
+const ICON_SVGS = {
+  temple: `<rect x="18" y="60" width="64" height="6" fill="var(--ink)"/><rect x="24" y="35" width="6" height="25" fill="var(--ink)"/><rect x="38" y="35" width="6" height="25" fill="var(--ink)"/><rect x="56" y="35" width="6" height="25" fill="var(--ink)"/><rect x="70" y="35" width="6" height="25" fill="var(--ink)"/><polygon points="50,18 20,35 80,35" fill="var(--rose)"/>`,
+
+  cliffMonastery: `<polygon points="0,100 35,18 65,18 100,100" fill="var(--ink)" opacity="0.85"/><path d="M40 100 V60 A10 10 0 0 1 60 60 V100 Z" fill="var(--surface-2)"/><rect x="47" y="10" width="6" height="16" fill="var(--rose)"/><rect x="41" y="14" width="18" height="6" fill="var(--rose)"/>`,
+
+  domeChurch: `<rect x="30" y="55" width="40" height="35" fill="var(--ink)"/><polygon points="50,25 32,55 68,55" fill="var(--ink)"/><rect x="47" y="12" width="6" height="14" fill="var(--rose)"/><rect x="41" y="16" width="18" height="6" fill="var(--rose)"/>`,
+
+  ruins: `<ellipse cx="50" cy="80" rx="34" ry="8" fill="none" stroke="var(--ink)" stroke-width="4"/><rect x="20" y="45" width="7" height="30" fill="var(--ink)"/><rect x="46" y="35" width="7" height="40" fill="var(--ink)"/><rect x="73" y="50" width="7" height="25" fill="var(--ink)"/><circle cx="50" cy="28" r="6" fill="var(--rose)"/>`,
+
+  waterfall: `<rect x="0" y="22" width="40" height="78" fill="var(--ink)" opacity="0.85"/><rect x="60" y="22" width="40" height="78" fill="var(--ink)" opacity="0.6"/><path d="M44 22V68M50 22V76M56 22V68" stroke="var(--blue)" stroke-width="5" stroke-linecap="round" fill="none"/><ellipse cx="50" cy="86" rx="18" ry="6" fill="var(--blue)" opacity="0.6"/>`,
+
+  fortress: `<polygon points="10,100 30,55 70,55 90,100" fill="var(--ink)" opacity="0.5"/><rect x="25" y="35" width="50" height="25" fill="var(--ink)"/><rect x="25" y="25" width="8" height="12" fill="var(--ink)"/><rect x="41" y="25" width="8" height="12" fill="var(--ink)"/><rect x="57" y="25" width="8" height="12" fill="var(--ink)"/><rect x="67" y="25" width="8" height="12" fill="var(--ink)"/><rect x="45" y="70" width="10" height="20" fill="var(--rose)"/>`,
+
+  gorge: `<polygon points="0,100 40,18 55,45 20,100" fill="var(--ink)" opacity="0.9"/><polygon points="100,100 60,18 45,45 80,100" fill="var(--ink)" opacity="0.6"/><path d="M40 100 Q50 68 50 100" fill="none" stroke="var(--rose)" stroke-width="5"/>`,
+
+  lake: `<circle cx="50" cy="40" r="14" fill="var(--rose)"/><path d="M10 65 Q25 58 40 65 T70 65 T100 65" fill="none" stroke="var(--ink)" stroke-width="5"/><path d="M10 78 Q25 71 40 78 T70 78 T100 78" fill="none" stroke="var(--ink)" stroke-width="5"/>`,
+
+  arch: `<circle cx="50" cy="26" r="6" fill="var(--rose)" opacity="0.7"/><path d="M25 95 V50 A25 25 0 0 1 75 50 V95" fill="none" stroke="var(--ink)" stroke-width="9"/><rect x="16" y="88" width="18" height="10" fill="var(--ink)"/><rect x="66" y="88" width="18" height="10" fill="var(--ink)"/>`,
+
+  observatory: `<rect x="30" y="60" width="40" height="30" fill="var(--ink)"/><path d="M25 60 A25 20 0 0 1 75 60 Z" fill="var(--ink)"/><rect x="48" y="25" width="30" height="10" fill="var(--rose)" transform="rotate(-30 48 30)"/><circle cx="50" cy="60" r="4" fill="var(--surface-2)"/>`,
+
+  memorial: `<polygon points="42,90 42,30 50,15 58,30 58,90" fill="var(--ink)"/><rect x="20" y="90" width="60" height="8" fill="var(--ink)"/><rect x="46" y="45" width="8" height="8" fill="var(--rose)"/>`,
+
+  cave: `<path d="M10 95 Q10 40 50 35 Q90 40 90 95 Z" fill="var(--ink)"/><path d="M30 95 Q30 60 50 58 Q70 60 70 95 Z" fill="var(--surface-2)"/><polygon points="45,58 50,70 55,58" fill="var(--rose)"/>`,
+
+  megalith: `<rect x="15" y="55" width="10" height="35" fill="var(--ink)" transform="rotate(-8 20 72)"/><rect x="35" y="45" width="10" height="45" fill="var(--ink)"/><rect x="55" y="50" width="10" height="40" fill="var(--ink)"/><rect x="75" y="58" width="10" height="32" fill="var(--ink)" transform="rotate(8 80 74)"/><circle cx="50" cy="26" r="6" fill="var(--rose)"/>`,
+
+  khachkarField: `<rect x="38" y="25" width="24" height="65" rx="3" fill="var(--ink)"/><rect x="46" y="35" width="8" height="30" fill="var(--rose)"/><rect x="36" y="46" width="28" height="8" fill="var(--rose)"/>`,
+
+  cityBlock: `<rect x="15" y="50" width="20" height="40" fill="var(--ink)"/><rect x="40" y="35" width="20" height="55" fill="var(--ink)"/><rect x="65" y="55" width="20" height="35" fill="var(--ink)"/><rect x="44" y="20" width="12" height="15" fill="var(--rose)"/>`,
+
+  town: `<rect x="15" y="60" width="24" height="30" fill="var(--ink)"/><polygon points="12,60 42,60 27,42" fill="var(--ink)"/><rect x="55" y="55" width="28" height="35" fill="var(--ink)"/><polygon points="51,55 87,55 69,36" fill="var(--ink)"/><circle cx="45" cy="55" r="10" fill="var(--rose)"/><rect x="42" y="55" width="6" height="20" fill="var(--rose)"/>`,
+};
+
+
+
+const SB_URL = 'https://ndjfqfsrkadpwfoymvxs.supabase.co';
+const SB_KEY = 'sb_publishable_QsSJX8Zua1_dK6hnxO-jeg_uyqZqnT5';
+const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { flowType: 'pkce' } });
+
+const S = { user:null, admin:false, tab:'places', ov:{}, catOv:{}, users:null, usersErr:'', q:'', filter:'all', openId:null, uq:'' };
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm = x => String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+
+let toastTimer;
+function toast(msg, err){ const t = $('toast'); t.textContent = msg; t.className = 'on' + (err ? ' err' : ''); clearTimeout(toastTimer); toastTimer = setTimeout(()=>{ t.className = ''; }, 3200); }
+
+/* ---------- what a place looks like after the saved edits ---------- */
+function eff(s){
+  const o = S.ov[s.id] || {};
+  const cats = (Array.isArray(o.cats) && o.cats.length) ? o.cats.filter(c=>CATEGORIES[c]) : s.cat;
+  const edited = !!(o.name_en || o.name_hy || o.why_en || o.why_hy || o.icon || (Array.isArray(o.cats) && o.cats.length));
+  return { id:s.id, region:s.region, hidden:!!o.hidden, edited,
+    name:{ en:o.name_en || s.name.en, hy:o.name_hy || s.name.hy },
+    why:{ en:o.why_en || s.why.en, hy:o.why_hy || s.why.hy },
+    icon:(o.icon && ICON_SVGS[o.icon]) ? o.icon : s.icon, cat: cats.length ? cats : s.cat };
+}
+function catName(id, lang){ const o = S.catOv[id]; return (o && o['name_' + lang]) || (CATEGORIES[id] && CATEGORIES[id][lang]) || id; }
+function iconSvg(key){
+  const inner = ICON_SVGS[key] || ICON_SVGS.domeChurch;
+  return '<svg viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="14" fill="var(--surface-2)" stroke="var(--border-strong)" stroke-width="1.5"/>' + inner + '</svg>';
+}
+
+/* ---------- sign-in ---------- */
+function renderLogin(msg){
+  $('app').innerHTML = `<div class="center card">
+    <h2>Backoffice</h2>
+    <p>Sign in to manage places, categories and see who has signed in.</p>
+    <button class="btn primary" onclick="googleIn()">Continue with Google</button>
+    <div class="or"><span>or use your email</span></div>
+    <input class="input" id="em" type="email" placeholder="Email" autocomplete="email">
+    <input class="input" id="pw" type="password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')emailIn()">
+    <button class="btn" onclick="emailIn()">Sign in</button>
+    <div class="msg ${msg && msg.err ? 'err' : ''}" id="lmsg">${esc(msg ? msg.text : '')}</div>
+  </div>`;
+}
+async function googleIn(){ await sb.auth.signInWithOAuth({ provider:'google', options:{ redirectTo: location.origin + location.pathname } }); }
+async function emailIn(){
+  const e = $('em').value.trim(), p = $('pw').value;
+  if(!e || !p){ $('lmsg').textContent = 'Please enter your email and password.'; $('lmsg').className = 'msg err'; return; }
+  const { error } = await sb.auth.signInWithPassword({ email:e, password:p });
+  if(error){ $('lmsg').textContent = 'Wrong email or password.'; $('lmsg').className = 'msg err'; }
+}
+async function signOut(){ await sb.auth.signOut(); }
+
+function renderNoAccess(){
+  $('app').innerHTML = `<div class="center card">
+    <h2>No access yet</h2>
+    <p>You are signed in as <b>${esc(S.user.email || 'this account')}</b>, but this account is not an admin.</p>
+    <p>If nobody has been set up as the admin yet, you can become the first one.</p>
+    <button class="btn primary" onclick="claimAdmin()">Make me the admin</button>
+    <button class="btn" onclick="signOut()">Sign out</button>
+    <div class="msg" id="cmsg"></div>
+  </div>`;
+}
+async function claimAdmin(){
+  const { data, error } = await sb.rpc('claim_first_admin');
+  if(error || !data){ $('cmsg').textContent = 'An admin already exists, so this is not possible. Ask them to add you.'; $('cmsg').className = 'msg err'; return; }
+  toast('You are now the admin.'); boot();
+}
+
+/* ---------- start ---------- */
+async function boot(){
+  if(!S.user){ renderLogin(); return; }
+  const { data } = await sb.rpc('is_admin');
+  S.admin = data === true;
+  if(!S.admin){ renderNoAccess(); return; }
+  $('app').innerHTML = '<div class="wrap"><div class="card">Loading…</div></div>';
+  const [a, b] = await Promise.all([ sb.from('sight_overrides').select('*'), sb.from('category_overrides').select('*') ]);
+  if(a.error || b.error){ $('app').innerHTML = '<div class="wrap"><div class="card">Could not load the saved edits. Please refresh.</div></div>'; return; }
+  S.ov = {}; (a.data||[]).forEach(r => S.ov[r.sight_id] = r);
+  S.catOv = {}; (b.data||[]).forEach(r => S.catOv[r.cat_id] = r);
+  renderShell();
+}
+let lastUid = null;
+sb.auth.onAuthStateChange((ev, session) => {
+  const u = session ? session.user : null;
+  if(ev === 'INITIAL_SESSION' || ev === 'SIGNED_IN' || ev === 'SIGNED_OUT'){
+    const id = u ? u.id : null;
+    if(ev !== 'INITIAL_SESSION' && id === lastUid) return;
+    lastUid = id; S.user = u; S.admin = false; boot();
+  }
+});
+
+/* ---------- main screen ---------- */
+function renderShell(){
+  $('app').innerHTML = `
+  <div class="top">
+    <h1>Armenia Along the Way · Backoffice</h1>
+    <div class="sp"></div>
+    <span class="who">${esc(S.user.email || '')}</span>
+    <a href="./" target="_blank" rel="noopener">Open the site</a>
+    <button class="btn small" style="background:transparent;border-color:#5a5e9a" onclick="signOut()">Sign out</button>
+  </div>
+  <div class="wrap">
+    <div class="tabs" id="tabs"></div>
+    <div id="pane"></div>
+  </div>`;
+  renderTabs(); renderPane();
+}
+function renderTabs(){
+  const T = [['places','Places'],['cats','Categories'],['people','People']];
+  $('tabs').innerHTML = T.map(([k,l]) => `<button class="tab ${S.tab===k?'on':''}" onclick="setTab('${k}')">${l}</button>`).join('');
+}
+function setTab(k){ S.tab = k; renderTabs(); renderPane(); }
+function renderPane(){
+  if(S.tab === 'places') renderPlaces();
+  else if(S.tab === 'cats') renderCats();
+  else renderPeople();
+}
+
+/* ---------- PLACES ---------- */
+function renderPlaces(){
+  $('pane').innerHTML = `
+  <div class="tools">
+    <input class="input" id="pq" type="search" placeholder="Search places…" value="${esc(S.q)}" oninput="S.q=this.value;renderList()">
+    <div class="seg">
+      <button class="${S.filter==='all'?'on':''}" onclick="setFilter('all')">All</button>
+      <button class="${S.filter==='edited'?'on':''}" onclick="setFilter('edited')">Edited</button>
+      <button class="${S.filter==='hidden'?'on':''}" onclick="setFilter('hidden')">Removed</button>
+    </div>
+    <span class="count" id="pcount"></span>
+  </div>
+  <div class="plist" id="plist"></div>`;
+  renderList();
+}
+function setFilter(f){ S.filter = f; renderPlaces(); }
+function renderList(){
+  const q = norm(S.q).trim().split(/\s+/).filter(Boolean);
+  const rows = SIGHTS.map(eff).filter(e => {
+    if(S.filter === 'edited' && !e.edited) return false;
+    if(S.filter === 'hidden' && !e.hidden) return false;
+    if(!q.length) return true;
+    const hay = norm([e.name.en, e.name.hy, e.id, e.region, e.cat.map(c=>catName(c,'en')).join(' ')].join(' '));
+    return q.every(t => hay.includes(t));
+  }).sort((a,b)=> a.name.en.localeCompare(b.name.en));
+  $('pcount').textContent = rows.length + (rows.length === 1 ? ' place' : ' places');
+  $('plist').innerHTML = rows.length ? rows.map(placeHtml).join('') : '<div class="card">No places match.</div>';
+}
+function placeHtml(e){
+  const open = S.openId === e.id;
+  return `<div class="place ${e.hidden?'hid':''}" id="pl-${esc(e.id)}">
+    <div class="prow" onclick="toggleOpen('${esc(e.id)}')">
+      <div class="ico">${iconSvg(e.icon)}</div>
+      <div class="pmain">
+        <div class="pname">${esc(e.name.en)} ${e.hidden ? '<span class="badge hd">Removed</span>' : (e.edited ? '<span class="badge ed">Edited</span>' : '')}</div>
+        <div class="pmeta">${esc(e.name.hy)} · ${esc(e.region || '')}</div>
+        <div class="chips">${e.cat.map(c=>`<span class="chip">${esc(catName(c,'en'))}</span>`).join('')}</div>
+      </div>
+      <button class="btn small ${e.hidden?'':'danger'}" onclick="event.stopPropagation();quickHide('${esc(e.id)}')">${e.hidden ? 'Show again' : 'Remove'}</button>
+      <button class="btn small" onclick="event.stopPropagation();toggleOpen('${esc(e.id)}')">${open ? 'Close' : 'Edit'}</button>
+    </div>
+    ${open ? editorHtml(e) : ''}
+  </div>`;
+}
+function toggleOpen(id){ S.openId = (S.openId === id) ? null : id; renderList(); if(S.openId){ const el = $('pl-' + id); if(el) el.scrollIntoView({ block:'nearest', behavior:'smooth' }); } }
+function editorHtml(e){
+  const base = SIGHTS.find(x => x.id === e.id);
+  return `<div class="editor">
+    <div class="grid2">
+      <div><label class="lbl" for="f-name-en">Name (English)</label><input class="input" id="f-name-en" maxlength="160" value="${esc(e.name.en)}"></div>
+      <div><label class="lbl" for="f-name-hy">Name (Armenian)</label><input class="input" id="f-name-hy" maxlength="160" value="${esc(e.name.hy)}"></div>
+    </div>
+    <div class="grid2">
+      <div><label class="lbl" for="f-why-en">Description (English)</label><textarea class="input" id="f-why-en" maxlength="1200">${esc(e.why.en)}</textarea></div>
+      <div><label class="lbl" for="f-why-hy">Description (Armenian)</label><textarea class="input" id="f-why-hy" maxlength="1200">${esc(e.why.hy)}</textarea></div>
+    </div>
+    <div>
+      <span class="lbl">Icon</span>
+      <div class="icons">${Object.keys(ICON_SVGS).map(k => `<label title="${esc(k)}"><input type="radio" name="f-icon" value="${esc(k)}" ${k===e.icon?'checked':''}><span class="ib">${iconSvg(k)}</span></label>`).join('')}</div>
+      <div class="hint">The icon shows where there is no photo of the place.</div>
+    </div>
+    <div>
+      <span class="lbl">Categories</span>
+      <div class="cats">${Object.keys(CATEGORIES).map(c => `<label><input type="checkbox" name="f-cat" value="${esc(c)}" ${e.cat.includes(c)?'checked':''}> ${esc(catName(c,'en'))}</label>`).join('')}</div>
+      <div class="hint">Pick at least one.</div>
+    </div>
+    <div class="acts">
+      <button class="btn primary" onclick="savePlace('${esc(e.id)}')">Save changes</button>
+      <button class="btn" onclick="toggleOpen('${esc(e.id)}')">Cancel</button>
+      <span class="sp"></span>
+      ${S.ov[e.id] ? `<button class="btn small" onclick="resetPlace('${esc(e.id)}')">Undo all edits to this place</button>` : ''}
+    </div>
+  </div>`;
+}
+
+async function writeOverride(id, f){
+  const empty = !f.hidden && f.name_en == null && f.name_hy == null && f.why_en == null && f.why_hy == null && f.icon == null && f.cats == null;
+  if(empty){
+    const { error } = await sb.from('sight_overrides').delete().eq('sight_id', id);
+    if(error) throw error;
+    delete S.ov[id];
+  }else{
+    const row = Object.assign({ sight_id:id, updated_at:new Date().toISOString() }, f);
+    const { data, error } = await sb.from('sight_overrides').upsert(row, { onConflict:'sight_id' }).select().single();
+    if(error) throw error;
+    S.ov[id] = data;
+  }
+}
+function currentFields(id){ const o = S.ov[id] || {}; return { hidden:!!o.hidden, name_en:o.name_en ?? null, name_hy:o.name_hy ?? null, why_en:o.why_en ?? null, why_hy:o.why_hy ?? null, icon:o.icon ?? null, cats:o.cats ?? null }; }
+
+async function savePlace(id){
+  const base = SIGHTS.find(x => x.id === id);
+  const v = k => ($(k).value || '').trim();
+  const f = currentFields(id);
+  const pick = (val, orig) => (val && val !== orig) ? val : null;
+  f.name_en = pick(v('f-name-en'), base.name.en);
+  f.name_hy = pick(v('f-name-hy'), base.name.hy);
+  f.why_en = pick(v('f-why-en'), base.why.en);
+  f.why_hy = pick(v('f-why-hy'), base.why.hy);
+  const ic = document.querySelector('input[name="f-icon"]:checked');
+  f.icon = (ic && ic.value !== base.icon) ? ic.value : null;
+  const cats = Array.from(document.querySelectorAll('input[name="f-cat"]:checked')).map(x => x.value);
+  if(!cats.length){ toast('Pick at least one category.', true); return; }
+  f.cats = (cats.slice().sort().join() === base.cat.slice().sort().join()) ? null : cats;
+  try{ await writeOverride(id, f); S.openId = null; renderList(); toast('Saved. The site will show it shortly.'); }
+  catch(e){ console.error(e); toast('Could not save. Please try again.', true); }
+}
+async function resetPlace(id){
+  if(!confirm('Undo all edits to this place and bring back the original?')) return;
+  try{ await writeOverride(id, { hidden:false, name_en:null, name_hy:null, why_en:null, why_hy:null, icon:null, cats:null }); S.openId = null; renderList(); toast('Back to the original.'); }
+  catch(e){ console.error(e); toast('Could not save. Please try again.', true); }
+}
+async function quickHide(id){
+  const f = currentFields(id); const e = eff(SIGHTS.find(x => x.id === id));
+  if(!f.hidden && !confirm('Remove "' + e.name.en + '" from the site? You can bring it back at any time.')) return;
+  f.hidden = !f.hidden;
+  try{ await writeOverride(id, f); renderList(); toast(f.hidden ? 'Removed from the site.' : 'It is back on the site.'); }
+  catch(err){ console.error(err); toast('Could not save. Please try again.', true); }
+}
+
+/* ---------- CATEGORIES ---------- */
+function renderCats(){
+  const used = {}; SIGHTS.map(eff).forEach(e => e.cat.forEach(c => used[c] = (used[c]||0) + 1));
+  $('pane').innerHTML = `<div class="card">
+    <p style="margin-top:0;color:var(--muted)">Rename the interest buttons on the site. Leave a box empty to use the original name.</p>
+    ${Object.keys(CATEGORIES).map(c => `<div class="catrow">
+      <div><b>${esc(CATEGORIES[c].en)}</b><div class="hint">${used[c]||0} places</div></div>
+      <div><label class="lbl" for="ce-${c}">English</label><input class="input" id="ce-${c}" maxlength="80" value="${esc((S.catOv[c]||{}).name_en || '')}" placeholder="${esc(CATEGORIES[c].en)}"></div>
+      <div><label class="lbl" for="ch-${c}">Armenian</label><input class="input" id="ch-${c}" maxlength="80" value="${esc((S.catOv[c]||{}).name_hy || '')}" placeholder="${esc(CATEGORIES[c].hy)}"></div>
+      <button class="btn primary" onclick="saveCat('${c}')">Save</button>
+    </div>`).join('')}
+  </div>`;
+}
+async function saveCat(c){
+  const en = ($('ce-' + c).value || '').trim(), hy = ($('ch-' + c).value || '').trim();
+  const nEn = (en && en !== CATEGORIES[c].en) ? en : null, nHy = (hy && hy !== CATEGORIES[c].hy) ? hy : null;
+  try{
+    if(nEn == null && nHy == null){
+      const { error } = await sb.from('category_overrides').delete().eq('cat_id', c); if(error) throw error; delete S.catOv[c];
+    }else{
+      const { data, error } = await sb.from('category_overrides').upsert({ cat_id:c, name_en:nEn, name_hy:nHy, updated_at:new Date().toISOString() }, { onConflict:'cat_id' }).select().single();
+      if(error) throw error; S.catOv[c] = data;
+    }
+    toast('Saved. The site will show it shortly.');
+  }catch(e){ console.error(e); toast('Could not save. Please try again.', true); }
+}
+
+/* ---------- PEOPLE ---------- */
+async function renderPeople(){
+  $('pane').innerHTML = '<div class="card">Loading people…</div>';
+  if(!S.users){
+    const { data, error } = await sb.rpc('admin_list_users');
+    if(error){ S.usersErr = 'Could not load the list.'; } else { S.users = data || []; S.usersErr = ''; }
+  }
+  if(S.usersErr){ $('pane').innerHTML = '<div class="card">' + esc(S.usersErr) + ' <button class="btn small" onclick="S.users=null;renderPeople()">Try again</button></div>'; return; }
+  const us = S.users, now = Date.now(), week = 7*24*3600*1000;
+  const active = us.filter(u => u.last_sign_in_at && now - new Date(u.last_sign_in_at).getTime() < week).length;
+  const withRev = us.filter(u => Number(u.reviews) > 0).length;
+  $('pane').innerHTML = `
+  <div class="stats">
+    <div class="stat"><b>${us.length}</b><span>People with an account</span></div>
+    <div class="stat"><b>${active}</b><span>Signed in the last 7 days</span></div>
+    <div class="stat"><b>${withRev}</b><span>Have left a review</span></div>
+  </div>
+  <div class="tools">
+    <input class="input" type="search" placeholder="Search by name or email…" value="${esc(S.uq)}" oninput="S.uq=this.value;renderUsers()">
+    <button class="btn small" onclick="downloadUsers()">Download as spreadsheet (CSV)</button>
+    <button class="btn small" onclick="S.users=null;renderPeople()">Refresh</button>
+    <span class="count" id="ucount"></span>
+  </div>
+  <div class="tablewrap"><table><thead><tr><th>Person</th><th>Signed up with</th><th>Joined</th><th>Last sign-in</th><th>Reviews</th><th>Saved trips</th><th>Wish list</th></tr></thead><tbody id="ubody"></tbody></table></div>`;
+  renderUsers();
+}
+const fmtDate = d => d ? new Date(d).toLocaleString(undefined, { dateStyle:'medium', timeStyle:'short' }) : '—';
+const provName = p => p === 'google' ? 'Google' : (p === 'email' ? 'Email' : p);
+function filteredUsers(){ const q = norm(S.uq).trim(); return (S.users||[]).filter(u => !q || norm((u.name||'') + ' ' + (u.email||'')).includes(q)); }
+function renderUsers(){
+  const rows = filteredUsers();
+  $('ucount').textContent = rows.length + (rows.length === 1 ? ' person' : ' people');
+  $('ubody').innerHTML = rows.length ? rows.map(u => `<tr>
+    <td><b>${esc(u.name || '—')}</b><div class="pmeta">${esc(u.email || '')}</div></td>
+    <td>${esc(provName(u.provider))}</td><td>${esc(fmtDate(u.created_at))}</td><td>${esc(fmtDate(u.last_sign_in_at))}</td>
+    <td>${u.reviews}</td><td>${u.saved_trips}</td><td>${u.wishlist}</td></tr>`).join('') : '<tr><td colspan="7">Nobody matches.</td></tr>';
+}
+function downloadUsers(){
+  const q = s => '"' + String(s == null ? '' : s).replace(/"/g, '""') + '"';
+  const lines = [['Name','Email','Signed up with','Joined','Last sign-in','Reviews','Saved trips','Wish list'].map(q).join(',')];
+  filteredUsers().forEach(u => lines.push([u.name, u.email, provName(u.provider), u.created_at, u.last_sign_in_at, u.reviews, u.saved_trips, u.wishlist].map(q).join(',')));
+  const blob = new Blob(['\ufeff' + lines.join('\n')], { type:'text/csv;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'people.csv'; document.body.appendChild(a); a.click(); a.remove();
+}
+</script>
+</body>
+</html>
