@@ -87,6 +87,17 @@ textarea.input{ min-height:96px; resize:vertical; line-height:1.45; }
 .acts{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
 .acts .sp{ flex:1; }
 
+
+.ico img{ width:100%; height:100%; object-fit:cover; border-radius:14px; display:block; border:1px solid var(--border-strong); }
+.pic{ display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+.picbox{ width:160px; height:110px; border-radius:14px; border:1px dashed var(--border-strong); background:#fff; display:flex; align-items:center; justify-content:center; overflow:hidden; color:var(--faint); font-size:12.5px; text-align:center; padding:6px; }
+.picbox img{ width:100%; height:100%; object-fit:cover; display:block; }
+.pager{ display:flex; gap:6px; align-items:center; justify-content:center; flex-wrap:wrap; margin:18px 0 6px; }
+.pager button{ min-width:38px; height:38px; padding:0 12px; border:1px solid var(--line); background:#fff; border-radius:10px; cursor:pointer; font-weight:600; }
+.pager button.on{ background:var(--navy); color:#fff; border-color:var(--navy); }
+.pager button:disabled{ opacity:.4; cursor:default; }
+.pager .dots{ color:var(--faint); padding:0 4px; }
+.pinfo{ text-align:center; color:var(--muted); font-size:13px; }
 table{ width:100%; border-collapse:collapse; }
 th,td{ text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); font-size:14px; vertical-align:top; }
 th{ font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--faint); }
@@ -674,7 +685,9 @@ const SB_URL = 'https://ndjfqfsrkadpwfoymvxs.supabase.co';
 const SB_KEY = 'sb_publishable_QsSJX8Zua1_dK6hnxO-jeg_uyqZqnT5';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { flowType: 'pkce' } });
 
-const S = { user:null, admin:false, tab:'places', ov:{}, catOv:{}, users:null, usersErr:'', q:'', filter:'all', openId:null, uq:'' };
+const PAGE = 15;   // places shown on each page
+const PIC_BUCKET = 'sight-pictures';
+const S = { user:null, admin:false, tab:'places', ov:{}, catOv:{}, users:null, usersErr:'', q:'', filter:'all', openId:null, uq:'', page:0, pend:null };
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm = x => String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
@@ -686,8 +699,8 @@ function toast(msg, err){ const t = $('toast'); t.textContent = msg; t.className
 function eff(s){
   const o = S.ov[s.id] || {};
   const cats = (Array.isArray(o.cats) && o.cats.length) ? o.cats.filter(c=>CATEGORIES[c]) : s.cat;
-  const edited = !!(o.name_en || o.name_hy || o.why_en || o.why_hy || o.icon || (Array.isArray(o.cats) && o.cats.length));
-  return { id:s.id, region:s.region, hidden:!!o.hidden, edited,
+  const edited = !!(o.name_en || o.name_hy || o.why_en || o.why_hy || o.icon || o.photo_url || (Array.isArray(o.cats) && o.cats.length));
+  return { id:s.id, region:s.region, hidden:!!o.hidden, edited, photo:o.photo_url || null,
     name:{ en:o.name_en || s.name.en, hy:o.name_hy || s.name.hy },
     why:{ en:o.why_en || s.why.en, hy:o.why_hy || s.why.hy },
     icon:(o.icon && ICON_SVGS[o.icon]) ? o.icon : s.icon, cat: cats.length ? cats : s.cat };
@@ -790,7 +803,7 @@ function renderPane(){
 function renderPlaces(){
   $('pane').innerHTML = `
   <div class="tools">
-    <input class="input" id="pq" type="search" placeholder="Search places…" value="${esc(S.q)}" oninput="S.q=this.value;renderList()">
+    <input class="input" id="pq" type="search" placeholder="Search places…" value="${esc(S.q)}" oninput="S.q=this.value;S.page=0;renderList()">
     <div class="seg">
       <button class="${S.filter==='all'?'on':''}" onclick="setFilter('all')">All</button>
       <button class="${S.filter==='edited'?'on':''}" onclick="setFilter('edited')">Edited</button>
@@ -798,10 +811,11 @@ function renderPlaces(){
     </div>
     <span class="count" id="pcount"></span>
   </div>
-  <div class="plist" id="plist"></div>`;
+  <div class="plist" id="plist"></div>
+  <div class="pager" id="ppager"></div>`;
   renderList();
 }
-function setFilter(f){ S.filter = f; renderPlaces(); }
+function setFilter(f){ S.filter = f; S.page = 0; renderPlaces(); }
 function renderList(){
   const q = norm(S.q).trim().split(/\s+/).filter(Boolean);
   const rows = SIGHTS.map(eff).filter(e => {
@@ -811,14 +825,28 @@ function renderList(){
     const hay = norm([e.name.en, e.name.hy, e.id, e.region, e.cat.map(c=>catName(c,'en')).join(' ')].join(' '));
     return q.every(t => hay.includes(t));
   }).sort((a,b)=> a.name.en.localeCompare(b.name.en));
-  $('pcount').textContent = rows.length + (rows.length === 1 ? ' place' : ' places');
-  $('plist').innerHTML = rows.length ? rows.map(placeHtml).join('') : '<div class="card">No places match.</div>';
+  const pages = Math.max(1, Math.ceil(rows.length / PAGE));
+  if(S.page > pages - 1) S.page = pages - 1;
+  if(S.page < 0) S.page = 0;
+  const from = S.page * PAGE, shown = rows.slice(from, from + PAGE);
+  $('pcount').textContent = rows.length ? ('Showing ' + (from + 1) + '–' + (from + shown.length) + ' of ' + rows.length) : '0 places';
+  $('plist').innerHTML = rows.length ? shown.map(placeHtml).join('') : '<div class="card">No places match.</div>';
+  $('ppager').innerHTML = pages > 1 ? pagerHtml(pages) : '';
 }
+function pagerHtml(pages){
+  const cur = S.page, want = new Set([0, pages - 1, cur, cur - 1, cur + 1, cur - 2, cur + 2]);
+  const nums = Array.from(want).filter(n => n >= 0 && n < pages).sort((a, b) => a - b);
+  let out = '<button ' + (cur === 0 ? 'disabled' : '') + ' onclick="goPage(' + (cur - 1) + ')">‹ Previous</button>', last = -1;
+  nums.forEach(n => { if(last !== -1 && n - last > 1) out += '<span class="dots">…</span>'; out += '<button class="' + (n === cur ? 'on' : '') + '" onclick="goPage(' + n + ')" aria-label="Page ' + (n + 1) + '">' + (n + 1) + '</button>'; last = n; });
+  out += '<button ' + (cur === pages - 1 ? 'disabled' : '') + ' onclick="goPage(' + (cur + 1) + ')">Next ›</button>';
+  return out;
+}
+function goPage(n){ S.page = n; S.openId = null; clearPend(); renderList(); window.scrollTo({ top:0, behavior:'smooth' }); }
 function placeHtml(e){
   const open = S.openId === e.id;
   return `<div class="place ${e.hidden?'hid':''}" id="pl-${esc(e.id)}">
     <div class="prow" onclick="toggleOpen('${esc(e.id)}')">
-      <div class="ico">${iconSvg(e.icon)}</div>
+      <div class="ico">${e.photo ? `<img src="${esc(e.photo)}" alt="" loading="lazy">` : iconSvg(e.icon)}</div>
       <div class="pmain">
         <div class="pname">${esc(e.name.en)} ${e.hidden ? '<span class="badge hd">Removed</span>' : (e.edited ? '<span class="badge ed">Edited</span>' : '')}</div>
         <div class="pmeta">${esc(e.name.hy)} · ${esc(e.region || '')}</div>
@@ -830,7 +858,7 @@ function placeHtml(e){
     ${open ? editorHtml(e) : ''}
   </div>`;
 }
-function toggleOpen(id){ S.openId = (S.openId === id) ? null : id; renderList(); if(S.openId){ const el = $('pl-' + id); if(el) el.scrollIntoView({ block:'nearest', behavior:'smooth' }); } }
+function toggleOpen(id){ clearPend(); S.openId = (S.openId === id) ? null : id; renderList(); if(S.openId){ const el = $('pl-' + id); if(el) el.scrollIntoView({ block:'nearest', behavior:'smooth' }); } }
 function editorHtml(e){
   const base = SIGHTS.find(x => x.id === e.id);
   return `<div class="editor">
@@ -841,6 +869,18 @@ function editorHtml(e){
     <div class="grid2">
       <div><label class="lbl" for="f-why-en">Description (English)</label><textarea class="input" id="f-why-en" maxlength="1200">${esc(e.why.en)}</textarea></div>
       <div><label class="lbl" for="f-why-hy">Description (Armenian)</label><textarea class="input" id="f-why-hy" maxlength="1200">${esc(e.why.hy)}</textarea></div>
+    </div>
+    <div>
+      <span class="lbl">Picture</span>
+      <div class="pic">
+        <div class="picbox" id="picbox">${picBoxHtml(e)}</div>
+        <div class="acts" style="flex-direction:column;align-items:flex-start;gap:8px">
+          <input type="file" id="pic-file" accept="image/jpeg,image/png,image/webp" hidden onchange="pickPic()">
+          <button type="button" class="btn small" onclick="$('pic-file').click()">Choose a picture…</button>
+          <button type="button" class="btn small danger" id="pic-remove" onclick="removePic()" ${e.photo ? '' : 'hidden'}>Remove picture</button>
+        </div>
+      </div>
+      <div class="hint">JPG, PNG or WebP. It is shrunk automatically and replaces any other picture of this place on the site. The picture is saved when you press “Save changes”.</div>
     </div>
     <div>
       <span class="lbl">Icon</span>
@@ -861,8 +901,58 @@ function editorHtml(e){
   </div>`;
 }
 
+/* ---------- pictures ---------- */
+function clearPend(){ if(S.pend && S.pend.url) URL.revokeObjectURL(S.pend.url); S.pend = null; }
+function picBoxHtml(e){
+  const p = S.pend;
+  if(p && p.id === e.id){
+    if(p.remove) return 'No picture';
+    if(p.url) return '<img src="' + esc(p.url) + '" alt="New picture">';
+  }
+  if(e.photo) return '<img src="' + esc(e.photo) + '" alt="Current picture">';
+  return 'No picture yet<br>(the icon is shown)';
+}
+function refreshPic(id){
+  const e = eff(SIGHTS.find(x => x.id === id));
+  const box = $('picbox'); if(box) box.innerHTML = picBoxHtml(e);
+  const has = S.pend && S.pend.id === id ? !S.pend.remove : !!e.photo;
+  const rm = $('pic-remove'); if(rm) rm.hidden = !has;
+}
+function resizeImage(file, maxSide){
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, maxSide / Math.max(img.width, img.height));
+      const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(img.width * k)); c.height = Math.max(1, Math.round(img.height * k));
+      const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      c.toBlob(b => b ? resolve(b) : reject(new Error('resize failed')), 'image/jpeg', 0.86);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('not an image')); };
+    img.src = url;
+  });
+}
+async function pickPic(){
+  const id = S.openId, inp = $('pic-file'), f = inp && inp.files && inp.files[0];
+  if(!id || !f) return;
+  if(!/^image\/(jpeg|png|webp)$/.test(f.type)){ toast('Please choose a JPG, PNG or WebP picture.', true); inp.value = ''; return; }
+  if(f.size > 20 * 1024 * 1024){ toast('That picture is too large (over 20 MB).', true); inp.value = ''; return; }
+  try{
+    const blob = await resizeImage(f, 1600);
+    clearPend(); S.pend = { id, blob, url:URL.createObjectURL(blob), remove:false };
+    refreshPic(id);
+  }catch(e){ console.error(e); toast('Could not read that picture.', true); }
+  inp.value = '';
+}
+function removePic(){
+  const id = S.openId; if(!id) return;
+  clearPend(); S.pend = { id, blob:null, url:null, remove:true }; refreshPic(id);
+}
+function picPathFromUrl(u){ const k = '/object/public/' + PIC_BUCKET + '/'; const i = String(u || '').indexOf(k); return i === -1 ? null : decodeURIComponent(u.slice(i + k.length)); }
+async function dropOldPicture(url){ const path = picPathFromUrl(url); if(path){ try{ await sb.storage.from(PIC_BUCKET).remove([path]); }catch(e){ console.warn(e); } } }
+
 async function writeOverride(id, f){
-  const empty = !f.hidden && f.name_en == null && f.name_hy == null && f.why_en == null && f.why_hy == null && f.icon == null && f.cats == null;
+  const empty = !f.hidden && f.name_en == null && f.name_hy == null && f.why_en == null && f.why_hy == null && f.icon == null && f.cats == null && f.photo_url == null;
   if(empty){
     const { error } = await sb.from('sight_overrides').delete().eq('sight_id', id);
     if(error) throw error;
@@ -874,7 +964,7 @@ async function writeOverride(id, f){
     S.ov[id] = data;
   }
 }
-function currentFields(id){ const o = S.ov[id] || {}; return { hidden:!!o.hidden, name_en:o.name_en ?? null, name_hy:o.name_hy ?? null, why_en:o.why_en ?? null, why_hy:o.why_hy ?? null, icon:o.icon ?? null, cats:o.cats ?? null }; }
+function currentFields(id){ const o = S.ov[id] || {}; return { hidden:!!o.hidden, name_en:o.name_en ?? null, name_hy:o.name_hy ?? null, why_en:o.why_en ?? null, why_hy:o.why_hy ?? null, icon:o.icon ?? null, cats:o.cats ?? null, photo_url:o.photo_url ?? null }; }
 
 async function savePlace(id){
   const base = SIGHTS.find(x => x.id === id);
@@ -890,12 +980,29 @@ async function savePlace(id){
   const cats = Array.from(document.querySelectorAll('input[name="f-cat"]:checked')).map(x => x.value);
   if(!cats.length){ toast('Pick at least one category.', true); return; }
   f.cats = (cats.slice().sort().join() === base.cat.slice().sort().join()) ? null : cats;
-  try{ await writeOverride(id, f); S.openId = null; renderList(); toast('Saved. The site will show it shortly.'); }
-  catch(e){ console.error(e); toast('Could not save. Please try again.', true); }
+  const oldPhoto = f.photo_url; let uploaded = null;
+  try{
+    const pd = (S.pend && S.pend.id === id) ? S.pend : null;
+    if(pd && pd.blob){
+      const path = id + '/' + Date.now() + '.jpg';
+      const up = await sb.storage.from(PIC_BUCKET).upload(path, pd.blob, { contentType:'image/jpeg', upsert:false });
+      if(up.error) throw up.error;
+      uploaded = path;
+      f.photo_url = sb.storage.from(PIC_BUCKET).getPublicUrl(path).data.publicUrl;
+    }else if(pd && pd.remove){ f.photo_url = null; }
+    await writeOverride(id, f);
+    if(oldPhoto && oldPhoto !== f.photo_url) dropOldPicture(oldPhoto);
+    clearPend(); S.openId = null; renderList(); toast('Saved. The site will show it shortly.');
+  }catch(e){
+    console.error(e);
+    if(uploaded){ try{ await sb.storage.from(PIC_BUCKET).remove([uploaded]); }catch(x){} }
+    toast('Could not save. Please try again.', true);
+  }
 }
 async function resetPlace(id){
   if(!confirm('Undo all edits to this place and bring back the original?')) return;
-  try{ await writeOverride(id, { hidden:false, name_en:null, name_hy:null, why_en:null, why_hy:null, icon:null, cats:null }); S.openId = null; renderList(); toast('Back to the original.'); }
+  const oldPhoto = (S.ov[id] || {}).photo_url;
+  try{ await writeOverride(id, { hidden:false, name_en:null, name_hy:null, why_en:null, why_hy:null, icon:null, cats:null, photo_url:null }); if(oldPhoto) dropOldPicture(oldPhoto); clearPend(); S.openId = null; renderList(); toast('Back to the original.'); }
   catch(e){ console.error(e); toast('Could not save. Please try again.', true); }
 }
 async function quickHide(id){

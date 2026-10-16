@@ -2898,6 +2898,7 @@ function loadFromHash(){
    saved. The last copy is kept in the browser so the page opens instantly with them,
    and a fresh copy is checked after the page has loaded.
 ====================================================================== */
+const ADMIN_PHOTOS = {};   // pictures uploaded in the backoffice (they replace any other picture of that place)
 function agApplyOverrides(o){
   if(!o) return;
   (o.c || []).forEach(r=>{
@@ -2914,6 +2915,7 @@ function agApplyOverrides(o){
     if(r.why_en) s.why.en = r.why_en;
     if(r.why_hy) s.why.hy = r.why_hy;
     if(r.icon && ICON_SVGS[r.icon]) s.icon = r.icon;
+    if(typeof r.photo_url === 'string' && /^https:\/\//.test(r.photo_url)){ ADMIN_PHOTOS[s.id] = r.photo_url; PHOTOS[s.id] = { url: r.photo_url, credit: 'Photo: Armenia Along the Way' }; }
     if(Array.isArray(r.cats)){ const cs = r.cats.filter(c=>CATEGORIES[c]); if(cs.length) s.cat = cs; }
   });
   if(hide.size){ for(let i=SIGHTS.length-1;i>=0;i--){ if(hide.has(SIGHTS[i].id)) SIGHTS.splice(i,1); } }
@@ -3251,6 +3253,7 @@ function applyLocalPhotos(map){
   let changed = false;
   SIGHTS.forEach(s => {
     const had = PHOTOS[s.id] && PHOTOS[s.id].url;
+    if(ADMIN_PHOTOS[s.id]){ if(had !== ADMIN_PHOTOS[s.id]){ PHOTOS[s.id] = { url: ADMIN_PHOTOS[s.id], credit: 'Photo: Armenia Along the Way' }; changed = true; } return; }
     if(map[s.id]){ if(had !== map[s.id]){ PHOTOS[s.id] = { url: map[s.id], credit: 'Photo: Armenia Along the Way' }; changed = true; } }
     else if(had){ delete PHOTOS[s.id]; changed = true; }
   });
