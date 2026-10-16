@@ -495,6 +495,28 @@ select{
 }
 .tp-google:hover{ border-color: var(--ink-faint); }
 .tp-list{ display:flex; flex-direction:column; gap:10px; }
+.tp-head{ align-items:center; }
+.tp-right{ display:flex; align-items:center; gap:12px; flex-wrap:nowrap; justify-content:flex-end; margin-left:auto; }
+.tp-search{ position:relative; flex:1 1 300px; min-width:220px; max-width:360px; }
+.tp-auth{ flex:none; }
+.tp-right .tp-google, .tp-right .tp-btn{ height:46px; box-sizing:border-box; white-space:nowrap; }
+.tp-search input{ width:100%; height:46px; box-sizing:border-box; padding:0 14px 0 40px; border-radius:999px; border:1px solid var(--border-strong); background:var(--surface); color:var(--ink); font:500 14px var(--font-body); }
+.tp-search input::placeholder{ color:var(--ink-faint); }
+.tp-search input:focus{ outline:2px solid var(--rose); outline-offset:1px; }
+.tp-search-ico{ position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--ink-faint); pointer-events:none; }
+.tp-row{ scroll-margin-top:16px; }
+.photo-credit{ font-size:11.5px; color:var(--ink-faint); }
+.photo-credit a{ color:inherit; text-decoration:underline; }
+.tp-credit{ margin:-4px 0 12px; }
+.tp-detail.tp-open{ animation:tpOpen .3s ease-out; }
+@keyframes tpOpen{ from{ opacity:0; transform:translateY(-8px); } to{ opacity:1; transform:none; } }
+.ph-section{ min-height:112px; }
+.sk-line{ height:12px; border-radius:6px; background:var(--surface-2); margin:12px 0; animation:skPulse 1.3s ease-in-out infinite; }
+.sk-row{ display:flex; gap:8px; margin:10px 0; }
+.sk-box{ width:72px; height:72px; border-radius:10px; background:var(--surface-2); animation:skPulse 1.3s ease-in-out infinite; }
+@keyframes skPulse{ 50%{ opacity:.45; } }
+@media (prefers-reduced-motion: reduce){ .tp-detail.tp-open, .sk-line, .sk-box{ animation:none; } }
+@media (max-width:760px){ .tp-head{ gap:14px; } .tp-right{ flex-direction:column; align-items:stretch; width:100%; margin-left:0; gap:10px; } .tp-search{ flex:none; max-width:none; width:100%; } .tp-auth{ width:100%; } .tp-auth > button{ width:100%; justify-content:center; } }
 .tp-more-wrap{ display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; padding:14px 0 4px; }
 .tp-count{ font-size:13px; color:var(--ink-muted); }
 .tp-pager{ display:flex; flex-direction:column; align-items:center; gap:10px; padding:16px 0 4px; }
@@ -925,14 +947,14 @@ html[lang="hy"] .btn-ghost, html[lang="hy"] .pl-btn, html[lang="hy"] .tp-btn{ wh
         </a>
       </div>
       <div class="top-copy">
-        <h1 class="display">The road there is half the sight</h1>
+        <h1 class="display">The destination is just the beginning.</h1>
         <svg class="road" viewBox="0 0 500 26" aria-hidden="true">
           <defs><mask id="roadMask" maskUnits="userSpaceOnUse" x="-10" y="-10" width="520" height="46"><path class="road-mask" pathLength="1" d="M6 17 C 70 3, 120 25, 190 13 S 300 3, 360 15 S 450 23, 494 9" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round"/></mask></defs>
           <path d="M6 17 C 70 3, 120 25, 190 13 S 300 3, 360 15 S 450 23, 494 9" fill="none" stroke="#FFB36B" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="0.1 8.5" mask="url(#roadMask)"/>
           <circle class="road-dot road-start" cx="6" cy="17" r="5" fill="#FFF4E8"/>
           <circle class="road-dot road-end" cx="494" cy="9" r="6" fill="#FFB36B" stroke="#FFF4E8" stroke-width="2.5"/>
         </svg>
-        <p data-i18n="heroSub">Pick how much time you have, or a place you want to reach. Get a day trip from Yerevan along one road, with the stops that are worth the detour.</p>
+        <p data-i18n="heroSub">Choose your destination and how much time you have. Discover hidden gems, unexpected detours, and places worth stopping for that will make your journey unforgettable.</p>
       </div>
     </div>
   </header>
@@ -1035,7 +1057,13 @@ html[lang="hy"] .btn-ghost, html[lang="hy"] .pl-btn, html[lang="hy"] .tp-btn{ wh
         <div>
           <h2 class="display tp-title" id="top-places-title">Top rated places</h2>
         </div>
-        <div class="tp-auth" id="tp-auth"></div>
+        <div class="tp-right">
+          <div class="tp-search">
+            <svg class="tp-search-ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <input type="search" id="tp-q" placeholder="Search by place name" autocomplete="off" aria-label="Search top rated places by name" oninput="tpSetSearch(this.value)">
+          </div>
+          <div class="tp-auth" id="tp-auth"></div>
+        </div>
       </div>
       <div id="tp-list" class="tp-list"><div class="status">Loading ratings…</div></div>
     </section>
@@ -1679,8 +1707,8 @@ const I18N = {
     sightLabel:'Must include', sightPick:'Choose a sight…',
     sightHelp:"We'll plan an out-and-back trip on the road to it, adding stops along the way.",
     interestLabel:'Interested in', findRoutes:'Find routes', savedLabel:'Saved trips',
-    heroTitle:'The road there is half the sight',
-    heroSub:"Pick how much time you have, or a place you want to reach. Get a day trip from Yerevan along one road, with the stops that are worth the detour.",
+    heroTitle:"The destination is just the beginning.",
+    heroSub:"Choose your destination and how much time you have. Discover hidden gems, unexpected detours, and places worth stopping for that will make your journey unforgettable.",
     statusIdle:'Choose your time above and press <strong>Find routes</strong> — or switch to a must-see place instead.',
     dataNote:"Coordinates and drive-time estimates are approximate, computed from straight-line distance and typical road speeds — not a live routing service. Hours, pricing and accessibility carry a dotted underline where we haven't independently verified them; confirm locally before you go. Routes are kept clear of border-adjacent areas by design.",
     noFit:"Nothing fits inside {h}h round trip from Yerevan with your current filters.",
@@ -1694,7 +1722,7 @@ const I18N = {
     corridorNote:'Out and back on one road — the stops above are on the way to {name}, not a separate detour.',
     catFilterAll:'All interests included by default — tap one or more to narrow it down.',
     entryFee:'Entry', hoursWord:'Hours',
-    budgetLabel:'Time budget', heroTitle:'The road there is half the sight',
+    budgetLabel:'Time budget', heroTitle:"The destination is just the beginning.",
   }
 };
 I18N.hy = {
@@ -1712,8 +1740,8 @@ I18N.hy = {
  "interestLabel": "Հետաքրքրում է",
  "findRoutes": "Գտնել երթուղիներ",
  "savedLabel": "Պահպանված ուղևորություններ",
- "heroTitle": "Ճանապարհը տեսարանի կեսն է",
- "heroSub": "Ընտրեք՝ որքան ժամանակ ունեք, կամ վայր, որտեղ ուզում եք հասնել։ Ստացեք օրվա ուղևորություն Երևանից՝ մեկ ճանապարհով, այն կանգառներով, որոնք արժե այցելել։",
+ "heroTitle": "Նպատակակետը միայն սկիզբն է",
+ "heroSub": "Ընտրեք ձեր ուղղությունն ու հասանելի ժամանակը։ Բացահայտեք ճանապարհին թաքնված գանձերը, անսպասելի կանգառներն ու այն վայրերը, որոնք ձեր ուղևորությունը կդարձնեն անմոռանալի։",
  "statusIdle": "Ընտրեք ձեր ժամանակը վերևում և սեղմեք <strong>Գտնել երթուղիներ</strong>՝ կամ փոխարենը ընտրեք ցանկացած վայրը։",
  "noFit": "Ձեր ընթացիկ զտիչներով Երևանից {h} ժամանոց գնալ-գալ ուղևորության մեջ ոչինչ չի տեղավորվում։",
  "noFitHelp": "Մենք չենք կրճատի ձեր ժամանակը՝ կանգառ ավելացնելու համար. փորձեք ավելի երկար ժամանակ, ավելի քիչ զտիչներ կամ ավելի մոտ վայր։",
@@ -2700,6 +2728,7 @@ function renderSightPanel(){
 
   if(needsOvernight(s)) metaHtml += `<span>Needs an overnight stay</span>`;
   if(s.posApprox) metaHtml += `<span class="flag" title="The map pin for this sight is a best-effort position and may be a few kilometres off">~ Pin position approximate</span>`;
+  { const cr = photoCreditHtml(s); if(cr) metaHtml += cr; }
   const activeRoute = state.routes && state.routes[state.activeRoute];
   if(activeRoute){
     const idx = activeRoute.order.findIndex(o=>o.id===s.id);
@@ -2898,7 +2927,13 @@ function loadFromHash(){
    saved. The last copy is kept in the browser so the page opens instantly with them,
    and a fresh copy is checked after the page has loaded.
 ====================================================================== */
-const ADMIN_PHOTOS = {};   // pictures uploaded in the backoffice (they replace any other picture of that place)
+const ADMIN_PHOTOS = {}, ADMIN_PHOTO_OBJ = {};   // pictures uploaded in the backoffice (they replace any other picture of that place)
+function photoCreditHtml(s){
+  const p = PHOTOS[s.id];
+  if(!p || !p.attrib) return '';
+  const label = L('Photo: ', 'Լուսանկար՝ '), txt = tpEsc(p.attrib);
+  return '<span class="photo-credit">' + label + (p.source ? '<a href="' + tpEsc(p.source) + '" target="_blank" rel="noopener">' + txt + '</a>' : txt) + '</span>';
+}
 function agApplyOverrides(o){
   if(!o) return;
   (o.c || []).forEach(r=>{
@@ -2915,7 +2950,11 @@ function agApplyOverrides(o){
     if(r.why_en) s.why.en = r.why_en;
     if(r.why_hy) s.why.hy = r.why_hy;
     if(r.icon && ICON_SVGS[r.icon]) s.icon = r.icon;
-    if(typeof r.photo_url === 'string' && /^https:\/\//.test(r.photo_url)){ ADMIN_PHOTOS[s.id] = r.photo_url; PHOTOS[s.id] = { url: r.photo_url, credit: 'Photo: Armenia Along the Way' }; }
+    if(typeof r.photo_url === 'string' && /^https:\/\//.test(r.photo_url)){
+      const cr = (r.photo_credit || '').trim(), src = /^https:\/\//.test(r.photo_source || '') ? r.photo_source : '';
+      const obj = { url: r.photo_url, credit: 'Photo: ' + (cr || 'Armenia Along the Way'), attrib: cr, source: src };
+      ADMIN_PHOTOS[s.id] = r.photo_url; ADMIN_PHOTO_OBJ[s.id] = obj; PHOTOS[s.id] = obj;
+    }
     if(Array.isArray(r.cats)){ const cs = r.cats.filter(c=>CATEGORIES[c]); if(cs.length) s.cat = cs; }
   });
   if(hide.size){ for(let i=SIGHTS.length-1;i>=0;i--){ if(hide.has(SIGHTS[i].id)) SIGHTS.splice(i,1); } }
@@ -2960,7 +2999,7 @@ try{
 }catch(e){ console.error('reviews unavailable', e); }
 
 const TP_PAGE = 5;   // places on each page (the pager shows at most 10 page numbers at a time)
-const tp = { user:null, stats:{}, openId:null, reviews:{}, draft:{ rating:0, comment:'' }, msg:'', busy:false, page:0 };
+const tp = { user:null, stats:{}, openId:null, reviews:{}, draft:{ rating:0, comment:'' }, msg:'', busy:false, page:0, q:'', justOpened:null };
 
 function tpEsc(s){
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -3010,23 +3049,36 @@ function tpRenderAuthInto(el){
   }
 }
 
+function tpFiltered(){
+  const all = tpSorted();
+  const q = msNorm(tp.q || '').trim();
+  if(!q) return all;
+  const toks = q.split(/\s+/);
+  return all.filter(r => { const hay = msNorm(r.s.name.en + ' ' + r.s.name.hy); return toks.every(k => hay.includes(k)); });
+}
+function tpSetSearch(v, silent){
+  tp.q = v || '';
+  const inp = document.getElementById('tp-q'); if(inp && inp.value !== tp.q) inp.value = tp.q;
+  tp.page = 0;
+  if(!silent) tpRender();
+}
+
 function tpRender(){
   const list = document.getElementById('tp-list');
   if(!list) return;
-  const rows = tpSorted();
+  const rows = tpFiltered();
+  const rk = {}; { let n = 0; tpSorted().forEach(x => { if(x.st && x.st.count > 0) rk[x.s.id] = ++n; }); }   // real rank, even while searching
   const pages = Math.max(1, Math.ceil(rows.length / TP_PAGE));
   if(tp.page > pages - 1) tp.page = pages - 1;
   if(tp.page < 0) tp.page = 0;
   const from = tp.page * TP_PAGE, to = Math.min(from + TP_PAGE, rows.length);
-  let rank = 0;
   const html = rows.map(({s, st}, idx) => {
     const rated = st && st.count > 0;
-    if(rated) rank++;
     if(idx < from || idx >= to) return '';
     const open = tp.openId === s.id;
     return `<div class="tp-row" id="tp-row-${tpEsc(s.id)}">
       <div class="tp-row-main">
-        <div class="tp-rank">${rated ? rank : '–'}</div>
+        <div class="tp-rank">${rated ? rk[s.id] : '–'}</div>
         <div class="tp-thumb">${renderSightBadge(s)}</div>
         <div class="tp-info">
           <div class="tp-title-row"><span class="tp-name">${tpEsc(s.name[LANG])}</span><span class="tp-cat">${tpEsc(CATEGORIES[s.cat[0]][LANG])}</span></div>
@@ -3037,7 +3089,7 @@ function tpRender(){
         </div>
         <button class="tp-btn ${open ? '' : 'primary'}" onclick="tpToggle('${tpEsc(s.id)}')">${open ? 'Close' : 'Rate & review'}</button>
       </div>
-      ${open ? `<div class="tp-detail" id="tp-detail">${tpDetailHtml(s)}</div>` : ''}
+      ${open ? `<div class="tp-detail${tp.justOpened === s.id ? ' tp-open' : ''}" id="tp-detail">${tpDetailHtml(s)}</div>` : ''}
     </div>`;
   }).join('');
   let pager = '';
@@ -3055,10 +3107,11 @@ function tpRender(){
         <button class="tp-pg" onclick="tpGoPage(${tp.page+1})" aria-label="Next page" ${tp.page >= pages-1 ? 'disabled' : ''}>›</button>
       </div></nav>`;
   }
-  list.innerHTML = html + pager;
+  list.innerHTML = rows.length ? html + pager : '<div class="status">' + T('No place matches that name. Try another.') + '</div>';
+  tp.justOpened = null;
 }
 function tpGoPage(n){
-  const pages = Math.max(1, Math.ceil(tpSorted().length / TP_PAGE));
+  const pages = Math.max(1, Math.ceil(tpFiltered().length / TP_PAGE));
   if(n < 0 || n > pages - 1) return;
   tp.page = n;
   tpRender();
@@ -3087,7 +3140,7 @@ function tpDetailHtml(s){
       </div></div>`;
   }
   let list;
-  if(!revs) list = '<div class="rv-empty">Loading reviews…</div>';
+  if(!revs) list = '<div class="sk" role="status" aria-label="Loading reviews"><div class="sk-line" style="width:88%"></div><div class="sk-line" style="width:68%"></div><div class="sk-line" style="width:52%"></div></div>';
   else if(!revs.length) list = '<div class="rv-empty">No written reviews yet.</div>';
   else list = revs.map(r => {
     const av = tpAvatar(r.user_avatar);
@@ -3096,7 +3149,7 @@ function tpDetailHtml(s){
       <span class="rv-date">${tpEsc(new Date(r.created_at).toLocaleDateString())}</span></div>
       ${r.comment ? `<p class="rv-text">${tpEsc(r.comment)}</p>` : ''}</div></div>`;
   }).join('');
-  return `<p class="tp-why">${tpEsc(s.why[LANG])}</p>${form}<div id="ph-section" class="ph-section">${phSectionHtml(s.id)}</div><div>${list}</div>`;
+  return `<p class="tp-why">${tpEsc(s.why[LANG])}</p>${photoCreditHtml(s) ? '<div class="tp-credit">' + photoCreditHtml(s) + '</div>' : ''}${form}<div id="ph-section" class="ph-section">${phSectionHtml(s.id)}</div><div>${list}</div>`;
 }
 
 async function tpLoadReviews(id){
@@ -3111,17 +3164,18 @@ async function tpLoadReviews(id){
   }
 }
 
-function tpToggle(id){
+function tpToggle(id, opts){
   tp.msg = ''; tp.msgErr = false;
   if(tp.openId === id){ tp.openId = null; tpRender(); return; }
-  tp.openId = id; tp.draft = { rating:0, comment:'' };
-  const oi = tpSorted().findIndex(r => r.s.id === id);
+  tp.openId = id; tp.draft = { rating:0, comment:'' }; tp.justOpened = id;
+  if(tp.q && !tpFiltered().some(r => r.s.id === id)) tpSetSearch('', true);   // a search must never hide the place you asked for
+  const oi = tpFiltered().findIndex(r => r.s.id === id);
   if(oi >= 0) tp.page = Math.floor(oi / TP_PAGE);
   tpRender();
   tpLoadReviews(id);
   phLoad(id);
   const row = document.getElementById('tp-row-' + id);
-  if(row) row.scrollIntoView({ block:'nearest', behavior:'smooth' });
+  if(row) row.scrollIntoView({ block: (opts && opts.align) || 'nearest', behavior:'smooth' });
 }
 
 function tpSetRating(n){
@@ -3197,9 +3251,11 @@ function focusTrip(){
 }
 function rateSelectedSight(){
   if(!selectedSightId) return;
-  const sec = document.getElementById('top-places');
-  if(sec) sec.scrollIntoView({ behavior:'smooth', block:'start' });
-  if(tp.openId !== selectedSightId) tpToggle(selectedSightId);
+  // one calm scroll straight to that place's row (no second jump after the list redraws)
+  const id = selectedSightId;
+  if(tp.openId !== id){ tpToggle(id, { align:'start' }); return; }
+  const row = document.getElementById('tp-row-' + id);
+  if(row) row.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 tpInit();
 
@@ -3253,7 +3309,7 @@ function applyLocalPhotos(map){
   let changed = false;
   SIGHTS.forEach(s => {
     const had = PHOTOS[s.id] && PHOTOS[s.id].url;
-    if(ADMIN_PHOTOS[s.id]){ if(had !== ADMIN_PHOTOS[s.id]){ PHOTOS[s.id] = { url: ADMIN_PHOTOS[s.id], credit: 'Photo: Armenia Along the Way' }; changed = true; } return; }
+    if(ADMIN_PHOTOS[s.id]){ if(had !== ADMIN_PHOTOS[s.id]){ PHOTOS[s.id] = ADMIN_PHOTO_OBJ[s.id]; changed = true; } return; }
     if(map[s.id]){ if(had !== map[s.id]){ PHOTOS[s.id] = { url: map[s.id], credit: 'Photo: Armenia Along the Way' }; changed = true; } }
     else if(had){ delete PHOTOS[s.id]; changed = true; }
   });
@@ -3542,7 +3598,7 @@ function phSectionHtml(id){
   if(!sb) return '';
   const s = SIGHTS.find(x=>x.id === id), list = phs.list[id];
   let grid;
-  if(!list) grid = '<div class="rv-empty">Loading photos…</div>';
+  if(!list) grid = '<div class="sk-row" role="status" aria-label="Loading photos"><div class="sk-box"></div><div class="sk-box"></div><div class="sk-box"></div></div>';
   else if(!list.length) grid = '<div class="rv-empty">No visitor photos yet.</div>';
   else grid = `<div class="ph-grid">${list.map((p,i)=>`<div class="ph-item"><button class="ph-open" onclick="phOpen('${id}',${i})" aria-label="Open photo ${i+1}"><img loading="lazy" src="${tpEsc(p.url)}" alt="Visitor photo of ${tpEsc(s.name[LANG])}"></button>${
     tp.user && p.user_id === tp.user.id ? `<button class="ph-act" onclick="phDelete('${id}','${p.id}')">Delete</button>` : `<button class="ph-act" onclick="phReport('${id}','${p.id}')">Report</button>`}</div>`).join('')}</div>`;
@@ -3818,6 +3874,11 @@ function resetApp(e){
    Anything not in a table simply stays in English, so nothing ever breaks.
 ====================================================================== */
 const UI_HY = {
+ "Search by place name": "Որոնել վայրի անունով",
+ "Search top rated places by name": "Որոնել լավագույն վայրերը անունով",
+ "No place matches that name. Try another.": "Այդ անունով վայր չի գտնվել։ Փորձեք մեկ այլ անուն։",
+ "Loading reviews": "Կարծիքները բեռնվում են",
+ "Loading photos": "Լուսանկարները բեռնվում են",
  "Sign in to continue.": "Խնդրում ենք մուտք գործել շարունակելու համար։",
  "or use your email": "կամ օգտագործեք էլ. փոստը",
  "Email": "Էլ. փոստ",

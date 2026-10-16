@@ -92,6 +92,17 @@ textarea.input{ min-height:96px; resize:vertical; line-height:1.45; }
 .pic{ display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
 .picbox{ width:160px; height:110px; border-radius:14px; border:1px dashed var(--border-strong); background:#fff; display:flex; align-items:center; justify-content:center; overflow:hidden; color:var(--faint); font-size:12.5px; text-align:center; padding:6px; }
 .picbox img{ width:100%; height:100%; object-fit:cover; display:block; }
+.cands{ display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; }
+.cand{ background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; display:flex; flex-direction:column; }
+.cand img{ width:100%; height:128px; object-fit:cover; display:block; background:var(--surface-2); }
+.cand .ci{ padding:8px 10px; font-size:12px; color:var(--muted); flex:1; overflow-wrap:anywhere; }
+.cand .ci b{ display:block; color:var(--ink); font-weight:500; }
+.cand .ca{ padding:0 10px 10px; display:flex; gap:10px; align-items:center; }
+.cand .ca a{ font-size:12px; }
+.prog{ height:8px; background:var(--surface-2); border-radius:99px; overflow:hidden; }
+.prog i{ display:block; height:100%; background:var(--navy); }
+.rvhead{ display:flex; gap:14px; align-items:center; }
+.rvhead .ico{ width:64px; height:64px; }
 .pager{ display:flex; gap:6px; align-items:center; justify-content:center; flex-wrap:wrap; margin:18px 0 6px; }
 .pager button{ min-width:38px; height:38px; padding:0 12px; border:1px solid var(--line); background:#fff; border-radius:10px; cursor:pointer; font-weight:600; }
 .pager button.on{ background:var(--navy); color:#fff; border-color:var(--navy); }
@@ -687,7 +698,7 @@ const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { flowType: 'pkc
 
 const PAGE = 15;   // places shown on each page
 const PIC_BUCKET = 'sight-pictures';
-const S = { user:null, admin:false, tab:'places', ov:{}, catOv:{}, users:null, usersErr:'', q:'', filter:'all', openId:null, uq:'', page:0, pend:null };
+const S = { user:null, admin:false, tab:'places', ov:{}, catOv:{}, users:null, usersErr:'', q:'', filter:'all', openId:null, uq:'', page:0, pend:null, ed:null, rv:{ q:'', cands:null, loadedFor:null, busy:false, err:'', skipped:new Set(), saving:-1 } };
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm = x => String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
@@ -789,12 +800,13 @@ function renderShell(){
   renderTabs(); renderPane();
 }
 function renderTabs(){
-  const T = [['places','Places'],['cats','Categories'],['people','People']];
+  const T = [['places','Places'],['pictures','Pictures'],['cats','Categories'],['people','People']];
   $('tabs').innerHTML = T.map(([k,l]) => `<button class="tab ${S.tab===k?'on':''}" onclick="setTab('${k}')">${l}</button>`).join('');
 }
 function setTab(k){ S.tab = k; renderTabs(); renderPane(); }
 function renderPane(){
   if(S.tab === 'places') renderPlaces();
+  else if(S.tab === 'pictures') renderPictures();
   else if(S.tab === 'cats') renderCats();
   else renderPeople();
 }
@@ -877,9 +889,11 @@ function editorHtml(e){
         <div class="acts" style="flex-direction:column;align-items:flex-start;gap:8px">
           <input type="file" id="pic-file" accept="image/jpeg,image/png,image/webp" hidden onchange="pickPic()">
           <button type="button" class="btn small" onclick="$('pic-file').click()">Choose a picture…</button>
+          <button type="button" class="btn small" onclick="findOnline()">Find a picture online…</button>
           <button type="button" class="btn small danger" id="pic-remove" onclick="removePic()" ${e.photo ? '' : 'hidden'}>Remove picture</button>
         </div>
       </div>
+      <div id="cand-box" style="margin-top:12px"></div>
       <div class="hint">JPG, PNG or WebP. It is shrunk automatically and replaces any other picture of this place on the site. The picture is saved when you press “Save changes”.</div>
     </div>
     <div>
@@ -901,8 +915,127 @@ function editorHtml(e){
   </div>`;
 }
 
+/* ---------- finding free pictures on Wikimedia Commons ---------- */
+const COMMONS = 'https://commons.wikimedia.org/w/api.php';
+function plain(html){ const d = document.createElement('div'); d.innerHTML = String(html || ''); return (d.textContent || '').replace(/\s+/g, ' ').trim(); }
+async function commonsSearch(q){
+  const url = COMMONS + '?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrlimit=24&gsrsearch=' + encodeURIComponent(q + ' filetype:bitmap')
+    + '&prop=imageinfo&iiprop=url|extmetadata|size|mime&iiurlwidth=960&iiextmetadatafilter=LicenseShortName|Artist';
+  const r = await fetch(url);
+  if(!r.ok) throw new Error('commons ' + r.status);
+  const d = await r.json();
+  const pages = d.query && d.query.pages ? Object.values(d.query.pages) : [];
+  pages.sort((a, b) => (a.index || 0) - (b.index || 0));
+  const out = [];
+  for(const pg of pages){
+    const ii = pg.imageinfo && pg.imageinfo[0]; if(!ii) continue;
+    if(!/^image\/(jpeg|png)$/.test(ii.mime || '')) continue;
+    if((ii.width || 0) < 900) continue;
+    const title = String(pg.title || '').replace(/^File:/, '');
+    if(/\b(map|maps|logo|flag|coat of arms|diagram|plan|stamp|locator|banknote|coin|poster|scan|panorama of)\b/i.test(title)) continue;
+    const m = ii.extmetadata || {};
+    const lic = plain(m.LicenseShortName && m.LicenseShortName.value);
+    if(!/^(CC[ -]?BY|CC0|Public domain|PD)/i.test(lic) || /\b(NC|ND)\b/i.test(lic)) continue;   // only licences that allow reuse on a website
+    const author = (plain(m.Artist && m.Artist.value) || 'Unknown author').slice(0, 110);
+    out.push({ title, thumb: ii.thumburl || ii.url, license: lic, author, source: ii.descriptionurl });
+    if(out.length >= 9) break;
+  }
+  return out;
+}
+const credOf = c => (c.author + ' · ' + c.license + ' · Wikimedia Commons').slice(0, 300);
+async function candidateBlob(c){
+  const r = await fetch(c.thumb); if(!r.ok) throw new Error('image ' + r.status);
+  return resizeImage(await r.blob(), 1600);
+}
+function candsHtml(cands, action){
+  if(!cands.length) return '<div class="hint">No free-to-use photos found for that search. Try other words, for example the local name, or skip this place.</div>';
+  return '<div class="cands">' + cands.map((c, i) => `<div class="cand"><img src="${esc(c.thumb)}" alt="${esc(c.title)}" loading="lazy" referrerpolicy="no-referrer"><div class="ci"><b>${esc(c.author)}</b>${esc(c.license)}</div><div class="ca"><button class="btn small primary" ${S.rv.saving !== -1 ? 'disabled' : ''} onclick="${action}(${i})">Use this</button><a href="${esc(c.source)}" target="_blank" rel="noopener">Details</a></div></div>`).join('') + '</div>';
+}
+function defaultQuery(id){ const e = eff(SIGHTS.find(x => x.id === id)); return e.name.en.replace(/\s*\(.*?\)\s*/g, ' ').trim() + ' Armenia'; }
+
+/* in the place editor: search, then the chosen picture waits for "Save changes" like an upload */
+async function findOnline(){
+  const id = S.openId; if(!id) return;
+  S.ed = { id, q: defaultQuery(id), cands:null, loading:true, err:'' };
+  renderCandBox(); await runEdSearch();
+}
+function renderCandBox(){
+  const box = $('cand-box'); if(!box || !S.ed || S.ed.id !== S.openId) return;
+  const ed = S.ed;
+  box.innerHTML = `<div class="row2" style="margin-bottom:10px"><input class="input" id="ed-q" value="${esc(ed.q)}" onkeydown="if(event.key==='Enter')edSearch()"><button class="btn" onclick="edSearch()">Search</button></div>`
+    + (ed.loading ? '<div class="hint">Searching…</div>' : ed.err ? `<div class="msg err">${esc(ed.err)}</div>` : candsHtml(ed.cands || [], 'useInEditor'))
+    + '<div class="hint">Photos from Wikimedia Commons, free to use with credit. The credit is added to the picture automatically.</div>';
+}
+function edSearch(){ if(!S.ed) return; S.ed.q = ($('ed-q').value || '').trim() || S.ed.q; S.ed.loading = true; renderCandBox(); runEdSearch(); }
+async function runEdSearch(){
+  const ed = S.ed; if(!ed) return;
+  try{ ed.cands = await commonsSearch(ed.q); ed.err = ''; }catch(e){ console.error(e); ed.cands = null; ed.err = 'Could not reach Wikimedia. Check your connection and try again.'; }
+  ed.loading = false; renderCandBox();
+}
+async function useInEditor(i){
+  const ed = S.ed; if(!ed || !ed.cands || !ed.cands[i]) return;
+  const c = ed.cands[i];
+  try{
+    toast('Getting the picture…');
+    const blob = await candidateBlob(c);
+    const keep = S.ed; clearPend(); S.ed = keep;
+    S.pend = { id:ed.id, blob, url:URL.createObjectURL(blob), remove:false, credit:credOf(c), source:c.source };
+    refreshPic(ed.id); toast('Picture chosen. Press “Save changes” to keep it.');
+  }catch(e){ console.error(e); toast('Could not get that picture. Try another one.', true); }
+}
+
+/* ---------- the Pictures tab: one place at a time, you approve or skip ---------- */
+function rvQueue(){ return SIGHTS.map(eff).filter(e => !e.hidden && !e.photo && !S.rv.skipped.has(e.id)).sort((a, b) => a.name.en.localeCompare(b.name.en)); }
+function renderPictures(){
+  const all = SIGHTS.map(eff).filter(e => !e.hidden), withPic = all.filter(e => e.photo).length;
+  const q = rvQueue(), rv = S.rv;
+  const bar = `<div class="card" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:8px"><b>${withPic} of ${all.length} places have a picture</b><span class="pinfo">${q.length} left to review</span></div><div class="prog"><i style="width:${all.length ? Math.round(withPic / all.length * 100) : 0}%"></i></div></div>`;
+  if(!q.length){
+    $('pane').innerHTML = bar + `<div class="card"><p style="margin-top:0">${S.rv.skipped.size ? 'You have gone through every place. ' + S.rv.skipped.size + ' were skipped.' : 'Every place has a picture.'}</p>${S.rv.skipped.size ? '<button class="btn" onclick="S.rv.skipped.clear();S.rv.loadedFor=null;renderPictures()">Review the skipped places again</button>' : ''}</div>`;
+    return;
+  }
+  const cur = q[0];
+  if(rv.loadedFor !== cur.id){ rv.loadedFor = cur.id; rv.q = defaultQuery(cur.id); rv.cands = null; rv.err = ''; rv.busy = true; rvSearch(); }
+  $('pane').innerHTML = bar + `<div class="card">
+    <div class="rvhead"><div class="ico">${iconSvg(cur.icon)}</div><div style="flex:1;min-width:0"><div class="pname">${esc(cur.name.en)}</div><div class="pmeta">${esc(cur.name.hy)} · ${esc(cur.region || '')}</div></div><button class="btn small" ${rv.saving !== -1 ? 'disabled' : ''} onclick="rvSkip()">Skip for now</button></div>
+    <div class="row2" style="margin:14px 0"><input class="input" id="rv-q" value="${esc(rv.q)}" onkeydown="if(event.key==='Enter')rvResearch()"><button class="btn" onclick="rvResearch()">Search</button></div>
+    <div id="rv-body">${rv.busy ? '<div class="hint">Searching…</div>' : rv.err ? `<div class="msg err">${esc(rv.err)} <button class="btn small" onclick="rvResearch()">Try again</button></div>` : candsHtml(rv.cands || [], 'rvApprove')}</div>
+    <div class="hint" style="margin-top:12px">Photos from Wikimedia Commons, free to use with credit. Check that the photo really shows this place, then press “Use this”.</div>
+  </div>`;
+}
+function rvResearch(){ const v = ($('rv-q').value || '').trim(); if(!v) return; S.rv.q = v; S.rv.busy = true; renderPictures(); rvSearch(); }
+async function rvSearch(){
+  const forId = S.rv.loadedFor, q = S.rv.q;
+  try{ const c = await commonsSearch(q); if(S.rv.loadedFor !== forId) return; S.rv.cands = c; S.rv.err = ''; }
+  catch(e){ console.error(e); if(S.rv.loadedFor !== forId) return; S.rv.cands = null; S.rv.err = 'Could not reach Wikimedia.'; }
+  S.rv.busy = false; if(S.tab === 'pictures') renderPictures();
+}
+function rvSkip(){ const cur = rvQueue()[0]; if(!cur) return; S.rv.skipped.add(cur.id); S.rv.loadedFor = null; renderPictures(); }
+async function rvApprove(i){
+  const rv = S.rv, c = rv.cands && rv.cands[i], id = rv.loadedFor; if(!c || !id || rv.saving !== -1) return;
+  rv.saving = i; renderPictures(); toast('Saving the picture…');
+  let uploaded = null;
+  try{
+    const blob = await candidateBlob(c);
+    const path = id + '/' + Date.now() + '.jpg';
+    const up = await sb.storage.from(PIC_BUCKET).upload(path, blob, { contentType:'image/jpeg', upsert:false });
+    if(up.error) throw up.error;
+    uploaded = path;
+    const f = currentFields(id), old = f.photo_url;
+    f.photo_url = sb.storage.from(PIC_BUCKET).getPublicUrl(path).data.publicUrl; f.photo_credit = credOf(c); f.photo_source = c.source;
+    await writeOverride(id, f);
+    if(old) dropOldPicture(old);
+    rv.loadedFor = null; toast('Picture saved.');
+  }catch(e){
+    console.error(e);
+    if(uploaded){ try{ await sb.storage.from(PIC_BUCKET).remove([uploaded]); }catch(x){} }
+    toast('Could not save that picture. Try another one.', true);
+  }
+  rv.saving = -1; renderPictures();
+}
+
 /* ---------- pictures ---------- */
-function clearPend(){ if(S.pend && S.pend.url) URL.revokeObjectURL(S.pend.url); S.pend = null; }
+function clearPend(){ if(S.pend && S.pend.url) URL.revokeObjectURL(S.pend.url); S.pend = null; S.ed = null; }
 function picBoxHtml(e){
   const p = S.pend;
   if(p && p.id === e.id){
@@ -939,7 +1072,7 @@ async function pickPic(){
   if(f.size > 20 * 1024 * 1024){ toast('That picture is too large (over 20 MB).', true); inp.value = ''; return; }
   try{
     const blob = await resizeImage(f, 1600);
-    clearPend(); S.pend = { id, blob, url:URL.createObjectURL(blob), remove:false };
+    clearPend(); S.pend = { id, blob, url:URL.createObjectURL(blob), remove:false, credit:null, source:null };
     refreshPic(id);
   }catch(e){ console.error(e); toast('Could not read that picture.', true); }
   inp.value = '';
@@ -964,7 +1097,7 @@ async function writeOverride(id, f){
     S.ov[id] = data;
   }
 }
-function currentFields(id){ const o = S.ov[id] || {}; return { hidden:!!o.hidden, name_en:o.name_en ?? null, name_hy:o.name_hy ?? null, why_en:o.why_en ?? null, why_hy:o.why_hy ?? null, icon:o.icon ?? null, cats:o.cats ?? null, photo_url:o.photo_url ?? null }; }
+function currentFields(id){ const o = S.ov[id] || {}; return { hidden:!!o.hidden, name_en:o.name_en ?? null, name_hy:o.name_hy ?? null, why_en:o.why_en ?? null, why_hy:o.why_hy ?? null, icon:o.icon ?? null, cats:o.cats ?? null, photo_url:o.photo_url ?? null, photo_credit:o.photo_credit ?? null, photo_source:o.photo_source ?? null }; }
 
 async function savePlace(id){
   const base = SIGHTS.find(x => x.id === id);
@@ -989,7 +1122,8 @@ async function savePlace(id){
       if(up.error) throw up.error;
       uploaded = path;
       f.photo_url = sb.storage.from(PIC_BUCKET).getPublicUrl(path).data.publicUrl;
-    }else if(pd && pd.remove){ f.photo_url = null; }
+      f.photo_credit = pd.credit || null; f.photo_source = pd.source || null;
+    }else if(pd && pd.remove){ f.photo_url = null; f.photo_credit = null; f.photo_source = null; }
     await writeOverride(id, f);
     if(oldPhoto && oldPhoto !== f.photo_url) dropOldPicture(oldPhoto);
     clearPend(); S.openId = null; renderList(); toast('Saved. The site will show it shortly.');
@@ -1002,7 +1136,7 @@ async function savePlace(id){
 async function resetPlace(id){
   if(!confirm('Undo all edits to this place and bring back the original?')) return;
   const oldPhoto = (S.ov[id] || {}).photo_url;
-  try{ await writeOverride(id, { hidden:false, name_en:null, name_hy:null, why_en:null, why_hy:null, icon:null, cats:null, photo_url:null }); if(oldPhoto) dropOldPicture(oldPhoto); clearPend(); S.openId = null; renderList(); toast('Back to the original.'); }
+  try{ await writeOverride(id, { hidden:false, name_en:null, name_hy:null, why_en:null, why_hy:null, icon:null, cats:null, photo_url:null, photo_credit:null, photo_source:null }); if(oldPhoto) dropOldPicture(oldPhoto); clearPend(); S.openId = null; renderList(); toast('Back to the original.'); }
   catch(e){ console.error(e); toast('Could not save. Please try again.', true); }
 }
 async function quickHide(id){
